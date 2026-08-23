@@ -1551,46 +1551,55 @@
     palm.position.y = -2.2;
     wristYaw.add(palm);
 
-    // mano articulada de 5 dedos (4 + pulgar), tipo prótesis mioeléctrica:
-    // segmentos grises mecánicos, juntas negras visibles en cada nudillo,
-    // punta clara -- no la pinza de 3 dedos anterior
-    function buildDigit(len1, len2, r) {
+    // mano articulada de 5 dedos (4 + pulgar), tipo prótesis mioeléctrica.
+    // Los 4 dedos tienen 3 piezas (2 nudillos), el pulgar tiene 2 (1 nudillo).
+    // Cerrar la mano gira cada nudillo hacia dentro -- como una mano de
+    // verdad -- en vez de desplazar el dedo entero en horizontal.
+    function buildDigit(lens, r) {
       var root = new THREE.Group();
-      var seg1 = capsule(r, len1, mechGrey);
-      seg1.position.y = -len1 / 2;
-      root.add(seg1);
-      var hinge1 = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.95, r * 0.95, r * 1.7, 10), jointMat);
-      hinge1.rotation.z = Math.PI / 2;
-      hinge1.position.y = -len1;
-      root.add(hinge1);
-      var seg2 = capsule(r * 0.82, len2, mechGrey);
-      seg2.position.y = -len1 - len2 / 2;
-      root.add(seg2);
-      var tip = new THREE.Mesh(new THREE.SphereGeometry(r * 0.85, 10, 10), aluminum);
-      tip.position.y = -len1 - len2;
-      root.add(tip);
-      return root;
+      var joints = [];
+      var current = root;
+      for (var i = 0; i < lens.length; i++) {
+        var segR = r * (1 - i * 0.14);
+        var seg = capsule(segR, lens[i], mechGrey);
+        seg.position.y = -lens[i] / 2;
+        current.add(seg);
+        if (i < lens.length - 1) {
+          var hinge = new THREE.Mesh(new THREE.CylinderGeometry(segR * 0.95, segR * 0.95, segR * 1.7, 10), jointMat);
+          hinge.rotation.z = Math.PI / 2;
+          hinge.position.y = -lens[i];
+          current.add(hinge);
+          var joint = new THREE.Group();
+          joint.position.y = -lens[i];
+          current.add(joint);
+          joints.push(joint);
+          current = joint;
+        } else {
+          var tip = new THREE.Mesh(new THREE.SphereGeometry(segR * 0.9, 10, 10), aluminum);
+          tip.position.y = -lens[i];
+          current.add(tip);
+        }
+      }
+      return { root: root, joints: joints };
     }
 
     var fingers = [];
     [
-      { x: -1.7, len1: 1.4, len2: 1.0 },
-      { x: -0.58, len1: 1.7, len2: 1.25 },
-      { x: 0.58, len1: 1.7, len2: 1.25 },
-      { x: 1.7, len1: 1.4, len2: 1.0 }
+      { x: -1.7, lens: [0.95, 0.75, 0.55] },
+      { x: -0.58, lens: [1.15, 0.9, 0.65] },
+      { x: 0.58, lens: [1.15, 0.9, 0.65] },
+      { x: 1.7, lens: [0.95, 0.75, 0.55] }
     ].forEach(function (fd) {
-      var fingerRoot = buildDigit(fd.len1, fd.len2, 0.34);
-      fingerRoot.position.set(fd.x, -3.4, 0.6);
-      fingerRoot.userData.baseX = fd.x;
-      wristYaw.add(fingerRoot);
-      fingers.push(fingerRoot);
+      var digit = buildDigit(fd.lens, 0.34);
+      digit.root.position.set(fd.x, -3.4, 0.6);
+      wristYaw.add(digit.root);
+      fingers.push(digit);
     });
-    // pulgar: más corto, hacia el lateral, ligeramente girado
-    var thumb = buildDigit(1.2, 0.9, 0.36);
-    thumb.position.set(-2.3, -2, 0.9);
-    thumb.rotation.z = 0.55;
-    thumb.userData.baseX = -2.3;
-    wristYaw.add(thumb);
+    // pulgar: 2 piezas, más corto, hacia el lateral, ligeramente girado
+    var thumb = buildDigit([1.1, 0.85], 0.36);
+    thumb.root.position.set(-2.3, -2, 0.9);
+    thumb.root.rotation.z = 0.55;
+    wristYaw.add(thumb.root);
     fingers.push(thumb);
 
     return { shoulderYaw: shoulderYaw, shoulderPitch: shoulderPitch, elbow: elbow, wristPitch: wristPitch, wristYaw: wristYaw, fingers: fingers };
@@ -1663,8 +1672,11 @@
     arm.wristPitch.rotation.x = deg(wrP);
     arm.wristYaw.rotation.y = deg(wrY) * sign;
     var open = gr / 100;
-    arm.fingers.forEach(function (fin) {
-      fin.position.x = fin.userData.baseX * (0.55 + open * 0.55);
+    // gr=100 -> mano abierta (nudillos rectos); gr=0 -> cerrada (cada
+    // nudillo girado 90° hacia dentro)
+    var curl = deg(90 * (1 - open));
+    arm.fingers.forEach(function (digit) {
+      digit.joints.forEach(function (j) { j.rotation.x = -curl; });
     });
   }
 
