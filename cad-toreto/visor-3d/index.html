@@ -1482,10 +1482,11 @@
   // Centrada en la altura del propio torso, con margen solo el necesario
   // para no comerse el redondeo de las esquinas. Fina de verdad, como una
   // tablet, no un bloque grueso.
-  var screenBezel = roundedBlock(13.5, torsoH - 2, 0.5, jointMat);
+  // girada 90° -- horizontal, no vertical
+  var screenBezel = roundedBlock(15.5, 12.5, 0.5, jointMat);
   screenBezel.position.set(0, torsoH / 2, 9.45);
   torsoGroup.add(screenBezel);
-  var screen = new THREE.Mesh(new THREE.PlaneGeometry(11.9, torsoH - 3.7), glow);
+  var screen = new THREE.Mesh(new THREE.PlaneGeometry(13.9, 10.9), glow);
   screen.position.set(0, torsoH / 2, 9.75);
   torsoGroup.add(screen);
 
