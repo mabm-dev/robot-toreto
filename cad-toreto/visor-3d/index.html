@@ -1599,8 +1599,9 @@
     // pulgar: 2 piezas, más corto, hacia el lateral, ligeramente girado
     var thumb = buildDigit([1.4, 1.05], 0.36);
     thumb.root.position.set(-2.1, -1.6, 1.1);
-    // transversal a la muñeca -- casi perpendicular, no un ligero giro
-    thumb.root.rotation.z = Math.PI / 2 - 0.15;
+    // transversal a la muñeca, y girado 180° sobre la palma respecto a la
+    // orientación anterior
+    thumb.root.rotation.z = Math.PI / 2 - 0.15 + Math.PI;
     wristYaw.add(thumb.root);
     fingers.push(thumb);
 
