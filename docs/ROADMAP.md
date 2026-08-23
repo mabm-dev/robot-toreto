@@ -11,8 +11,10 @@ con IA integrada — el objetivo final.
 ## v0.1 — Diseño cerrado · fase 1 🟡 en curso
 
 - [x] Lámina de diseño redibujada contra la imagen de referencia
-- [ ] Visto bueno del usuario sobre la forma (brazos, cabeza, proporción base/torso)
-- [ ] Proporciones finales documentadas en `cad-toreto/lista_piezas_v2.md`
+- [x] Visto bueno del usuario sobre la forma — visor 3D interactivo
+      (`cad-toreto/visor-3d/`), forma aprobada
+- [ ] Proporciones finales — no se cierra hasta fase 3: el visor 3D es un
+      proxy estético, no cotas reales (ver `DECISIONES.md`)
 
 ## v0.2 — Componentes elegidos · fase 2 ⬜
 
