@@ -1602,6 +1602,10 @@
     // 90° exactos, perpendicular a la muñeca -- limpio, sin los ajustes
     // finos anteriores
     thumb.root.rotation.z = Math.PI / 2;
+    // al estar girado 90° respecto a los otros dedos, el mismo signo de
+    // giro en la junta lo cerraba al revés que ellos -- invertido para que
+    // cierre a la vez, no en contra
+    thumb.curlSign = -1;
     wristYaw.add(thumb.root);
     fingers.push(thumb);
 
@@ -1679,7 +1683,8 @@
     // nudillo girado 90° hacia dentro)
     var curl = deg(90 * (1 - open));
     arm.fingers.forEach(function (digit) {
-      digit.joints.forEach(function (j) { j.rotation.x = -curl; });
+      var s = digit.curlSign || 1;
+      digit.joints.forEach(function (j) { j.rotation.x = -curl * s; });
     });
   }
 
