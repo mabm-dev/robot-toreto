@@ -1545,8 +1545,10 @@
     var wristJoint = roundedBlock(2.6, 2.8, 2.4, jointMat);
     wristYaw.add(wristJoint);
 
-    var palm = roundedBlock(4.4, 3.4, 2.2, aluminum);
-    palm.position.y = -2.4;
+    // más pequeña que antes, para que los dedos respiren en vez de nacer
+    // pegados a un bloque grande
+    var palm = roundedBlock(3.2, 2.3, 2, aluminum);
+    palm.position.y = -2.2;
     wristYaw.add(palm);
 
     // mano articulada de 5 dedos (4 + pulgar), tipo prótesis mioeléctrica:
