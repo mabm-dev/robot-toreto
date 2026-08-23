@@ -1599,9 +1599,10 @@
     // pulgar: 2 piezas, más corto, hacia el lateral, ligeramente girado
     var thumb = buildDigit([1.4, 1.05], 0.36);
     thumb.root.position.set(-2.1, -1.6, 1.1);
-    // 90° exactos, perpendicular a la muñeca -- limpio, sin los ajustes
-    // finos anteriores
-    thumb.root.rotation.z = Math.PI / 2;
+    // perpendicular de verdad -- normal al plano de la palma (sale hacia
+    // fuera, eje Z), no girado dentro del mismo plano en el que cuelgan
+    // los dedos (eso era solo un giro en Z, seguía "plano")
+    thumb.root.rotation.x = -Math.PI / 2;
     // al estar girado 90° respecto a los otros dedos, el mismo signo de
     // giro en la junta lo cerraba al revés que ellos -- invertido para que
     // cierre a la vez, no en contra
