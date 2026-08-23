@@ -15,6 +15,11 @@ El proyecto avanza en tres fases fijas, en este orden — ver el porqué en
 | 2. Componentes | Batería, servos, motores, LIDAR, cámara, procesador | ⬜ no empezada |
 | 3. CAD y materiales | Medidas definitivas y material pieza a pieza (Fusion) | ⬜ no empezada |
 
+Seguimiento del avance, en este repo:
+
+- [`docs/ROADMAP.md`](docs/ROADMAP.md) — versiones y checklist de cada una
+- [`docs/DECISIONES.md`](docs/DECISIONES.md) — por qué se tomó cada decisión
+
 Documentos vivos (consulta desde cualquier dispositivo, se actualizan sobre la
 misma URL):
 
@@ -34,8 +39,12 @@ cad-toreto/
 └── exports/, exports_v1/, exports_v2/   # STL y renders exportados
 
 docs/
-└── DECISIONES.md           # por qué se tomó cada decisión importante
+├── ROADMAP.md               # versiones y checklist de cada una
+└── DECISIONES.md            # por qué se tomó cada decisión importante
 ```
+
+Hay también un cuaderno de aprendizaje (`docs/CUADERNO.md` en local) que es
+deliberadamente privado y no está en este repositorio.
 
 ## Piezas y materiales
 
