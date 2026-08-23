@@ -19,6 +19,7 @@ Seguimiento del avance, en este repo:
 
 - [`docs/ROADMAP.md`](docs/ROADMAP.md) — versiones y checklist de cada una
 - [`docs/DECISIONES.md`](docs/DECISIONES.md) — por qué se tomó cada decisión
+- [`docs/CINEMATICA.md`](docs/CINEMATICA.md) — árbol de links/joints previsto (planificación, no URDF final)
 
 Documentos vivos (consulta desde cualquier dispositivo, se actualizan sobre la
 misma URL):
@@ -40,7 +41,8 @@ cad-toreto/
 
 docs/
 ├── ROADMAP.md               # versiones y checklist de cada una
-└── DECISIONES.md            # por qué se tomó cada decisión importante
+├── DECISIONES.md            # por qué se tomó cada decisión importante
+└── CINEMATICA.md            # árbol de links/joints previsto (planificación)
 ```
 
 Hay también un cuaderno de aprendizaje (`docs/CUADERNO.md` en local) que es

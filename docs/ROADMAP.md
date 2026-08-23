@@ -26,11 +26,14 @@ con IA integrada — el objetivo final.
 
 ## v0.3 — CAD funcional en Fusion · fase 3 ⬜
 
-- [ ] Migrar de OpenSCAD a Autodesk Fusion
-- [ ] Ensamblaje con articulaciones reales y topes de recorrido
+- [ ] Migrar de OpenSCAD a Autodesk Fusion (no AutoCAD — ver `DECISIONES.md`)
+- [ ] Ensamblaje con articulaciones reales y topes de recorrido, siguiendo
+      la jerarquía de [`CINEMATICA.md`](CINEMATICA.md)
 - [ ] Exportar a URDF (plugin URDF Exporter)
 - [ ] Medidas definitivas pieza a pieza, con los componentes físicos ya en la mano
 - [ ] Verificar que cada pieza cabe en el volumen de la Bambu P1S (256×256×256 mm)
+- [ ] Candidato a evaluar una vez exista URDF real: visor interactivo
+      [URDF-Visualizer](https://github.com/UNLINEARITY/URDF-Visualizer) (WebGL)
 
 ## v1.0 — Maqueta física impresa ⬜
 
