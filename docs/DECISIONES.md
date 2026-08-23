@@ -68,6 +68,30 @@ Recomendación de partida: mixto — local lo crítico e inmediato (detección d
 obstáculos, parada de emergencia), en la nube lo que tolera medio segundo
 (conversación).
 
+## Identidad visual: de ilustración plana a CAD 3D interactivo (23 ago 2026)
+
+La lámina de diseño y la imagen de portada del repo se hicieron primero como
+ilustración SVG plana (formas redondeadas, colores sólidos, sin volumen). El
+usuario la calificó de "borrador preliminar" y decidió sustituirla por un
+estándar de documentación técnica más exigente:
+
+- Visores 3D interactivos en Three.js (materiales PBR, `OrbitControls`,
+  iluminación de estudio de 3 puntos, sombras dinámicas) en vez de dibujos
+  estáticos.
+- Láminas en layout Bento Grid, modo oscuro.
+- Vistas 2D solo como proyecciones ortogonales normalizadas (con cotas y
+  líneas de centros) — no como icono decorativo.
+
+Estándar fijado en las skills `toreto-cad-visual-identity` y
+`toreto-mechanical-tokens` (`.claude/skills/`). Esta última es explícita en
+no inventar datos: remite a `docs/CINEMATICA.md` y a este archivo como única
+fuente de verdad, y dejar como `TBD` lo que dependa de componentes aún no
+elegidos (fase 2).
+
+La primera lámina 3D bajo este estándar es un **proxy geométrico** basado en
+las cotas ya conocidas (altura 950 mm, base ⌀400 mm, torso_h 228 mm, waist_h
+202 mm) — no es el modelo real de Fusion, que llega en fase 3.
+
 ## Documentos vivos (fuera de este repo)
 
 Se publican como artefactos porque se consultan desde la tablet. Al

@@ -6,6 +6,14 @@ plugin URDF Exporter. Los tipos de joint son los previstos; los ángulos límite
 y el actuador de cada uno quedan como `TBD` hasta cerrar la fase 2
 ([`ROADMAP.md`](ROADMAP.md), milestone v0.2).
 
+Las clases de color (`estructura`/`actuador`/`sensor`) y el estándar de
+visualización técnica del proyecto (visores 3D, láminas Bento Grid, vistas
+ortogonales normalizadas) los fijan las skills
+[`toreto-cad-visual-identity`](../.claude/skills/toreto-cad-visual-identity/SKILL.md)
+y [`toreto-mechanical-tokens`](../.claude/skills/toreto-mechanical-tokens/SKILL.md)
+— no son arbitrarios, para que cualquier pieza nueva del proyecto use la misma
+clave visual sin tener que redecidirla cada vez.
+
 Sirve para razonar la estructura ahora, sin bloquear nada de CAD ni de
 componentes — y como referencia directa cuando llegue el momento de nombrar
 los links y joints reales en Fusion, para que coincidan con este árbol.
