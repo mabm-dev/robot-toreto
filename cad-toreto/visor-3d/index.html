@@ -1543,7 +1543,7 @@
     var wristYaw = new THREE.Group();
     wristPitch.add(wristYaw);
     // más pequeña que antes -- menos protagonismo de la muñeca
-    var wristJoint = roundedBlock(1.7, 1.8, 1.6, jointMat);
+    var wristJoint = roundedBlock(1.2, 1.25, 1.1, jointMat);
     wristYaw.add(wristJoint);
 
     // más pequeña que antes, para que los dedos respiren en vez de nacer
@@ -1599,9 +1599,9 @@
     // pulgar: 2 piezas, más corto, hacia el lateral, ligeramente girado
     var thumb = buildDigit([1.4, 1.05], 0.36);
     thumb.root.position.set(-2.1, -1.6, 1.1);
-    // transversal a la muñeca, y girado 180° sobre la palma respecto a la
-    // orientación anterior
-    thumb.root.rotation.z = Math.PI / 2 - 0.15 + Math.PI;
+    // 90° exactos, perpendicular a la muñeca -- limpio, sin los ajustes
+    // finos anteriores
+    thumb.root.rotation.z = Math.PI / 2;
     wristYaw.add(thumb.root);
     fingers.push(thumb);
 
