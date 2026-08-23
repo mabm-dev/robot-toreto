@@ -1,0 +1,24 @@
+# Rama descartada (ver docs/DECISIONES.md) — no forma parte del proyecto activo
+cad-toreto-gpt/
+
+# Configuración local de Claude Code (no compartida)
+**/.claude/settings.local.json
+
+# Sistema operativo
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Editores / IDE
+.vscode/
+.idea/
+*.swp
+
+# Python (scripts auxiliares de export/render)
+__pycache__/
+*.pyc
+
+# Temporales de OpenSCAD / exportación
+*.tmp
+*.bak
+*~
