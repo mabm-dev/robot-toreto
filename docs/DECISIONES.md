@@ -42,18 +42,6 @@ Electrical, ROS 2 + Gazebo, GitHub.
 Impresión: más perímetros antes que más relleno — 4-5 paredes con giroide al
 25-30 %, en una Bambu Lab P1S (volumen 256 × 256 × 256 mm).
 
-## `cad-toreto-gpt` queda descartada (23 ago 2026)
-
-Existió una rama paralela del proyecto, `cad-toreto-gpt/` (no versionada en
-este repositorio), con un robot funcional de 65 cm y componentes ya elegidos
-(servo FEETECH ST-3215-C018, controlador Waveshare ESP32, motores JGB37-520,
-ruedas mecanum). Se llevó en otro hilo de trabajo, sin relación con este
-repositorio.
-
-El 23 de agosto de 2026 se decidió explícitamente que **no** es el proyecto
-real. `cad-toreto/` (95 cm) es la línea activa. No se adoptan los componentes,
-medidas ni arquitectura eléctrica de la rama descartada.
-
 ## IA local o en la nube — pendiente
 
 Decisión abierta que bloquea la fase 2 (hay que cerrarla antes de comprar el
@@ -68,12 +56,9 @@ Recomendación de partida: mixto — local lo crítico e inmediato (detección d
 obstáculos, parada de emergencia), en la nube lo que tolera medio segundo
 (conversación).
 
-## Identidad visual: de ilustración plana a CAD 3D interactivo (23 ago 2026)
+## Identidad visual: CAD 3D interactivo (23 ago 2026)
 
-La lámina de diseño y la imagen de portada del repo se hicieron primero como
-ilustración SVG plana (formas redondeadas, colores sólidos, sin volumen). El
-usuario la calificó de "borrador preliminar" y decidió sustituirla por un
-estándar de documentación técnica más exigente:
+Estándar de documentación técnica para todo el material visual del proyecto:
 
 - Visores 3D interactivos en Three.js (materiales PBR, `OrbitControls`,
   iluminación de estudio de 3 puntos, sombras dinámicas) en vez de dibujos
@@ -91,6 +76,15 @@ elegidos (fase 2).
 La primera lámina 3D bajo este estándar es un **proxy geométrico** basado en
 las cotas ya conocidas (altura 950 mm, base ⌀400 mm, torso_h 228 mm, waist_h
 202 mm) — no es el modelo real de Fusion, que llega en fase 3.
+
+## Base: 4 ruedas mecanum (23 ago 2026)
+
+La base móvil usa **4 ruedas mecanum en disposición rectangular**, holonómica
+(traslación en cualquier dirección y giro sobre su eje sin necesidad de
+orientar las ruedas). Altura (95 cm) y el resto de medidas generales no
+cambian.
+
+Actualizado: `README.md`, `docs/CINEMATICA.md` (nodos `wheel_fl/fr/rl/rr`).
 
 ## Documentos vivos (fuera de este repo)
 

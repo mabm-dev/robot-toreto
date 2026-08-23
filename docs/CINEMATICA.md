@@ -25,14 +25,16 @@ graph TD
     classDef sensor fill:#1a7f5a,stroke:#1a7f5a,color:#ffffff
 
     base[["base_link<br/>base móvil"]]:::estructura
-    w1((wheel_1)):::actuador
-    w2((wheel_2)):::actuador
-    w3((wheel_3)):::actuador
+    w1((wheel_fl)):::actuador
+    w2((wheel_fr)):::actuador
+    w3((wheel_rl)):::actuador
+    w4((wheel_rr)):::actuador
     lidar([lidar_link]):::sensor
 
     base -->|"continuous · TBD"| w1
     base -->|"continuous · TBD"| w2
     base -->|"continuous · TBD"| w3
+    base -->|"continuous · TBD"| w4
     base -->|fixed| lidar
 
     waist[waist_link]:::estructura
@@ -68,9 +70,14 @@ graph TD
 
 ## Notas
 
-- La base no es una cadena serie clásica: al ser holonómica de 3 ruedas omni,
-  el `base_link` es el marco flotante de todo el árbol, no un eslabón fijo al
-  suelo. Las 3 ruedas son `continuous` porque giran sin límite.
+- La base no es una cadena serie clásica: al ser holonómica de 4 ruedas
+  mecanum (`fl`/`fr`/`rl`/`rr` — delantera/trasera, izquierda/derecha, en
+  disposición rectangular, no en triángulo), el `base_link` es el marco
+  flotante de todo el árbol, no un eslabón fijo al suelo. Las 4 ruedas son
+  `continuous` porque giran sin límite; los rodillos angulados de cada rueda
+  mecanum son detalle de geometría/fricción, no un joint adicional en el URDF.
+  (Cambiado de 3 ruedas omni a 4 mecanum el 23 de agosto de 2026 — ver
+  `DECISIONES.md`.)
 - `TBD` en cualquier joint significa: sin servo/motor elegido todavía. No
   fijar el ángulo límite hasta tener la hoja de datos del actuador real —
   poner un número ahora sería inventarlo.

@@ -1,8 +1,8 @@
 # Robot Toreto
 
-Robot asistente de 95 cm impreso en 3D: base holonómica de 3 ruedas omni con
-LIDAR, brazo de 6 grados de libertad por lado, cabeza de 2 grados de libertad
-con cámara RGB-D, torso con pantalla táctil. Peso objetivo ~15 kg.
+Robot asistente de 95 cm impreso en 3D: base holonómica de 4 ruedas mecanum
+con LIDAR, brazo de 6 grados de libertad por lado, cabeza de 2 grados de
+libertad con cámara RGB-D, torso con pantalla táctil. Peso objetivo ~15 kg.
 
 ## Estado del proyecto
 
