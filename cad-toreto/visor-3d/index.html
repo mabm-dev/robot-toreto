@@ -1398,48 +1398,51 @@
   // base -- mitad blanca arriba, franja negra sustancial abajo (no una banda
   // fina), como la referencia. Las ruedas nacen dentro/debajo de esa franja.
   var baseWhiteH = 8, baseBlackH = 6;
-  var baseWhite = new THREE.Mesh(new THREE.CylinderGeometry(20.5, 21, baseWhiteH, 32), aluminum);
+  // diámetro reducido -- ~20% menos que la versión anterior, a petición
+  // tras ver el render; todo lo montado sobre la base (sensores, LIDAR,
+  // ruedas) escalado igual para que siga encajando
+  var baseWhite = new THREE.Mesh(new THREE.CylinderGeometry(16.4, 16.8, baseWhiteH, 32), aluminum);
   baseWhite.position.y = baseBlackH + baseWhiteH / 2;
   baseWhite.castShadow = baseWhite.receiveShadow = true;
   robot.add(baseWhite);
-  var baseGroove = new THREE.Mesh(new THREE.CylinderGeometry(20.6, 20.6, 0.5, 32), jointMat);
+  var baseGroove = new THREE.Mesh(new THREE.CylinderGeometry(16.5, 16.5, 0.5, 32), jointMat);
   baseGroove.position.y = baseBlackH + baseWhiteH - 1.6;
   robot.add(baseGroove);
-  var baseBlack = new THREE.Mesh(new THREE.CylinderGeometry(21, 20, baseBlackH, 32), jointMat);
+  var baseBlack = new THREE.Mesh(new THREE.CylinderGeometry(16.8, 16, baseBlackH, 32), jointMat);
   baseBlack.position.y = baseBlackH / 2;
   baseBlack.castShadow = baseBlack.receiveShadow = true;
   robot.add(baseBlack);
 
   // barra de sensores frontal, con lentes reales (anillo + punto), no solo
   // puntos de luz sueltos
-  var sensorBar = roundedBlock(11, 3, 1, jointMat);
-  sensorBar.position.set(0, baseBlackH / 2 + 1, 20.4);
+  var sensorBar = roundedBlock(9, 2.6, 1, jointMat);
+  sensorBar.position.set(0, baseBlackH / 2 + 1, 16.3);
   robot.add(sensorBar);
-  [-3.2, 0, 3.2].forEach(function (x) {
-    var ring = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.16, 10, 20), aluminumDark);
-    ring.position.set(x, baseBlackH / 2 + 1, 21);
+  [-2.6, 0, 2.6].forEach(function (x) {
+    var ring = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.15, 10, 20), aluminumDark);
+    ring.position.set(x, baseBlackH / 2 + 1, 16.9);
     robot.add(ring);
-    var pupil = new THREE.Mesh(new THREE.SphereGeometry(0.28, 10, 10), glow);
-    pupil.position.set(x, baseBlackH / 2 + 1, 21.1);
+    var pupil = new THREE.Mesh(new THREE.SphereGeometry(0.26, 10, 10), glow);
+    pupil.position.set(x, baseBlackH / 2 + 1, 17);
     robot.add(pupil);
   });
 
   // LIDAR: disco negro sobre la base, hacia el frente, con dos lentes azules
-  var lidar = new THREE.Mesh(new THREE.CylinderGeometry(3.4, 3.4, 2.2, 24), jointMat);
-  lidar.position.set(0, baseBlackH + baseWhiteH + 1.1, 6);
+  var lidar = new THREE.Mesh(new THREE.CylinderGeometry(3, 3, 2, 24), jointMat);
+  lidar.position.set(0, baseBlackH + baseWhiteH + 1, 4.8);
   lidar.castShadow = true;
   robot.add(lidar);
-  [-1.3, 1.3].forEach(function (x) {
-    var lidarLens = new THREE.Mesh(new THREE.SphereGeometry(0.3, 10, 10), glow);
-    lidarLens.position.set(x, baseBlackH + baseWhiteH + 1.1, 9.3);
+  [-1.1, 1.1].forEach(function (x) {
+    var lidarLens = new THREE.Mesh(new THREE.SphereGeometry(0.27, 10, 10), glow);
+    lidarLens.position.set(x, baseBlackH + baseWhiteH + 1, 7.5);
     robot.add(lidarLens);
   });
   // 4 ruedas mecanum, disposición rectangular (no triangular como las omni
   // anteriores) -- fl/fr/rl/rr. Rodillos angulados insinuados con anillos,
   // no son geometría funcional, solo lectura visual de "esto es mecanum".
   var wheelPositions = [
-    { x: -15, z: 13 }, { x: 15, z: 13 },
-    { x: -15, z: -13 }, { x: 15, z: -13 }
+    { x: -12, z: 10.5 }, { x: 12, z: 10.5 },
+    { x: -12, z: -10.5 }, { x: 12, z: -10.5 }
   ];
   wheelPositions.forEach(function (p) {
     var wheel = new THREE.Mesh(new THREE.CylinderGeometry(4.2, 4.2, 3.4, 20), carbon);
