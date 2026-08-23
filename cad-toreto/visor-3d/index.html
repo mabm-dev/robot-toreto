@@ -1632,7 +1632,7 @@
     // en negativo cruza el brazo por delante del torso, para poder "cerrarlos".
     arm.shoulderYaw.rotation.x = deg(shY);
     arm.shoulderPitch.rotation.z = deg(shP) * -sign;
-    arm.elbow.rotation.z = deg(el) * -sign;
+    arm.elbow.rotation.z = deg(el) * sign;
     arm.wristPitch.rotation.x = deg(wrP);
     arm.wristYaw.rotation.y = deg(wrY) * sign;
     var open = gr / 100;
