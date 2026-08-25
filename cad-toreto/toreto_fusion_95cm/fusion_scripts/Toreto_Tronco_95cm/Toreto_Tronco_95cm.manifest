@@ -1,0 +1,9 @@
+{
+  "autodeskProduct": "Fusion360",
+  "type": "script",
+  "author": "Robot Toreto / OpenAI Codex",
+  "description": "TRONCO EXTERIOR REFINADO v1.1.0 - Robot Toreto 95 cm.",
+  "version": "1.3.0",
+  "runOnStartup": false,
+  "supportedOS": "windows"
+}

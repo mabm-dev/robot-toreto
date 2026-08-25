@@ -1,0 +1,9 @@
+{
+  "autodeskProduct": "Fusion360",
+  "type": "script",
+  "author": "Robot Toreto / OpenAI Codex",
+  "description": "ALINEAR MONTAJE v1.0.0 - hornea las cotas globales de todos los módulos.",
+  "version": "1.1.0",
+  "runOnStartup": false,
+  "supportedOS": "windows"
+}

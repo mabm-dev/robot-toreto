@@ -1,0 +1,9 @@
+{
+  "autodeskProduct": "Fusion360",
+  "type": "script",
+  "author": "Robot Toreto / OpenAI Codex",
+  "description": "Inserta cuatro lienzos ortogonales calibrados del Robot Toreto de 95 cm y la malla dimensional opcional.",
+  "version": "2.0.0",
+  "runOnStartup": false,
+  "supportedOS": "windows"
+}

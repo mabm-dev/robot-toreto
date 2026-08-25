@@ -1,0 +1,9 @@
+{
+  "autodeskProduct": "Fusion360",
+  "type": "script",
+  "author": "Robot Toreto / OpenAI Codex",
+  "description": "BRAZOS EXTERIORES v2.0.0 - ejes laterales y mano exacta de cinco dedos.",
+  "version": "2.2.0",
+  "runOnStartup": false,
+  "supportedOS": "windows"
+}

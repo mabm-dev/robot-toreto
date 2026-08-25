@@ -1,0 +1,78 @@
+{
+  "source": "C:\\Users\\tarif\\Desktop\\Robot-Toreto\\cad-toreto\\toreto_fusion_95cm\\reference\\lamina_maestra_4vistas.jpg",
+  "canvas_px": [
+    2000,
+    2000
+  ],
+  "robot_top_px": 50,
+  "robot_bottom_px": 1950,
+  "robot_height_px": 1900,
+  "robot_height_mm": 950,
+  "mm_per_pixel": 0.5,
+  "fusion_calibration": "Seleccionar los dos extremos cian e introducir 950 mm",
+  "views": {
+    "frontal": "toreto_95cm_frontal.png",
+    "lateral_derecho": "toreto_95cm_lateral_derecho.png",
+    "posterior": "toreto_95cm_posterior.png",
+    "lateral_izquierdo": "toreto_95cm_lateral_izquierdo.png"
+  },
+  "per_view_detection": {
+    "frontal": {
+      "source_bbox_px": [
+        342,
+        88,
+        949,
+        862
+      ],
+      "source_silhouette_px": [
+        608,
+        775
+      ],
+      "scale_applied": 2.451613,
+      "canvas_offset_x": 254
+    },
+    "lateral_derecho": {
+      "source_bbox_px": [
+        1546,
+        89,
+        2059,
+        862
+      ],
+      "source_silhouette_px": [
+        514,
+        774
+      ],
+      "scale_applied": 2.45478,
+      "canvas_offset_x": 369
+    },
+    "posterior": {
+      "source_bbox_px": [
+        343,
+        946,
+        948,
+        1725
+      ],
+      "source_silhouette_px": [
+        606,
+        780
+      ],
+      "scale_applied": 2.435897,
+      "canvas_offset_x": 262
+    },
+    "lateral_izquierdo": {
+      "source_bbox_px": [
+        1564,
+        946,
+        2059,
+        1725
+      ],
+      "source_silhouette_px": [
+        496,
+        780
+      ],
+      "scale_applied": 2.435897,
+      "canvas_offset_x": 396
+    }
+  },
+  "note": "Cada vista se calibro de forma independiente contra su propia silueta (no contra una caja de recorte manual). Ver docs/CUADERNO.md, 26 ago 2026, para el porque."
+}

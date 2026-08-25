@@ -1,0 +1,9 @@
+{
+  "autodeskProduct": "Fusion360",
+  "type": "script",
+  "author": "Robot Toreto / OpenAI Codex",
+  "description": "CUELLO EXTERIOR v1.0.0 - Robot Toreto 95 cm.",
+  "version": "1.2.0",
+  "runOnStartup": false,
+  "supportedOS": "windows"
+}

@@ -86,6 +86,25 @@ cambian.
 
 Actualizado: `README.md`, `docs/CINEMATICA.md` (nodos `wheel_fl/fr/rl/rr`).
 
+## Fuente maestra de cotas: lámina de 4 vistas calibrada (26 ago 2026)
+
+`cad-toreto/toreto_fusion_95cm/reference/lamina_maestra_4vistas.jpg` es la
+fuente única para dimensionar el exterior de 95 cm — frontal, lateral
+derecho, posterior y lateral izquierdo, cada uno calibrado de forma
+independiente contra la silueta real del robot en esa vista (no contra una
+caja de recorte), a 0,5 mm/px exactos entre Z=0 (suelo) y Z=950 mm
+(coronilla).
+
+El generador (`tools/prepare_fusion_canvases.py`) valida su propia salida:
+si alguna vista no cae dentro de Z=0–950 mm con menos de 3 px de margen, el
+script falla en vez de escribir un lienzo mal calibrado.
+
+Con esta fuente ya fiable, el siguiente paso es medir sobre el lienzo
+frontal (maestro) las separaciones Z reales de cada módulo, y usar esa
+tabla única para corregir los add-ins de Fusion y los módulos OpenSCAD de
+`toreto_exterior_95cm`, que hoy no coinciden entre sí en cómo reparten los
+950 mm.
+
 ## Documentos vivos (fuera de este repo)
 
 Se publican como artefactos porque se consultan desde la tablet. Al

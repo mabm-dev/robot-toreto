@@ -1,0 +1,9 @@
+{
+  "autodeskProduct": "Fusion360",
+  "type": "script",
+  "author": "Robot Toreto / OpenAI Codex",
+  "description": "Organiza la estructura del Robot Toreto de 95 cm sin trasladar ni duplicar geometría.",
+  "version": "1.1.1",
+  "runOnStartup": false,
+  "supportedOS": "windows"
+}

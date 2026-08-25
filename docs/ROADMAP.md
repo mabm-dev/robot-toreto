@@ -28,6 +28,19 @@ con IA integrada — el objetivo final.
 
 ## v0.3 — CAD funcional en Fusion · fase 3 ⬜
 
+Exterior únicamente (carcasas y volúmenes, sin mecánica funcional) — se
+adelanta a la fase 2 porque no fija tolerancias ni ajustes, solo forma y
+particiones. Ver `cad-toreto/toreto_fusion_95cm/README.md`.
+
+- [x] Lámina maestra de 4 vistas (frontal/lateral dcho/posterior/lateral
+      izq) calibrada a 950 mm de verdad — cada vista escalada contra su
+      propia silueta, no contra una caja de recorte manual. Fuente:
+      `cad-toreto/toreto_fusion_95cm/reference/lamina_maestra_4vistas.jpg`,
+      generador en `tools/prepare_fusion_canvases.py`
+- [ ] Medir las separaciones Z reales sobre el lienzo frontal (maestro) y
+      fijar una tabla única de cotas — **siguiente paso exacto**
+- [ ] Adaptar los 10 add-ins de Fusion y los 5 módulos OpenSCAD de
+      `toreto_exterior_95cm` a esa tabla única (hoy no coinciden entre sí)
 - [ ] Migrar de OpenSCAD a Autodesk Fusion (no AutoCAD — ver `DECISIONES.md`)
 - [ ] Ensamblaje con articulaciones reales y topes de recorrido, siguiendo
       la jerarquía de [`CINEMATICA.md`](CINEMATICA.md)

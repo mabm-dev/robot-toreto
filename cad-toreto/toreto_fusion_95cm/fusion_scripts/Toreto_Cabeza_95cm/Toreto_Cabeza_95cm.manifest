@@ -1,0 +1,9 @@
+{
+  "autodeskProduct": "Fusion360",
+  "type": "script",
+  "author": "Robot Toreto / OpenAI Codex",
+  "description": "CABEZA EXTERIOR v1.0.0 - pantalla Waveshare parametrizada.",
+  "version": "2.1.0",
+  "runOnStartup": false,
+  "supportedOS": "windows"
+}

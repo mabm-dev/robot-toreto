@@ -1,0 +1,9 @@
+{
+  "autodeskProduct": "Fusion360",
+  "type": "script",
+  "author": "Robot Toreto / OpenAI Codex",
+  "description": "BASE EXTERIOR v1.4.0 - separadores laterales, frontal limpio, Robot Toreto 95 cm.",
+  "version": "1.5.0",
+  "runOnStartup": false,
+  "supportedOS": "windows"
+}
