@@ -1,64 +1,46 @@
-# Robot Toreto - Concepto CAD V0
+# cad-toreto — índice
 
-Este paquete es un primer concepto CAD parametrico para convertir la idea de Robot Toreto en piezas modulares imprimibles en una Bambu P1S.
+Todo el CAD de Robot Toreto vive aquí, no en la raíz del repo (ver
+`docs/DECISIONES.md` en la raíz para el porqué de cada decisión). Esta
+carpeta acumula varias generaciones de trabajo — de más reciente/vigente a
+más antigua/histórica:
 
-No es todavia un diseno mecanico final para montar motores reales. Es una base de trabajo para validar volumen, estetica, divisiones de impresion, posiciones de electronica y arquitectura general.
+## Vigente (fase 3, exterior — sin mecánica ni cotas fijas)
 
-## Archivo principal
+- **[`toreto_fusion_95cm/`](toreto_fusion_95cm/README.md)** — integración
+  Autodesk Fusion 360: 10 add-ins, las 4 vistas de referencia calibradas a
+  950mm (`reference/lienzos_95cm/`) y las herramientas que las generan y
+  miden (`tools/`).
+- **[`toreto_exterior_95cm/`](toreto_exterior_95cm/README.md)** — las mismas
+  piezas exteriores en OpenSCAD: 5 módulos fuente, STL exportados y un
+  render/doc por módulo.
 
-- `toreto_concept_v0.scad`: modelo parametrico OpenSCAD con selector de piezas.
+Ambas carpetas describen el **mismo** exterior de 95cm desde herramientas
+distintas y hoy no reparten los 950mm verticales de la misma forma entre sí
+— la tabla única de cotas está deliberadamente sin fijar porque depende de
+dónde queden batería y mecanismos internos (fase 2, todavía sin cerrar).
 
-Abre el archivo en OpenSCAD y cambia esta linea:
+## Vigente (fase 1 — visor de forma)
 
-```scad
-part = "assembly";
-```
+- **[`visor-3d/`](visor-3d/README.md)** — visor 3D interactivo en Three.js;
+  con él se aprobó la forma del robot (milestone v0.1 del roadmap).
 
-Por una de estas piezas:
+## Histórico (maquetas anteriores, superadas)
 
-```scad
-part = "base_quadrant";
-part = "base_center_plate";
-part = "electronics_box";
-part = "wheel_cover";
-part = "sensor_panel";
-part = "torso_front";
-part = "torso_back";
-part = "shoulder_mount_left";
-part = "shoulder_mount_right";
-part = "neck_column";
-part = "head_front";
-part = "head_back";
-part = "head_side_pod";
-part = "upper_arm_shell";
-part = "forearm_shell";
-part = "wrist_gripper_concept";
-```
+- `toreto_v2.scad` (+ `lista_piezas_v2.md`, `README_V2.md`,
+  `STL_EXPORTADOS_V2.md`, `exports_v2/`) — última maqueta OpenSCAD de fase 1
+  antes de migrar a Fusion. Validó forma, proporción y que cada pieza cabe
+  en el volumen de la Bambu P1S (256×256×256mm); no lleva mecanismo interno.
+- `toreto_reference_v1.scad` (+ `README_V1_REFERENCIA.md`,
+  `STL_EXPORTADOS_V1.md`, `exports_v1/`) y `toreto_concept_v0.scad`
+  (+ `lista_piezas_concepto.md`) — generaciones anteriores a v2.
+- `guia_impresion_p1s.md` — perfiles de slicing; el criterio general (más
+  perímetros que relleno) sigue aplicando aunque las piezas cambien.
+- `MIGRACION_95CM.md` — nota de la consolidación del 25 ago 2026 que separó
+  lo que sí pasaba a 95cm de lo que se descartaba (rama de 65cm con servos
+  ST-3215 ya elegidos — ver `toreto-gpt-descartado` en la memoria del
+  proyecto, no forma parte de este repo).
 
-Despues renderiza y exporta a STL.
-
-## Medidas base
-
-- Altura objetivo: 950 mm.
-- Diametro de base: 400 mm.
-- Torso: 230 x 170 x 220 mm.
-- Cabeza: 220 x 120 x 112 mm.
-- Base dividida en 4 cuadrantes para entrar en la Bambu P1S.
-
-## Material recomendado
-
-- Carcasas exteriores: PETG.
-- Soportes de brazo, cuello y hombros: PETG-CF o PA-CF, con boquilla endurecida.
-- Piezas internas con carga: combinar impresion 3D con ejes metalicos, rodamientos, insertos termicos y tornilleria.
-
-## Enfoque recomendado
-
-1. Imprimir una maqueta sin electronica para validar tamano.
-2. Hacer base movil con motores y bateria baja.
-3. Montar cabeza con pantalla, microfonos, altavoz y camara.
-4. Conectar con tus agentes por API, MQTT o WebSocket.
-5. Anadir brazo sencillo antes de intentar brazo de 6 DOF con carga real.
-
-## Aviso importante
-
-El brazo de 6 DOF y la carga de 2 kg del concepto original requieren calculo mecanico serio. Para la primera version, recomiendo limitar la pinza a objetos ligeros de 300 a 500 g.
+No confundir con la carpeta hermana `cad-toreto-gpt/` (fuera de este repo,
+en `.gitignore`) — es una rama paralela de 65cm descartada, no el proyecto
+activo.
