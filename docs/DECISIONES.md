@@ -42,19 +42,31 @@ Electrical, ROS 2 + Gazebo, GitHub.
 Impresión: más perímetros antes que más relleno — 4-5 paredes con giroide al
 25-30 %, en una Bambu Lab P1S (volumen 256 × 256 × 256 mm).
 
-## IA local o en la nube — pendiente
+## IA local o en la nube — cerrada: todo local, Jetson Orin Nano (26 ago 2026)
 
-Decisión abierta que bloquea la fase 2 (hay que cerrarla antes de comprar el
-ordenador de a bordo):
+Decisión que bloqueaba el resto de la fase 2. Se barajaron tres opciones
+(nube con Raspberry Pi 5, mixto con Pi 5 + LIDAR local para el reflejo de
+emergencia, y todo local con Jetson) y el usuario eligió **todo local**:
 
-- **Nube** (Gemini, vía Google AI Pro): basta una Raspberry Pi 5 — más barata
-  y con menos consumo, pero exige internet y añade latencia de red.
-- **Local**: hace falta un Jetson Orin Nano — más caro y con más consumo,
-  pero funciona sin conexión y responde al instante.
+- **Ordenador de a bordo único: NVIDIA Jetson Orin Nano** (Super Developer
+  Kit o equivalente — modelo exacto y precio real quedan para la lista de
+  compra). No hace falta Raspberry Pi adicional: el Jetson hace de único
+  computador de a bordo.
+- Funciona sin conexión a internet y responde al instante, tanto para la
+  conversación como para la detección de obstáculos/parada de emergencia.
+  No se usa Gemini/Google AI Pro para la IA embarcada del robot (sigue
+  disponible para todo lo demás del proyecto que ya lo usa).
+- Coste más alto que la alternativa nube (~250 € frente a ~80 € de una
+  Raspberry Pi, cifras aproximadas de agosto 2026 — verificar en la lista de
+  compra real) y más consumo, asumido a cambio de funcionar sin red y sin
+  depender de servicio externo.
 
-Recomendación de partida: mixto — local lo crítico e inmediato (detección de
-obstáculos, parada de emergencia), en la nube lo que tolera medio segundo
-(conversación).
+**Pendiente para cuando se elijan motores/encoders de la base:** decidir si
+el control de motores y la parada de emergencia por hardware corren
+directamente en el Jetson (Linux, sin tiempo real garantizado) o si conviene
+un microcontrolador aparte (Arduino/STM32/ESP32) dedicado a esa parte
+crítica — no es lo mismo IA local que control en tiempo real, y el Jetson
+resuelve la primera pero no necesariamente la segunda.
 
 ## Identidad visual: CAD 3D interactivo (23 ago 2026)
 

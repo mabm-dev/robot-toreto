@@ -16,9 +16,10 @@ con IA integrada — el objetivo final.
 - [ ] Proporciones finales — no se cierra hasta fase 3: el visor 3D es un
       proxy estético, no cotas reales (ver `DECISIONES.md`)
 
-## v0.2 — Componentes elegidos · fase 2 ⬜
+## v0.2 — Componentes elegidos · fase 2 🟡 en curso
 
-- [ ] IA local o en la nube (Raspberry Pi 5 vs. Jetson Orin Nano) — bloquea el resto
+- [x] IA local o en la nube — **todo local, Jetson Orin Nano** (26 ago 2026,
+      ver `DECISIONES.md`); no hace falta Raspberry Pi adicional
 - [ ] Servos de hombro y codo (los que más carga soportan — definen tamaño de carcasas)
 - [ ] Resto de servos del brazo y la cabeza
 - [ ] Motores + encoders de la base móvil
