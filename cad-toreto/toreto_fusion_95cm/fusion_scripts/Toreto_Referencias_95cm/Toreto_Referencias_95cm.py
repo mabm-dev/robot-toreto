@@ -85,7 +85,10 @@ def _find_mesh(component, name):
     return None
 
 
-def _canvas_transform(plane_code, mirror):
+_DEBUG_LINES = []
+
+
+def _canvas_transform(name, plane_code, mirror):
     """Calcula la transformación 2D del lienzo para el plano indicado.
 
     OJO: la convención de ejes nativos (U,V) de cada plano de origen de
@@ -95,11 +98,12 @@ def _canvas_transform(plane_code, mirror):
     docs/CUADERNO.md, 26 ago 2026): en xZConstructionPlane, U nativo
     corresponde a la Z del mundo y V nativo a la X del mundo.
 
-    El caso YZ (los dos laterales) usa aquí una PRIMERA HIPÓTESIS sin
-    verificar todavía: que el plano YZ no necesita el mismo intercambio
-    (U nativo = Y, V nativo = Z, sin invertir). Si al ejecutar el add-in
-    los laterales siguen sin encajar, ese es el primer sitio a corregir --
-    probablemente haya que intercambiar u_axis/v_axis como se hizo para XZ.
+    Intento 1 para YZ (sin intercambio) dio un resultado diminuto y mal
+    ubicado -- descartado. Intento 2 (este): reutilizar exactamente la
+    misma disposición numérica que XZ, por si el plano YZ de Fusion sigue
+    el mismo patrón "intercambiado" que el XZ. Sigue siendo una hipótesis;
+    ver el mensaje final del add-in para los números reales usados, y
+    compararlos con lo que Fusion mida en las esquinas del lienzo.
 
     `mirror` invierte el ancho de la imagen (para vistas tomadas mirando en
     sentido contrario al frontal, como la posterior -- ver la izquierda y la
@@ -125,22 +129,23 @@ def _canvas_transform(plane_code, mirror):
     # plano cuando el lienzo avanza a lo largo de su propio ancho (U) o
     # alto (V) de imagen. El orden importa: invertirlo NO es lo mismo que
     # intercambiar U y V dentro de cada vector.
-    if plane_code == "XZ":
-        # Verificado en Fusion para frontal (mirror=False): avanzar en
-        # ancho de imagen mueve la coordenada V del plano; avanzar en alto
-        # de imagen mueve la coordenada U del plano.
-        origin = adsk.core.Point2D.create(vertical_offset_cm, -half_width_signed)
-        canvas_u_vector = adsk.core.Vector2D.create(0.0, width_vector_signed)
-        canvas_v_vector = adsk.core.Vector2D.create(image_height_cm, 0.0)
-    elif plane_code == "YZ":
-        # SIN VERIFICAR (ver docstring) -- primera hipótesis: sin el
-        # intercambio que sí hizo falta en XZ (ancho de imagen mueve U,
-        # alto de imagen mueve V).
-        origin = adsk.core.Point2D.create(-half_width_signed, vertical_offset_cm)
-        canvas_u_vector = adsk.core.Vector2D.create(width_vector_signed, 0.0)
-        canvas_v_vector = adsk.core.Vector2D.create(0.0, image_height_cm)
-    else:
+    #
+    # Misma disposición numérica para los dos planos -- intento 2 para YZ,
+    # ver docstring. Si algún día se confirma que YZ necesita otra cosa,
+    # este es el único sitio a tocar.
+    origin = adsk.core.Point2D.create(vertical_offset_cm, -half_width_signed)
+    canvas_u_vector = adsk.core.Vector2D.create(0.0, width_vector_signed)
+    canvas_v_vector = adsk.core.Vector2D.create(image_height_cm, 0.0)
+
+    if plane_code not in ("XZ", "YZ"):
         raise ValueError("Plano de lienzo no reconocido: " + plane_code)
+
+    _DEBUG_LINES.append(
+        f"{name} [{plane_code}, mirror={mirror}]: "
+        f"origin=({origin.x:.2f},{origin.y:.2f}) cm  "
+        f"u=({canvas_u_vector.x:.2f},{canvas_u_vector.y:.2f})  "
+        f"v=({canvas_v_vector.x:.2f},{canvas_v_vector.y:.2f})"
+    )
 
     matrix = adsk.core.Matrix2D.create()
     if not matrix.setWithCoordinateSystem(origin, canvas_u_vector, canvas_v_vector):
@@ -160,7 +165,7 @@ def _create_or_update_canvas(component, name, image_path, plane_code, mirror, vi
     canvas = _find_canvas(component, name)
     if canvas:
         canvas.imageFilename = image_path
-        canvas.transform = _canvas_transform(plane_code, mirror)
+        canvas.transform = _canvas_transform(name, plane_code, mirror)
         canvas.opacity = 55
         canvas.isDisplayedThrough = True
         canvas.isSelectable = False
@@ -173,7 +178,7 @@ def _create_or_update_canvas(component, name, image_path, plane_code, mirror, vi
     )
     if not canvas_input:
         raise RuntimeError("Fusion no pudo preparar el lienzo " + name + ".")
-    canvas_input.transform = _canvas_transform(plane_code, mirror)
+    canvas_input.transform = _canvas_transform(name, plane_code, mirror)
     canvas_input.opacity = 55
     canvas_input.isDisplayedThrough = True
     canvas_input.isSelectable = False
@@ -268,9 +273,10 @@ def run(context):
             mesh_created = _import_mesh(component)
             mesh_status = "importada" if mesh_created else "ya existente"
 
-        root.attributes.add("RobotToreto", "referencias_95cm", "2.2.0")
+        root.attributes.add("RobotToreto", "referencias_95cm", "2.3.0")
         app.activeViewport.fit()
 
+        debug_block = "\n".join(_DEBUG_LINES)
         ui.messageBox(
             "Cuatro patrones ortogonales preparados.\n\n"
             f"Lienzos creados: {canvases_created}\n"
@@ -278,11 +284,13 @@ def run(context):
             f"Malla dimensional: {mesh_status}\n\n"
             "El FRONTAL está verificado: encaja en altura (Z=0-950mm) y en "
             "ancho (X).\n"
-            "POSTERIOR y los dos LATERALES son la v2.2.0, sin comprobar "
+            "POSTERIOR y los dos LATERALES son la v2.3.0, sin comprobar "
             "todavía -- revisa cada uno contra la malla o el modelo antes "
             "de fiarte de ellos. Si alguno no encaja, dilo con detalle "
             "(¿gira 90°? ¿aparece en espejo? ¿tamaño distinto?) para poder "
             "corregir la fórmula concreta.\n\n"
+            "Cifras usadas por lienzo (origen/u/v en cm, plano nativo):\n"
+            f"{debug_block}\n\n"
             "Se muestra el FRONTAL por defecto. En 00_REFERENCIAS > "
             "Lienzos, apaga uno y enciende el patrón que quieras seguir.\n"
             "Los lienzos son guías; no son piezas imprimibles.",
