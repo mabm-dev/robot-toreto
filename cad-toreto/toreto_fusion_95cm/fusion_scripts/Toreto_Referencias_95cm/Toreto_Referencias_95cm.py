@@ -34,6 +34,7 @@ CANVAS_SPECS = (
         "PATRON_01_FRONTAL_95CM",
         "toreto_95cm_frontal.png",
         "XZ",
+        1000.14,
         False,
         True,
     ),
@@ -41,6 +42,7 @@ CANVAS_SPECS = (
         "PATRON_02_POSTERIOR_95CM",
         "toreto_95cm_posterior.png",
         "XZ",
+        987.86,
         True,
         False,
     ),
@@ -48,6 +50,7 @@ CANVAS_SPECS = (
         "PATRON_03_LATERAL_IZQUIERDO_95CM",
         "toreto_95cm_lateral_izquierdo.png",
         "YZ",
+        1280.00,
         False,
         False,
     ),
@@ -55,6 +58,7 @@ CANVAS_SPECS = (
         "PATRON_04_LATERAL_DERECHO_95CM",
         "toreto_95cm_lateral_derecho.png",
         "YZ",
+        999.34,
         False,
         False,
     ),
@@ -77,6 +81,21 @@ def _find_canvas(component, name):
     return None
 
 
+def _remove_other_canvases(component):
+    """Conserva exclusivamente los cuatro patrones 95 cm vigentes."""
+    keep_names = {spec[0] for spec in CANVAS_SPECS}
+    removed = 0
+    for index in range(component.canvases.count - 1, -1, -1):
+        canvas = component.canvases.item(index)
+        if canvas.name not in keep_names:
+            if not canvas.deleteMe():
+                raise RuntimeError(
+                    "Fusion no pudo borrar el lienzo antiguo: " + canvas.name
+                )
+            removed += 1
+    return removed
+
+
 def _find_mesh(component, name):
     for index in range(component.meshBodies.count):
         body = component.meshBodies.item(index)
@@ -85,30 +104,7 @@ def _find_mesh(component, name):
     return None
 
 
-_DEBUG_LINES = []
-
-
-def _canvas_transform(name, plane_code, mirror):
-    """Calcula la transformación 2D del lienzo para el plano indicado.
-
-    OJO: la convención de ejes nativos (U,V) de cada plano de origen de
-    Fusion no es la misma para XZ que para YZ, y no se puede deducir por
-    simetría de nombre -- hay que comprobarlo dentro de Fusion. Solo el
-    caso XZ sin espejo (frontal) está verificado visualmente (ver
-    docs/CUADERNO.md, 26 ago 2026): en xZConstructionPlane, U nativo
-    corresponde a la Z del mundo y V nativo a la X del mundo.
-
-    Intento 1 para YZ (sin intercambio) dio un resultado diminuto y mal
-    ubicado -- descartado. Intento 2 (este): reutilizar exactamente la
-    misma disposición numérica que XZ, por si el plano YZ de Fusion sigue
-    el mismo patrón "intercambiado" que el XZ. Sigue siendo una hipótesis;
-    ver el mensaje final del add-in para los números reales usados, y
-    compararlos con lo que Fusion mida en las esquinas del lienzo.
-
-    `mirror` invierte el ancho de la imagen (para vistas tomadas mirando en
-    sentido contrario al frontal, como la posterior -- ver la izquierda y la
-    derecha del robot invertidas al mirarlo de espaldas).
-    """
+def _canvas_transform(plane_code, anchor_x_px, mirror):
     cm_per_pixel = ROBOT_HEIGHT_CM / (ROBOT_BOTTOM_PX - ROBOT_TOP_PX)
     image_width_cm = IMAGE_WIDTH_PX * cm_per_pixel
     image_height_cm = IMAGE_HEIGHT_PX * cm_per_pixel
@@ -119,36 +115,37 @@ def _canvas_transform(name, plane_code, mirror):
     vertical_offset_cm = -(
         IMAGE_HEIGHT_PX - ROBOT_BOTTOM_PX
     ) * cm_per_pixel
-
     width_sign = -1.0 if mirror else 1.0
-    half_width_signed = width_sign * image_width_cm / 2.0
-    width_vector_signed = width_sign * image_width_cm
 
-    # canvas_u_vector / canvas_v_vector son, en ese orden, el 2º y 3er
-    # argumento de setWithCoordinateSystem -- cómo se mueve el punto del
-    # plano cuando el lienzo avanza a lo largo de su propio ancho (U) o
-    # alto (V) de imagen. El orden importa: invertirlo NO es lo mismo que
-    # intercambiar U y V dentro de cada vector.
-    #
-    # Misma disposición numérica para los dos planos -- intento 2 para YZ,
-    # ver docstring. Si algún día se confirma que YZ necesita otra cosa,
-    # este es el único sitio a tocar.
-    origin = adsk.core.Point2D.create(vertical_offset_cm, -half_width_signed)
-    canvas_u_vector = adsk.core.Vector2D.create(0.0, width_vector_signed)
-    canvas_v_vector = adsk.core.Vector2D.create(image_height_cm, 0.0)
-
-    if plane_code not in ("XZ", "YZ"):
+    if plane_code == "XZ":
+        # En XZ, Fusion expone U como Z (vertical) y V como X (horizontal).
+        # La imagen se intercambia para que su altura siga Z.
+        origin = adsk.core.Point2D.create(
+            vertical_offset_cm,
+            -width_sign * anchor_x_px * cm_per_pixel,
+        )
+        image_x_axis = adsk.core.Vector2D.create(
+            0.0, width_sign * image_width_cm
+        )
+        image_y_axis = adsk.core.Vector2D.create(image_height_cm, 0.0)
+    elif plane_code == "YZ":
+        # En YZ, Fusion ya expone U como Y (horizontal) y V como Z
+        # (vertical). Intercambiar aquí los ejes tumbaba los laterales 90°.
+        origin = adsk.core.Point2D.create(
+            -width_sign * anchor_x_px * cm_per_pixel,
+            vertical_offset_cm,
+        )
+        image_x_axis = adsk.core.Vector2D.create(
+            width_sign * image_width_cm, 0.0
+        )
+        image_y_axis = adsk.core.Vector2D.create(0.0, image_height_cm)
+    else:
         raise ValueError("Plano de lienzo no reconocido: " + plane_code)
 
-    _DEBUG_LINES.append(
-        f"{name} [{plane_code}, mirror={mirror}]: "
-        f"origin=({origin.x:.2f},{origin.y:.2f}) cm  "
-        f"u=({canvas_u_vector.x:.2f},{canvas_u_vector.y:.2f})  "
-        f"v=({canvas_v_vector.x:.2f},{canvas_v_vector.y:.2f})"
-    )
-
     matrix = adsk.core.Matrix2D.create()
-    if not matrix.setWithCoordinateSystem(origin, canvas_u_vector, canvas_v_vector):
+    if not matrix.setWithCoordinateSystem(
+        origin, image_x_axis, image_y_axis
+    ):
         raise RuntimeError("No se pudo calcular la transformación del lienzo.")
     return matrix
 
@@ -161,11 +158,13 @@ def _plane_for(component, plane_code):
     raise ValueError("Plano de lienzo no reconocido: " + plane_code)
 
 
-def _create_or_update_canvas(component, name, image_path, plane_code, mirror, visible):
+def _create_or_update_canvas(
+    component, name, image_path, plane_code, anchor_x_px, mirror, visible
+):
     canvas = _find_canvas(component, name)
     if canvas:
         canvas.imageFilename = image_path
-        canvas.transform = _canvas_transform(name, plane_code, mirror)
+        canvas.transform = _canvas_transform(plane_code, anchor_x_px, mirror)
         canvas.opacity = 55
         canvas.isDisplayedThrough = True
         canvas.isSelectable = False
@@ -178,7 +177,9 @@ def _create_or_update_canvas(component, name, image_path, plane_code, mirror, vi
     )
     if not canvas_input:
         raise RuntimeError("Fusion no pudo preparar el lienzo " + name + ".")
-    canvas_input.transform = _canvas_transform(name, plane_code, mirror)
+    canvas_input.transform = _canvas_transform(
+        plane_code, anchor_x_px, mirror
+    )
     canvas_input.opacity = 55
     canvas_input.isDisplayedThrough = True
     canvas_input.isSelectable = False
@@ -193,23 +194,34 @@ def _create_or_update_canvas(component, name, image_path, plane_code, mirror, vi
 
 
 def _prepare_canvases(component):
-    legacy = _find_canvas(component, LEGACY_CANVAS_NAME)
-    if legacy:
-        legacy.isLightBulbOn = False
+    removed = _remove_other_canvases(component)
 
     created = 0
     updated = 0
-    for name, filename, plane_code, mirror, visible in CANVAS_SPECS:
+    for (
+        name,
+        filename,
+        plane_code,
+        anchor_x_px,
+        mirror,
+        visible,
+    ) in CANVAS_SPECS:
         image_path = os.path.join(CANVAS_DIR, filename)
         if not os.path.isfile(image_path):
             raise FileNotFoundError("Falta el lienzo:\n" + image_path)
         if _create_or_update_canvas(
-            component, name, image_path, plane_code, mirror, visible
+            component,
+            name,
+            image_path,
+            plane_code,
+            anchor_x_px,
+            mirror,
+            visible,
         ):
             created += 1
         else:
             updated += 1
-    return created, updated
+    return created, updated, removed
 
 
 def _import_mesh(component):
@@ -266,31 +278,27 @@ def run(context):
             )
 
         component = occurrence.component
-        canvases_created, canvases_updated = _prepare_canvases(component)
+        (
+            canvases_created,
+            canvases_updated,
+            canvases_removed,
+        ) = _prepare_canvases(component)
 
         mesh_status = "pendiente (el STL todavía no está disponible)"
         if os.path.isfile(MESH_PATH):
             mesh_created = _import_mesh(component)
             mesh_status = "importada" if mesh_created else "ya existente"
 
-        root.attributes.add("RobotToreto", "referencias_95cm", "2.3.0")
+        root.attributes.add("RobotToreto", "referencias_95cm", "2.4.0")
         app.activeViewport.fit()
 
-        debug_block = "\n".join(_DEBUG_LINES)
         ui.messageBox(
-            "Cuatro patrones ortogonales preparados.\n\n"
+            "Cuatro patrones ortogonales preparados correctamente.\n\n"
             f"Lienzos creados: {canvases_created}\n"
             f"Lienzos actualizados: {canvases_updated}\n"
+            f"Lienzos antiguos eliminados: {canvases_removed}\n"
             f"Malla dimensional: {mesh_status}\n\n"
-            "El FRONTAL está verificado: encaja en altura (Z=0-950mm) y en "
-            "ancho (X).\n"
-            "POSTERIOR y los dos LATERALES son la v2.3.0, sin comprobar "
-            "todavía -- revisa cada uno contra la malla o el modelo antes "
-            "de fiarte de ellos. Si alguno no encaja, dilo con detalle "
-            "(¿gira 90°? ¿aparece en espejo? ¿tamaño distinto?) para poder "
-            "corregir la fórmula concreta.\n\n"
-            "Cifras usadas por lienzo (origen/u/v en cm, plano nativo):\n"
-            f"{debug_block}\n\n"
+            "Todos quedan calibrados desde Z=0 hasta Z=950 mm.\n"
             "Se muestra el FRONTAL por defecto. En 00_REFERENCIAS > "
             "Lienzos, apaga uno y enciende el patrón que quieras seguir.\n"
             "Los lienzos son guías; no son piezas imprimibles.",

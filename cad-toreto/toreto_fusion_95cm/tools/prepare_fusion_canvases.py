@@ -53,6 +53,16 @@ AUDITED_SILHOUETTE_BOXES = {
     "lateral_izquierdo": (1360, 946, 2010, 1727),
 }
 
+# Eje longitudinal del robot en la lamina original. No se usa el centro de
+# la caja de silueta porque una mano adelantada desplaza mucho esa caja en
+# los laterales. Fusion debe superponer este eje con el origen del montaje.
+SOURCE_ROBOT_AXIS_X = {
+    "frontal": 600,
+    "posterior": 600,
+    "lateral_derecho": 1800,
+    "lateral_izquierdo": 1800,
+}
+
 # El rotulo SIDE invade el margen superior del recorte lateral izquierdo.
 # Se elimina por filas copiando el fondo contiguo; no intersecta el robot.
 ERASE_AREAS = {
@@ -224,6 +234,9 @@ def _make_canvas(source: Image.Image, name: str, bg) -> tuple[Image.Image, dict]
         "source_silhouette_px": [silhouette_w, silhouette_h],
         "scale_applied": round(scale, 6),
         "canvas_offset_x": x,
+        "fusion_anchor_x_px": round(
+            x + (SOURCE_ROBOT_AXIS_X[name] - left) * scale, 2
+        ),
         "content_box_px": [
             x,
             ROBOT_TOP_PX,

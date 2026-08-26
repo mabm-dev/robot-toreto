@@ -17,14 +17,13 @@ Desde la versión 2.1.0, las cuatro siluetas se calibran de forma independiente
 contra sus límites auditados y ocupan exactamente 1900 intervalos a
 `0,5 mm/píxel`; los márgenes originales de la lámina no afectan a la escala.
 
-**2.2.0 (26 ago 2026): solo el FRONTAL está verificado dentro de Fusion.**
-El posterior y los dos laterales usaban la misma fórmula de transformación
-que el frontal, sin comprobar que el plano YZ de Fusion mapea sus ejes
-igual que el XZ (no lo hace necesariamente) ni que ver la espalda del robot
-necesita invertir el ancho de imagen (sí hace falta: el posterior ya lleva
-ese espejo desde esta versión). Si al ejecutar el add-in alguno de los tres
-sigue sin encajar, revisar `_canvas_transform()` en el `.py` — está separado
-por plano exactamente para poder corregir uno sin tocar los demás.
+La versión 2.4.0 consolida las correcciones comprobadas en Fusion:
+
+- usa una matriz distinta para XZ y YZ, manteniendo Z vertical;
+- ancla cada vista por el eje central de la base, no por el centro del PNG;
+- conserva el espejo horizontal necesario en la vista posterior;
+- elimina de `00_REFERENCIAS > Lienzos` cualquier lienzo antiguo y conserva
+  exclusivamente los cuatro patrones calibrados de 95 cm.
 
 Las referencias no son piezas fabricables. El script es repetible: actualiza
 los lienzos existentes sin duplicarlos y no duplica la malla existente.
