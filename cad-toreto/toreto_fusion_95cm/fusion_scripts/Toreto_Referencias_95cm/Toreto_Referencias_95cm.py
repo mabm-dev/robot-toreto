@@ -34,12 +34,14 @@ CANVAS_SPECS = (
         "PATRON_01_FRONTAL_95CM",
         "toreto_95cm_frontal.png",
         "XZ",
+        False,
         True,
     ),
     (
         "PATRON_02_POSTERIOR_95CM",
         "toreto_95cm_posterior.png",
         "XZ",
+        True,
         False,
     ),
     (
@@ -47,11 +49,13 @@ CANVAS_SPECS = (
         "toreto_95cm_lateral_izquierdo.png",
         "YZ",
         False,
+        False,
     ),
     (
         "PATRON_04_LATERAL_DERECHO_95CM",
         "toreto_95cm_lateral_derecho.png",
         "YZ",
+        False,
         False,
     ),
 )
@@ -81,7 +85,26 @@ def _find_mesh(component, name):
     return None
 
 
-def _canvas_transform():
+def _canvas_transform(plane_code, mirror):
+    """Calcula la transformación 2D del lienzo para el plano indicado.
+
+    OJO: la convención de ejes nativos (U,V) de cada plano de origen de
+    Fusion no es la misma para XZ que para YZ, y no se puede deducir por
+    simetría de nombre -- hay que comprobarlo dentro de Fusion. Solo el
+    caso XZ sin espejo (frontal) está verificado visualmente (ver
+    docs/CUADERNO.md, 26 ago 2026): en xZConstructionPlane, U nativo
+    corresponde a la Z del mundo y V nativo a la X del mundo.
+
+    El caso YZ (los dos laterales) usa aquí una PRIMERA HIPÓTESIS sin
+    verificar todavía: que el plano YZ no necesita el mismo intercambio
+    (U nativo = Y, V nativo = Z, sin invertir). Si al ejecutar el add-in
+    los laterales siguen sin encajar, ese es el primer sitio a corregir --
+    probablemente haya que intercambiar u_axis/v_axis como se hizo para XZ.
+
+    `mirror` invierte el ancho de la imagen (para vistas tomadas mirando en
+    sentido contrario al frontal, como la posterior -- ver la izquierda y la
+    derecha del robot invertidas al mirarlo de espaldas).
+    """
     cm_per_pixel = ROBOT_HEIGHT_CM / (ROBOT_BOTTOM_PX - ROBOT_TOP_PX)
     image_width_cm = IMAGE_WIDTH_PX * cm_per_pixel
     image_height_cm = IMAGE_HEIGHT_PX * cm_per_pixel
@@ -93,16 +116,34 @@ def _canvas_transform():
         IMAGE_HEIGHT_PX - ROBOT_BOTTOM_PX
     ) * cm_per_pixel
 
-    # En el plano XZ nativo de Fusion, el eje U corresponde a la vertical Z
-    # y el eje V a la horizontal X. Por eso las direcciones se intercambian:
-    # ancho de imagen sobre V y alto de imagen sobre U.
-    origin = adsk.core.Point2D.create(
-        vertical_offset_cm, -image_width_cm / 2.0
-    )
-    x_axis = adsk.core.Vector2D.create(0.0, image_width_cm)
-    z_axis = adsk.core.Vector2D.create(image_height_cm, 0.0)
+    width_sign = -1.0 if mirror else 1.0
+    half_width_signed = width_sign * image_width_cm / 2.0
+    width_vector_signed = width_sign * image_width_cm
+
+    # canvas_u_vector / canvas_v_vector son, en ese orden, el 2º y 3er
+    # argumento de setWithCoordinateSystem -- cómo se mueve el punto del
+    # plano cuando el lienzo avanza a lo largo de su propio ancho (U) o
+    # alto (V) de imagen. El orden importa: invertirlo NO es lo mismo que
+    # intercambiar U y V dentro de cada vector.
+    if plane_code == "XZ":
+        # Verificado en Fusion para frontal (mirror=False): avanzar en
+        # ancho de imagen mueve la coordenada V del plano; avanzar en alto
+        # de imagen mueve la coordenada U del plano.
+        origin = adsk.core.Point2D.create(vertical_offset_cm, -half_width_signed)
+        canvas_u_vector = adsk.core.Vector2D.create(0.0, width_vector_signed)
+        canvas_v_vector = adsk.core.Vector2D.create(image_height_cm, 0.0)
+    elif plane_code == "YZ":
+        # SIN VERIFICAR (ver docstring) -- primera hipótesis: sin el
+        # intercambio que sí hizo falta en XZ (ancho de imagen mueve U,
+        # alto de imagen mueve V).
+        origin = adsk.core.Point2D.create(-half_width_signed, vertical_offset_cm)
+        canvas_u_vector = adsk.core.Vector2D.create(width_vector_signed, 0.0)
+        canvas_v_vector = adsk.core.Vector2D.create(0.0, image_height_cm)
+    else:
+        raise ValueError("Plano de lienzo no reconocido: " + plane_code)
+
     matrix = adsk.core.Matrix2D.create()
-    if not matrix.setWithCoordinateSystem(origin, x_axis, z_axis):
+    if not matrix.setWithCoordinateSystem(origin, canvas_u_vector, canvas_v_vector):
         raise RuntimeError("No se pudo calcular la transformación del lienzo.")
     return matrix
 
@@ -115,11 +156,11 @@ def _plane_for(component, plane_code):
     raise ValueError("Plano de lienzo no reconocido: " + plane_code)
 
 
-def _create_or_update_canvas(component, name, image_path, plane_code, visible):
+def _create_or_update_canvas(component, name, image_path, plane_code, mirror, visible):
     canvas = _find_canvas(component, name)
     if canvas:
         canvas.imageFilename = image_path
-        canvas.transform = _canvas_transform()
+        canvas.transform = _canvas_transform(plane_code, mirror)
         canvas.opacity = 55
         canvas.isDisplayedThrough = True
         canvas.isSelectable = False
@@ -132,7 +173,7 @@ def _create_or_update_canvas(component, name, image_path, plane_code, visible):
     )
     if not canvas_input:
         raise RuntimeError("Fusion no pudo preparar el lienzo " + name + ".")
-    canvas_input.transform = _canvas_transform()
+    canvas_input.transform = _canvas_transform(plane_code, mirror)
     canvas_input.opacity = 55
     canvas_input.isDisplayedThrough = True
     canvas_input.isSelectable = False
@@ -153,12 +194,12 @@ def _prepare_canvases(component):
 
     created = 0
     updated = 0
-    for name, filename, plane_code, visible in CANVAS_SPECS:
+    for name, filename, plane_code, mirror, visible in CANVAS_SPECS:
         image_path = os.path.join(CANVAS_DIR, filename)
         if not os.path.isfile(image_path):
             raise FileNotFoundError("Falta el lienzo:\n" + image_path)
         if _create_or_update_canvas(
-            component, name, image_path, plane_code, visible
+            component, name, image_path, plane_code, mirror, visible
         ):
             created += 1
         else:
@@ -227,15 +268,21 @@ def run(context):
             mesh_created = _import_mesh(component)
             mesh_status = "importada" if mesh_created else "ya existente"
 
-        root.attributes.add("RobotToreto", "referencias_95cm", "2.1.0")
+        root.attributes.add("RobotToreto", "referencias_95cm", "2.2.0")
         app.activeViewport.fit()
 
         ui.messageBox(
-            "Cuatro patrones ortogonales preparados correctamente.\n\n"
+            "Cuatro patrones ortogonales preparados.\n\n"
             f"Lienzos creados: {canvases_created}\n"
             f"Lienzos actualizados: {canvases_updated}\n"
             f"Malla dimensional: {mesh_status}\n\n"
-            "Todos quedan calibrados desde Z=0 hasta Z=950 mm.\n"
+            "El FRONTAL está verificado: encaja en altura (Z=0-950mm) y en "
+            "ancho (X).\n"
+            "POSTERIOR y los dos LATERALES son la v2.2.0, sin comprobar "
+            "todavía -- revisa cada uno contra la malla o el modelo antes "
+            "de fiarte de ellos. Si alguno no encaja, dilo con detalle "
+            "(¿gira 90°? ¿aparece en espejo? ¿tamaño distinto?) para poder "
+            "corregir la fórmula concreta.\n\n"
             "Se muestra el FRONTAL por defecto. En 00_REFERENCIAS > "
             "Lienzos, apaga uno y enciende el patrón que quieras seguir.\n"
             "Los lienzos son guías; no son piezas imprimibles.",
