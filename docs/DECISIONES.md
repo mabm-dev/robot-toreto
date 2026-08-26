@@ -68,6 +68,22 @@ un microcontrolador aparte (Arduino/STM32/ESP32) dedicado a esa parte
 crítica — no es lo mismo IA local que control en tiempo real, y el Jetson
 resuelve la primera pero no necesariamente la segunda.
 
+## LIDAR y cámara RGB-D — cerrada (26 ago 2026)
+
+- **LIDAR: RPLIDAR C1** (Slamtec) — 12m de alcance, montado en la base,
+  familia con soporte ROS2 oficial (`rplidar_ros`), estándar de facto en
+  los tutoriales de Nav2. Se prefirió sobre el A1M8 (más barato, ~8m) por
+  el margen de alcance.
+- **Cámara: con IA integrada, categoría tipo OAK-D** (Luxonis) — la propia
+  cámara procesa parte de la visión (detección, quizás profundidad) antes
+  de mandar datos al Jetson, en vez de una RGB-D "tonta" que le pasa todo
+  el cómputo crudo al Jetson. Modelo exacto pendiente de la lista de compra.
+- Se comprobaron dos cámaras que el usuario ya tenía (Tapo C411, Tapo C230)
+  y una Insta360 Ace Pro 2 — ninguna sirve: sin sensor de profundidad
+  ninguna de las tres, y además la Tapo depende de wifi/nube propietaria y
+  la Ace Pro 2 es una cámara de acción sin salida de vídeo en vivo de baja
+  latencia. Hace falta comprar una cámara nueva.
+
 ## Identidad visual: CAD 3D interactivo (23 ago 2026)
 
 Estándar de documentación técnica para todo el material visual del proyecto:

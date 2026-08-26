@@ -24,7 +24,9 @@ con IA integrada — el objetivo final.
 - [ ] Resto de servos del brazo y la cabeza
 - [ ] Motores + encoders de la base móvil
 - [ ] Batería y arquitectura de alimentación
-- [ ] LIDAR y cámara RGB-D
+- [x] LIDAR y cámara RGB-D — **RPLIDAR C1** + **cámara con IA integrada
+      (tipo OAK-D)** (26 ago 2026, ver `DECISIONES.md`); modelo exacto de
+      cámara queda para la lista de compra
 - [ ] Lista de compra con precios reales (sustituye a las estimaciones de la infografía)
 
 ## v0.3 — CAD funcional en Fusion · fase 3 ⬜
