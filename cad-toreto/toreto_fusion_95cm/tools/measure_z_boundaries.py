@@ -61,7 +61,15 @@ def _font(size: int):
     return ImageFont.load_default()
 
 
-def _draw_ruler(img: Image.Image, y0: int, y_bottom_px: int, mm_per_px: float, minor_step: int = 5, major_step: int = 25) -> Image.Image:
+def _draw_ruler(
+    img: Image.Image,
+    y0: int,
+    y_bottom_px: int,
+    mm_per_px: float,
+    display_scale: float = 1.0,
+    minor_step: int = 5,
+    major_step: int = 25,
+) -> Image.Image:
     """Dibuja marcas cada `minor_step` px y una línea+etiqueta "yNNN ZNNN"
     cada `major_step` px. Z se calcula desde `y_bottom_px` (Z=0), no desde
     el origen del recorte -- así la etiqueta es la cota real del robot,
@@ -69,9 +77,12 @@ def _draw_ruler(img: Image.Image, y0: int, y_bottom_px: int, mm_per_px: float, m
     draw = ImageDraw.Draw(img)
     font = _font(16)
     w, h = img.size
+    if display_scale <= 0:
+        raise ValueError("display_scale debe ser mayor que cero")
+    original_height = h / display_scale
     first = y0 - (y0 % minor_step)
-    for y_orig in range(first, y0 + h):
-        y_local = y_orig - y0
+    for y_orig in range(first, int(y0 + original_height) + 1):
+        y_local = round((y_orig - y0) * display_scale)
         if y_local < 0 or y_local >= h:
             continue
         major = y_orig % major_step == 0
@@ -117,7 +128,9 @@ def main() -> None:
         region = img.crop((x0, y0, x1, y1))
         rw, rh = region.size
         big = region.resize((int(rw * scale), int(rh * scale)), Image.Resampling.LANCZOS)
-        big = _draw_ruler(big.copy(), y0, y_bottom_px, mm_per_px)
+        big = _draw_ruler(
+            big.copy(), y0, y_bottom_px, mm_per_px, display_scale=scale
+        )
         out = OUTPUT_DIR / f"{name}.png"
         big.save(out)
         print(f"OK {out.name} (Y={y0}..{y1}, Z={round((y_bottom_px - y1) * mm_per_px)}..{round((y_bottom_px - y0) * mm_per_px)} mm)")

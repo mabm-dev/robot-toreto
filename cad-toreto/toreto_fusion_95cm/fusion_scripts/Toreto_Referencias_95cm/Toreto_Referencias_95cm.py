@@ -23,7 +23,7 @@ MESH_NAME = "REF_VOLUMENES_SCAD_95CM"
 # Los cuatro PNG comparten exactamente el mismo encuadre y escala.
 # La transformación sitúa el contacto de las ruedas en Z=0 y la parte más
 # alta de la cabeza en Z=950 mm. La regla cian permite comprobarlo a mano.
-IMAGE_WIDTH_PX = 1200.0
+IMAGE_WIDTH_PX = 2000.0
 IMAGE_HEIGHT_PX = 2000.0
 ROBOT_TOP_PX = 50.0
 ROBOT_BOTTOM_PX = 1950.0
@@ -227,7 +227,7 @@ def run(context):
             mesh_created = _import_mesh(component)
             mesh_status = "importada" if mesh_created else "ya existente"
 
-        root.attributes.add("RobotToreto", "referencias_95cm", "2.0.0")
+        root.attributes.add("RobotToreto", "referencias_95cm", "2.1.0")
         app.activeViewport.fit()
 
         ui.messageBox(

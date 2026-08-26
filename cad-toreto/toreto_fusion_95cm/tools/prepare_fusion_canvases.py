@@ -8,11 +8,10 @@ lateral derecho, 0.526 posterior/lateral izquierdo) en vez de una sola.
 
 Esta version:
   1. Parte de la copia local de la lamina (no de %TEMP%, que es efimero).
-  2. Detecta la silueta real de cada vista dentro de su cuadrante, en dos
-     pasadas (ver _detect_core / _detect_full mas abajo) para no confundir
-     texto de rotulo ni lineas divisorias con el propio robot.
-  3. Escala cada vista de forma INDEPENDIENTE a su propia silueta -> exactos
-     1900 px de alto (950 mm a 0.5 mm/px), no a la caja que la contiene.
+  2. Usa cajas de silueta auditadas sobre las cuatro vistas, conservando
+     manos y ruedas completas y excluyendo los margenes desiguales.
+  3. Escala cada vista de forma INDEPENDIENTE a 1900 intervalos verticales
+     (950 mm a 0.5 mm/px), con 1901 filas para incluir ambos extremos.
   4. Valida el resultado: si la silueta de salida no cae exactamente entre
      Y=50 y Y=1950 (con tolerancia de redondeo de 1 px), el script falla en
      vez de escribir un lienzo mal calibrado.
@@ -21,6 +20,7 @@ Esta version:
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
@@ -41,11 +41,30 @@ QUADRANTS = {
     "lateral_izquierdo": (1200, 896, 2400, 1792),
 }
 
+# Cajas finales auditadas sobre la lamina fuente. Derecha e inferior son
+# exclusivas (convencion PIL). A diferencia de los cuadrantes, cada caja
+# empieza en la coronilla y termina en la ultima fila del suelo. Tambien
+# conserva las manos completas; la deteccion automatica anterior perdia la
+# mano adelantada del lateral izquierdo al quedar fuera de su nucleo.
+AUDITED_SILHOUETTE_BOXES = {
+    "frontal": (330, 89, 870, 863),
+    "lateral_derecho": (1580, 89, 2020, 863),
+    "posterior": (340, 946, 870, 1727),
+    "lateral_izquierdo": (1360, 946, 2010, 1727),
+}
+
+# El rotulo SIDE invade el margen superior del recorte lateral izquierdo.
+# Se elimina por filas copiando el fondo contiguo; no intersecta el robot.
+ERASE_AREAS = {
+    "lateral_izquierdo": ((1360, 946, 1580, 990),),
+}
+
 CANVAS_WIDTH_PX = 2000
 CANVAS_HEIGHT_PX = 2000
 ROBOT_TOP_PX = 50
 ROBOT_BOTTOM_PX = 1950
-ROBOT_HEIGHT_PX = ROBOT_BOTTOM_PX - ROBOT_TOP_PX  # 1900
+ROBOT_HEIGHT_PX = ROBOT_BOTTOM_PX - ROBOT_TOP_PX  # 1900 intervalos
+ROBOT_RASTER_HEIGHT_PX = ROBOT_HEIGHT_PX + 1  # incluye ambos extremos
 ROBOT_HEIGHT_MM = 950
 MM_PER_PX = ROBOT_HEIGHT_MM / ROBOT_HEIGHT_PX  # 0.5 exacto, una vez corregido
 
@@ -157,16 +176,30 @@ def _font(size: int):
     return ImageFont.load_default()
 
 
-def _make_canvas(source: Image.Image, box, bg) -> tuple[Image.Image, dict]:
-    core = _detect_core_bbox(source, box, bg)
-    minx, maxx, miny, maxy = _detect_full_bbox(source, box, core, bg)
-    silhouette_h = maxy - miny + 1
-    silhouette_w = maxx - minx + 1
+def _make_canvas(source: Image.Image, name: str, bg) -> tuple[Image.Image, dict]:
+    left, top, right, bottom = AUDITED_SILHOUETTE_BOXES[name]
+    silhouette_h = bottom - top
+    silhouette_w = right - left
+    crop = source.crop((left, top, right, bottom))
 
-    scale = ROBOT_HEIGHT_PX / silhouette_h
-    crop = source.crop((minx, miny, maxx + 1, maxy + 1))
+    crop_draw = ImageDraw.Draw(crop)
+    for erase_left, erase_top, erase_right, erase_bottom in ERASE_AREAS.get(
+        name, ()
+    ):
+        x0 = erase_left - left
+        x1 = erase_right - left
+        for source_y in range(erase_top, erase_bottom):
+            y = source_y - top
+            sample_x = min(crop.width - 1, x1 + 5)
+            crop_draw.line(
+                (x0, y, x1, y), fill=crop.getpixel((sample_x, y))
+            )
+
+    scale = ROBOT_RASTER_HEIGHT_PX / silhouette_h
     resized_w = round(silhouette_w * scale)
-    crop = crop.resize((resized_w, ROBOT_HEIGHT_PX), Image.Resampling.LANCZOS)
+    crop = crop.resize(
+        (resized_w, ROBOT_RASTER_HEIGHT_PX), Image.Resampling.LANCZOS
+    )
 
     if resized_w > CANVAS_WIDTH_PX - 40:
         raise RuntimeError(
@@ -187,10 +220,16 @@ def _make_canvas(source: Image.Image, box, bg) -> tuple[Image.Image, dict]:
     draw.text((50, ROBOT_TOP_PX + 8), "950 mm", font=_font(28), fill=cyan)
 
     meta = {
-        "source_bbox_px": [minx, miny, maxx, maxy],
+        "source_bbox_px": [left, top, right, bottom],
         "source_silhouette_px": [silhouette_w, silhouette_h],
         "scale_applied": round(scale, 6),
         "canvas_offset_x": x,
+        "content_box_px": [
+            x,
+            ROBOT_TOP_PX,
+            x + resized_w - 1,
+            ROBOT_BOTTOM_PX,
+        ],
     }
     return canvas, meta
 
@@ -279,8 +318,8 @@ def main() -> None:
 
     outputs = {}
     views_meta = {}
-    for name, box in QUADRANTS.items():
-        canvas, meta = _make_canvas(source, box, bg)
+    for name in QUADRANTS:
+        canvas, meta = _make_canvas(source, name, bg)
         _validate(canvas, bg, name)
         path = OUTPUT_DIR / f"toreto_95cm_{name}.png"
         canvas.save(path, format="PNG", optimize=True)
@@ -290,19 +329,21 @@ def main() -> None:
               f"escala aplicada {meta['scale_applied']:.4f} -> validado Z=0..950mm")
 
     metadata = {
-        "source": str(SOURCE),
+        "source": str(SOURCE.relative_to(Path(__file__).resolve().parents[1])),
+        "source_sha256": hashlib.sha256(SOURCE.read_bytes()).hexdigest(),
         "canvas_px": [CANVAS_WIDTH_PX, CANVAS_HEIGHT_PX],
         "robot_top_px": ROBOT_TOP_PX,
         "robot_bottom_px": ROBOT_BOTTOM_PX,
         "robot_height_px": ROBOT_HEIGHT_PX,
+        "robot_raster_height_px": ROBOT_RASTER_HEIGHT_PX,
         "robot_height_mm": ROBOT_HEIGHT_MM,
         "mm_per_pixel": MM_PER_PX,
         "fusion_calibration": "Seleccionar los dos extremos cian e introducir 950 mm",
         "views": outputs,
         "per_view_detection": views_meta,
         "note": (
-            "Cada vista se calibro de forma independiente contra su propia "
-            "silueta (no contra una caja de recorte manual). Ver "
+            "Cada vista se calibro de forma independiente con su caja de "
+            "silueta auditada (no contra el cuadrante con margenes). Ver "
             "docs/CUADERNO.md, 26 ago 2026, para el porque."
         ),
     }

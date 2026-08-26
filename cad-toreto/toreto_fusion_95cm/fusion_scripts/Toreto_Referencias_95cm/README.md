@@ -13,5 +13,9 @@ y parte superior de la cabeza en `Z=950 mm`. Solo el frontal queda visible al
 terminar. En `00_REFERENCIAS > Lienzos`, apaga su bombilla y enciende la vista
 que necesites para evitar superposiciones.
 
+Desde la versión 2.1.0, las cuatro siluetas se calibran de forma independiente
+contra sus límites auditados y ocupan exactamente 1900 intervalos a
+`0,5 mm/píxel`; los márgenes originales de la lámina no afectan a la escala.
+
 Las referencias no son piezas fabricables. El script es repetible: actualiza
 los lienzos existentes sin duplicarlos y no duplica la malla existente.

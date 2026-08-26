@@ -1,5 +1,6 @@
 {
-  "source": "C:\\Users\\tarif\\Desktop\\Robot-Toreto\\cad-toreto\\toreto_fusion_95cm\\reference\\lamina_maestra_4vistas.jpg",
+  "source": "reference\\lamina_maestra_4vistas.jpg",
+  "source_sha256": "2d85b81850af57366317300caa68d626a3a37dd31d6f6455b21a5228fab41412",
   "canvas_px": [
     2000,
     2000
@@ -7,6 +8,7 @@
   "robot_top_px": 50,
   "robot_bottom_px": 1950,
   "robot_height_px": 1900,
+  "robot_raster_height_px": 1901,
   "robot_height_mm": 950,
   "mm_per_pixel": 0.5,
   "fusion_calibration": "Seleccionar los dos extremos cian e introducir 950 mm",
@@ -19,60 +21,84 @@
   "per_view_detection": {
     "frontal": {
       "source_bbox_px": [
-        342,
-        88,
-        949,
-        862
+        330,
+        89,
+        870,
+        863
       ],
       "source_silhouette_px": [
-        608,
-        775
+        540,
+        774
       ],
-      "scale_applied": 2.451613,
-      "canvas_offset_x": 254
+      "scale_applied": 2.456072,
+      "canvas_offset_x": 337,
+      "content_box_px": [
+        337,
+        50,
+        1662,
+        1950
+      ]
     },
     "lateral_derecho": {
       "source_bbox_px": [
-        1546,
+        1580,
         89,
-        2059,
-        862
+        2020,
+        863
       ],
       "source_silhouette_px": [
-        514,
+        440,
         774
       ],
-      "scale_applied": 2.45478,
-      "canvas_offset_x": 369
+      "scale_applied": 2.456072,
+      "canvas_offset_x": 459,
+      "content_box_px": [
+        459,
+        50,
+        1539,
+        1950
+      ]
     },
     "posterior": {
       "source_bbox_px": [
-        343,
+        340,
         946,
-        948,
-        1725
+        870,
+        1727
       ],
       "source_silhouette_px": [
-        606,
-        780
+        530,
+        781
       ],
-      "scale_applied": 2.435897,
-      "canvas_offset_x": 262
+      "scale_applied": 2.434059,
+      "canvas_offset_x": 355,
+      "content_box_px": [
+        355,
+        50,
+        1644,
+        1950
+      ]
     },
     "lateral_izquierdo": {
       "source_bbox_px": [
-        1564,
+        1360,
         946,
-        2059,
-        1725
+        2010,
+        1727
       ],
       "source_silhouette_px": [
-        496,
-        780
+        650,
+        781
       ],
-      "scale_applied": 2.435897,
-      "canvas_offset_x": 396
+      "scale_applied": 2.434059,
+      "canvas_offset_x": 209,
+      "content_box_px": [
+        209,
+        50,
+        1790,
+        1950
+      ]
     }
   },
-  "note": "Cada vista se calibro de forma independiente contra su propia silueta (no contra una caja de recorte manual). Ver docs/CUADERNO.md, 26 ago 2026, para el porque."
+  "note": "Cada vista se calibro de forma independiente con su caja de silueta auditada (no contra el cuadrante con margenes). Ver docs/CUADERNO.md, 26 ago 2026, para el porque."
 }
