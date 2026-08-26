@@ -37,10 +37,15 @@ particiones. Ver `cad-toreto/toreto_fusion_95cm/README.md`.
       propia silueta, no contra una caja de recorte manual. Fuente:
       `cad-toreto/toreto_fusion_95cm/reference/lamina_maestra_4vistas.jpg`,
       generador en `tools/prepare_fusion_canvases.py`
-- [ ] Medir las separaciones Z reales sobre el lienzo frontal (maestro) y
-      fijar una tabla única de cotas — **siguiente paso exacto**
+- [x] Medir las separaciones Z reales sobre el lienzo frontal (maestro) con
+      regla de píxeles reproducible (`tools/measure_z_boundaries.py`) —
+      lectura completa en `docs/CUADERNO.md`, 26 ago 2026
+- [ ] Fijar una tabla única de cotas — **bloqueado**: el usuario decidió no
+      cerrarla todavía porque depende de dónde queden batería y mecanismos
+      internos (fase 2, ver `DECISIONES.md`), no solo de la silueta exterior
 - [ ] Adaptar los 10 add-ins de Fusion y los 5 módulos OpenSCAD de
-      `toreto_exterior_95cm` a esa tabla única (hoy no coinciden entre sí)
+      `toreto_exterior_95cm` a esa tabla única (hoy no coinciden entre sí) —
+      depende del punto anterior
 - [ ] Migrar de OpenSCAD a Autodesk Fusion (no AutoCAD — ver `DECISIONES.md`)
 - [ ] Ensamblaje con articulaciones reales y topes de recorrido, siguiendo
       la jerarquía de [`CINEMATICA.md`](CINEMATICA.md)

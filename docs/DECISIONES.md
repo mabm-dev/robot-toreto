@@ -105,6 +105,23 @@ tabla única para corregir los add-ins de Fusion y los módulos OpenSCAD de
 `toreto_exterior_95cm`, que hoy no coinciden entre sí en cómo reparten los
 950 mm.
 
+## La tabla de cotas Z no se fija todavía (26 ago 2026)
+
+La medición sobre el lienzo frontal ya está hecha —
+`tools/measure_z_boundaries.py` genera la regla de píxeles reproducible,
+lectura completa en `docs/CUADERNO.md`— pero el usuario decidió **no
+fijarla como tabla única todavía**: dónde caen los cortes reales de
+tronco/cintura/pecho depende de dónde queden la batería y los mecanismos
+internos, y eso es fase 2 (componentes), no fase 1 (silueta exterior). Fijar
+la tabla solo con la silueta de fuera sería inventar una cota que luego
+puede no tener sitio por dentro — exactamente lo que la regla de
+[orden de trabajo](#orden-de-trabajo-diseño--componentes--cad) quiere evitar.
+
+Los 10 add-ins de Fusion y los 5 módulos OpenSCAD siguen, por tanto, con sus
+valores por defecto actuales (no coincidentes entre sí) hasta que haya
+componentes elegidos y la tabla se pueda fijar con conocimiento de qué va
+dentro de cada módulo.
+
 ## Documentos vivos (fuera de este repo)
 
 Se publican como artefactos porque se consultan desde la tablet. Al
