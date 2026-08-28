@@ -8,8 +8,9 @@ import adsk.fusion
 
 COMPONENT_NAME = "04_PECHO_HOMBROS"
 FEATURE_NAME = "PECHO_HOMBROS_EXTERIOR_TORETO_95CM"
+ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "PECHO95_"
-VERSION = "2.1.0"
+VERSION = "2.2.0"
 
 _GEOMETRY_Z = 0.0
 
@@ -196,6 +197,10 @@ def _version(component):
 def _replace_old(component):
     if not _has_bodies(component):
         return False
+    for index in range(component.features.moveFeatures.count - 1, -1, -1):
+        move = component.features.moveFeatures.item(index)
+        if move.name == ALIGNMENT_FEATURE_NAME and not move.deleteMe():
+            raise RuntimeError("No se pudo retirar la alineación anterior del pecho.")
     feature = None
     for index in range(component.features.baseFeatures.count):
         candidate = component.features.baseFeatures.item(index)
@@ -207,9 +212,21 @@ def _replace_old(component):
     return True
 
 
-def _build(manager, width, depth, height, screen_width, screen_height, screen_depth, clearance):
+def _build(
+    manager,
+    body_width,
+    shoulder_span,
+    depth,
+    height,
+    screen_width,
+    screen_height,
+    screen_depth,
+    clearance,
+):
     """Construye el pecho siguiendo las vistas frontal, lateral y trasera."""
-    rs = width / 34.0
+    # La lámina frontal mide unos 252 mm para la carcasa blanca. Los 340 mm
+    # corresponden al conjunto de hombros, no al rectángulo del pecho.
+    rs = shoulder_span / 34.0
     ds = depth / 21.6
     hs = height / 22.8
     r = lambda value: value * rs
@@ -219,10 +236,24 @@ def _build(manager, width, depth, height, screen_width, screen_height, screen_de
 
     # Cuerpo rectangular redondeado; sustituye el antiguo pecho elíptico.
     shell = _rounded_panel(
-        manager, 0, 0, z(11.4), width, height, depth, min(width, height) * .12
+        manager,
+        0,
+        0,
+        z(11.4),
+        body_width,
+        height,
+        depth,
+        min(body_width, height) * .12,
     )
     side_shell = _rounded_side(
-        manager, 0, d(.15), z(11.4), depth, height, width + r(.5), min(depth, height) * .17
+        manager,
+        0,
+        d(.15),
+        z(11.4),
+        depth,
+        height,
+        body_width + r(.5),
+        min(depth, height) * .17,
     )
     if not manager.booleanOperation(
         shell, side_shell, adsk.fusion.BooleanTypes.IntersectionBooleanType
@@ -233,10 +264,10 @@ def _build(manager, width, depth, height, screen_width, screen_height, screen_de
         0,
         0,
         z(11.4),
-        width - r(1.7),
+        body_width - r(1.7),
         height - z(1.7),
         depth - d(1.8),
-        min(width, height) * .095,
+        min(body_width, height) * .095,
     )
     side_inner = _rounded_side(
         manager,
@@ -245,7 +276,7 @@ def _build(manager, width, depth, height, screen_width, screen_height, screen_de
         z(11.4),
         depth - d(1.8),
         height - z(1.7),
-        width - r(1.2),
+        body_width - r(1.2),
         min(depth, height) * .13,
     )
     if not manager.booleanOperation(
@@ -279,6 +310,20 @@ def _build(manager, width, depth, height, screen_width, screen_height, screen_de
         shell, neck_cut, adsk.fusion.BooleanTypes.DifferenceBooleanType
     ):
         raise RuntimeError("No se pudo abrir el paso superior del cuello.")
+    neck_channel = _rounded_panel(
+        manager,
+        0,
+        0,
+        z(21.05),
+        r(11.2),
+        z(4.5),
+        depth + d(2.0),
+        z(1.45),
+    )
+    if not manager.booleanOperation(
+        shell, neck_channel, adsk.fusion.BooleanTypes.DifferenceBooleanType
+    ):
+        raise RuntimeError("No se pudo abrir la escotadura visible del cuello.")
     _append(specs, shell, "01_CARCASA_RECTANGULAR_REDONDEADA", WHITE)
 
     lower = _rounded_panel(
@@ -297,8 +342,8 @@ def _build(manager, width, depth, height, screen_width, screen_height, screen_de
         0,
         front_y,
         z(11.4),
-        cavity_width + r(.8),
-        cavity_height + z(.8),
+        cavity_width + r(2.2),
+        cavity_height + z(2.0),
         d(.52),
         min(cavity_width, cavity_height) * .10,
     )
@@ -327,21 +372,42 @@ def _build(manager, width, depth, height, screen_width, screen_height, screen_de
         r(.12),
     )
     _append(specs, screen_glow, "06_LINEA_PANTALLA_CIAN", CYAN)
+    waveform = (0.7, 1.25, 2.0, 3.2, 1.8, 1.1, 2.4, 3.8, 2.3, 1.35, 2.7, 1.65, 0.8)
+    spacing = min(screen_width * .065, r(1.05))
+    for index, bar_height in enumerate(waveform):
+        bar = _rounded_panel(
+            manager,
+            (index - (len(waveform) - 1) / 2.0) * spacing,
+            front_y - d(.57),
+            z(11.4),
+            r(.28),
+            z(bar_height),
+            d(.07),
+            r(.08),
+        )
+        _append(specs, bar, f"06_ONDA_CIAN_{index + 1:02d}", CYAN)
 
     # Sólo el conector negro pertenece al pecho; la carcasa blanca es del brazo.
     for side, label in ((-1.0, "IZQ"), (1.0, "DER")):
         cx = side * r(17.15)
         socket = _cylinder(
             manager,
-            _point(cx - side * r(.55), 0, z(16.4)),
-            _point(cx + side * r(2.5), 0, z(16.4)),
+            _point(cx - side * r(.55), 0, z(18.1)),
+            _point(cx + side * r(2.5), 0, z(18.1)),
             r(3.65),
         )
         _append(specs, socket, f"07_CONECTOR_HOMBRO_{label}", BLACK)
 
     back_y = depth / 2 + d(.08)
     back_panel = _rounded_panel(
-        manager, 0, back_y + d(.14), z(11.5), r(26.3), z(14.3), d(.26), z(1.0)
+        manager,
+        0,
+        back_y + d(.14),
+        z(11.5),
+        body_width - r(1.2),
+        z(14.3),
+        d(.26),
+        z(1.0),
     )
     _append(specs, back_panel, "08_TAPA_TRASERA_BLANCA", WHITE)
     for index, x in enumerate((-4.8, 4.8), start=1):
@@ -374,21 +440,30 @@ def run(context):
             return
         replaced = _replace_old(component)
         # Valores de la envolvente exterior definida en continuidad.
-        width = _set_master_value(
-            design, "ancho_pecho", "340 mm", "Anchura máxima de la carcasa de pecho"
+        shoulder_span = _set_master_value(
+            design,
+            "ancho_pecho",
+            "340 mm",
+            "Separación exterior de referencia del conjunto de hombros",
+        )
+        body_width = _set_master_value(
+            design,
+            "ancho_carcasa_pecho",
+            "252 mm",
+            "Anchura de la carcasa central medida en el lienzo frontal",
         )
         depth = _set_master_value(
-            design, "fondo_pecho", "216 mm", "Profundidad máxima de la carcasa de pecho"
+            design, "fondo_pecho", "220 mm", "Profundidad máxima de la carcasa de pecho"
         )
         height = _set_master_value(
-            design, "alto_pecho", "228 mm", "Altura exterior de la carcasa de pecho"
+            design, "alto_pecho", "190 mm", "Altura exterior de la carcasa de pecho"
         )
         _GEOMETRY_Z = sum(
             _ensure_value(design, name, expression, comment)
             for name, expression, comment in (
-                ("alto_base", "225 mm", "Altura base"),
-                ("alto_tronco", "185 mm", "Altura tronco"),
-                ("alto_cintura", "100 mm", "Altura cintura"),
+                ("alto_base", "200 mm", "Altura base"),
+                ("alto_tronco", "190 mm", "Altura tronco"),
+                ("alto_cintura", "150 mm", "Altura cintura"),
             )
         )
         screen_width = _ensure_value(
@@ -418,7 +493,8 @@ def run(context):
         manager = adsk.fusion.TemporaryBRepManager.get()
         specs = _build(
             manager,
-            width,
+            body_width,
+            shoulder_span,
             depth,
             height,
             screen_width,

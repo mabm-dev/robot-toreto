@@ -1,3 +1,3 @@
 # Toreto_Componentes_95cm
 
-Estructura paramétrica del ensamblaje exterior de 95 cm. Fija todas las ocurrencias respecto al origen raíz: X=0 e Y=0 para el eje central; la base queda en Z=0 y el tronco comienza en Z=225 mm.
+Estructura paramétrica del ensamblaje exterior de 95 cm. Crea los componentes y planos que falten sin tocar la posición de piezas ya generadas. Solo normaliza ocurrencias nuevas y vacías; por tanto se puede volver a ejecutar sin devolver módulos a `Z=0`.

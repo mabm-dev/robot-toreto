@@ -616,8 +616,8 @@ def run(context):
 
         replaced = _replace_previous_generation(component)
 
-        diameter = _parameter_value(design, "diametro_base", 40.0)
-        height = _parameter_value(design, "alto_base", 22.5)
+        diameter = _parameter_value(design, "diametro_base", 45.0)
+        height = _parameter_value(design, "alto_base", 20.0)
         radial_scale = diameter / 40.0
         height_scale = height / 22.5
 

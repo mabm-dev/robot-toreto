@@ -2,8 +2,8 @@
   "autodeskProduct": "Fusion360",
   "type": "script",
   "author": "Robot Toreto / OpenAI Codex",
-  "description": "PECHO EXTERIOR v1.2.0 - tapa superior y abertura pasante de cuello.",
-  "version": "2.1.0",
+  "description": "PECHO EXTERIOR v2.2.0 - carcasa estrecha de referencia, pantalla y cuello pasante.",
+  "version": "2.2.0",
   "runOnStartup": false,
   "supportedOS": "windows"
 }

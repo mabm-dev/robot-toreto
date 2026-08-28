@@ -8,8 +8,9 @@ import traceback
 
 COMPONENTS = ("07_BRAZO_IZQUIERDO", "08_BRAZO_DERECHO")
 FEATURE_NAME = "BRAZOS_EXTERIORES_TORETO_95CM"
+ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "BRAZO95_"
-VERSION = "2.2.0"
+VERSION = "2.3.0"
 
 # Desplazamiento de emergencia para Fusion: algunas versiones dejan una
 # ocurrencia recién creada en (0,0,0) aunque transform2 se haya escrito. El
@@ -133,6 +134,10 @@ def _version(component):
 def _replace_old(component):
     if not _has_bodies(component):
         return False
+    for index in range(component.features.moveFeatures.count - 1, -1, -1):
+        move = component.features.moveFeatures.item(index)
+        if move.name == ALIGNMENT_FEATURE_NAME and not move.deleteMe():
+            raise RuntimeError("No se pudo retirar la alineación anterior del brazo.")
     feature = None
     for index in range(component.features.baseFeatures.count):
         candidate = component.features.baseFeatures.item(index)
@@ -151,15 +156,26 @@ def _segment(manager, specs, side, name, p1, p2, radius, color):
 
 
 def _oriented_box(manager, p1, p2, width, depth):
-    """Prisma orientado entre dos puntos, con profundidad frontal Y."""
+    """Prisma orientado entre dos puntos, incluso fuera del plano frontal."""
     dx = p2[0] - p1[0]
     dy = p2[1] - p1[1]
     dz = p2[2] - p1[2]
     length = math.sqrt(dx * dx + dy * dy + dz * dz)
     if length < 0.001:
         raise RuntimeError("Segmento de brazo demasiado corto.")
-    axis = _vector(dx / length, dy / length, dz / length)
-    depth_axis = _vector(0, 1, 0)
+    ax = (dx / length, dy / length, dz / length)
+    axis = _vector(*ax)
+    # Proyecta el eje Y sobre el plano normal al segmento. Esto conserva la
+    # profundidad frontal de brazos/dedos y también permite que el pulgar
+    # salga de verdad del plano de la palma sin crear ejes paralelos.
+    dot = ax[1]
+    depth_direction = (-dot * ax[0], 1.0 - dot * ax[1], -dot * ax[2])
+    depth_length = math.sqrt(sum(value * value for value in depth_direction))
+    if depth_length < 0.001:
+        dot = ax[0]
+        depth_direction = (1.0 - dot * ax[0], -dot * ax[1], -dot * ax[2])
+        depth_length = math.sqrt(sum(value * value for value in depth_direction))
+    depth_axis = _vector(*(value / depth_length for value in depth_direction))
     center = _point(
         (p1[0] + p2[0]) / 2,
         (p1[1] + p2[1]) / 2,
@@ -489,7 +505,7 @@ def _build_v2(manager, side):
     upper_p2 = _global_point(side, (1.25, 0, -13.0))
     _append(
         specs,
-        _capsule(manager, upper_p1, upper_p2, 5.6, 7.2),
+        _capsule(manager, upper_p1, upper_p2, 6.8, 7.8),
         "02_CARCASA_BRAZO_SUPERIOR",
         WHITE,
     )
@@ -547,7 +563,7 @@ def _build_v2(manager, side):
     fore_p2 = _global_point(side, (0.80, 0, -25.1))
     _append(
         specs,
-        _capsule(manager, fore_p1, fore_p2, 5.2, 6.4),
+        _capsule(manager, fore_p1, fore_p2, 5.9, 6.7),
         "07_CARCASA_ANTEBRAZO",
         WHITE,
     )
@@ -564,23 +580,24 @@ def _build_v2(manager, side):
         BLACK,
     )
 
-    # Palma negra compacta con placa blanca posterior de cuatro fijaciones.
+    # Palma compacta. En la vista frontal predomina el núcleo grafito; la
+    # placa blanca de cuatro fijaciones pertenece al dorso, como en la lámina.
     palm_x = 0.80
     _append(
         specs,
-        _rounded_panel(manager, side * palm_x, 0, -29.7, 7.6, 6.6, 5.2, 1.45),
+        _rounded_panel(manager, side * palm_x, 0, -29.55, 6.2, 5.8, 4.8, 1.30),
         "09_NUCLEO_PALMA_NEGRO",
         BLACK,
     )
     _append(
         specs,
-        _rounded_panel(manager, side * palm_x, -2.82, -29.7, 6.8, 5.8, 0.56, 1.25),
-        "10_CUBIERTA_FRONTAL_PALMA",
-        WHITE,
+        _rounded_panel(manager, side * palm_x, -2.62, -29.55, 5.55, 4.9, 0.46, 1.05),
+        "10_CUBIERTA_FRONTAL_GRAFITO",
+        DARK,
     )
     _append(
         specs,
-        _rounded_panel(manager, side * palm_x, 2.82, -29.7, 6.25, 5.35, 0.58, 1.10),
+        _rounded_panel(manager, side * palm_x, 2.62, -29.55, 5.6, 4.85, 0.50, 1.05),
         "11_PLACA_POSTERIOR_PALMA",
         WHITE,
     )
@@ -590,28 +607,36 @@ def _build_v2(manager, side):
                 specs,
                 _cylinder(
                     manager,
-                    _point(side * (palm_x + sx * 2.25), 3.08, -29.7 + sz * 1.75),
-                    _point(side * (palm_x + sx * 2.25), 3.30, -29.7 + sz * 1.75),
-                    0.22,
+                    _point(side * (palm_x + sx * 1.92), 2.88, -29.55 + sz * 1.55),
+                    _point(side * (palm_x + sx * 1.92), 3.08, -29.55 + sz * 1.55),
+                    0.19,
                 ),
                 f"12_TORNILLO_PALMA_{int(sx)}_{int(sz)}",
                 BLACK,
             )
 
-    # Cuatro dedos con tres falanges prismáticas, bisagras negras y punta blanca.
-    finger_offsets = (-2.55, -0.85, 0.85, 2.55)
-    for index, offset in enumerate(finger_offsets, 1):
+    # Cuatro dedos de longitudes distintas. La convergencia progresiva hacia
+    # el centro reproduce la silueta relajada de las vistas definitivas.
+    finger_offsets = (-2.10, -0.70, 0.70, 2.10)
+    finger_lengths = (
+        (1.70, 1.55, 1.35),
+        (1.88, 1.72, 1.52),
+        (1.78, 1.62, 1.42),
+        (1.48, 1.35, 1.18),
+    )
+    for index, (offset, lengths) in enumerate(zip(finger_offsets, finger_lengths), 1):
         u0 = palm_x + offset
-        p0 = (u0, -3.02, -32.55)
-        p1 = (u0 - offset * 0.075, -3.02, -34.35)
-        p2 = (u0 - offset * 0.16, -3.02, -36.05)
-        p3 = (u0 - offset * 0.25, -3.02, -37.55)
-        _append(specs, _joint_y(manager, side, p0, 1.55, 0.69), f"13_DEDO_{index}_NUDILLO", BLACK)
-        _append(specs, _finger_box(manager, side, p0, p1, 1.38, 1.55), f"14_DEDO_{index}_FALANGE_1", DARK)
-        _append(specs, _joint_y(manager, side, p1, 1.46, 0.64), f"15_DEDO_{index}_BISAGRA_1", BLACK)
-        _append(specs, _finger_box(manager, side, p1, p2, 1.28, 1.47), f"16_DEDO_{index}_FALANGE_2", DARK)
-        _append(specs, _joint_y(manager, side, p2, 1.38, 0.59), f"17_DEDO_{index}_BISAGRA_2", BLACK)
-        _append(specs, _finger_box(manager, side, p2, p3, 1.15, 1.38), f"18_DEDO_{index}_FALANGE_3", DARK)
+        l1, l2, l3 = lengths
+        p0 = (u0, -2.78, -31.95)
+        p1 = (u0 - offset * 0.10, -2.78, p0[2] - l1)
+        p2 = (u0 - offset * 0.22, -2.78, p1[2] - l2)
+        p3 = (u0 - offset * 0.36, -2.78, p2[2] - l3)
+        _append(specs, _joint_y(manager, side, p0, 1.42, 0.62), f"13_DEDO_{index}_NUDILLO", BLACK)
+        _append(specs, _finger_box(manager, side, p0, p1, 1.18, 1.42), f"14_DEDO_{index}_FALANGE_1", DARK)
+        _append(specs, _joint_y(manager, side, p1, 1.34, 0.57), f"15_DEDO_{index}_BISAGRA_1", BLACK)
+        _append(specs, _finger_box(manager, side, p1, p2, 1.10, 1.34), f"16_DEDO_{index}_FALANGE_2", DARK)
+        _append(specs, _joint_y(manager, side, p2, 1.27, 0.52), f"17_DEDO_{index}_BISAGRA_2", BLACK)
+        _append(specs, _finger_box(manager, side, p2, p3, 1.02, 1.27), f"18_DEDO_{index}_FALANGE_3", DARK)
         _segment(
             manager,
             specs,
@@ -619,18 +644,19 @@ def _build_v2(manager, side):
             f"19_DEDO_{index}_PUNTA_BLANCA",
             p3,
             (p3[0] - offset * 0.025, p3[1], p3[2] - 0.78),
-            0.57,
+            0.50,
             WHITE,
         )
 
-    # Pulgar lateral, separado de los cuatro dedos y con dos falanges.
-    t0 = (palm_x - 3.35, -2.95, -29.55)
-    t1 = (palm_x - 4.95, -2.95, -30.85)
-    t2 = (palm_x - 6.20, -2.95, -32.35)
-    _append(specs, _joint_y(manager, side, t0, 1.7, 0.88), "20_PULGAR_NUDILLO", BLACK)
-    _append(specs, _finger_box(manager, side, t0, t1, 1.55, 1.72), "21_PULGAR_FALANGE_1", DARK)
-    _append(specs, _joint_y(manager, side, t1, 1.60, 0.76), "22_PULGAR_BISAGRA", BLACK)
-    _append(specs, _finger_box(manager, side, t1, t2, 1.35, 1.62), "23_PULGAR_FALANGE_2", DARK)
+    # Pulgar opuesto: sale hacia delante de la palma en vez de quedar dibujado
+    # en el mismo plano que los otros cuatro dedos.
+    t0 = (palm_x - 2.75, -2.25, -29.35)
+    t1 = (palm_x - 4.15, -4.10, -30.35)
+    t2 = (palm_x - 5.20, -5.25, -31.75)
+    _append(specs, _joint_y(manager, side, t0, 1.55, 0.78), "20_PULGAR_NUDILLO", BLACK)
+    _append(specs, _finger_box(manager, side, t0, t1, 1.38, 1.58), "21_PULGAR_FALANGE_1", DARK)
+    _append(specs, _joint_y(manager, side, t1, 1.45, 0.68), "22_PULGAR_BISAGRA", BLACK)
+    _append(specs, _finger_box(manager, side, t1, t2, 1.22, 1.48), "23_PULGAR_FALANGE_2", DARK)
     _segment(
         manager,
         specs,
@@ -638,13 +664,14 @@ def _build_v2(manager, side):
         "24_PULGAR_PUNTA_BLANCA",
         t2,
         (t2[0] - 0.48, t2[1], t2[2] - 0.48),
-        0.61,
+        0.55,
         WHITE,
     )
     return specs
 
 
 def run(context):
+    global _GEOMETRY_OFFSET
     app = adsk.core.Application.get()
     ui = app.userInterface
     try:
@@ -665,14 +692,14 @@ def run(context):
         # Fusion muestra estas ocurrencias en el origen aunque transform2
         # informe otra cota. Para evitar el fallo, los cuerpos se construyen
         # directamente en coordenadas globales y la ocurrencia queda neutra.
-        base_h = _value(design, "alto_base", 22.5)
-        trunk_h = _value(design, "alto_tronco", 18.5)
-        waist_h = _value(design, "alto_cintura", 10.0)
-        chest_h = _value(design, "alto_pecho", 22.8)
+        base_h = _value(design, "alto_base", 20.0)
+        trunk_h = _value(design, "alto_tronco", 19.0)
+        waist_h = _value(design, "alto_cintura", 15.0)
+        chest_h = _value(design, "alto_pecho", 19.0)
         chest_w = _value(design, "ancho_pecho", 34.0)
         z_chest = base_h + trunk_h + waist_h
-        shoulder_z = z_chest + chest_h * 0.72
-        shoulder_x = chest_w / 2.0 + 2.3
+        shoulder_z = z_chest + chest_h * 0.88
+        shoulder_x = chest_w / 2.0 + 0.15
         expected_positions = ((-shoulder_x, 0.0, shoulder_z), (shoulder_x, 0.0, shoulder_z))
         actual_positions = []
         for occurrence in occurrences:
@@ -695,7 +722,6 @@ def run(context):
             if _version(component) == VERSION and _has_bodies(component):
                 continue
             replaced = _replace_old(component) or replaced
-            global _GEOMETRY_OFFSET
             tolerance = 0.001
             _GEOMETRY_OFFSET = (
                 expected[0],
@@ -729,7 +755,7 @@ def run(context):
             + f"\n\nCuerpos generados: {total}\n"
             f"Posiciones globales integradas en cuerpos: {baked_offsets}\n"
             "Hombros, brazo superior, antebrazo, muñecas y manos segmentadas.\n"
-            "Cuatro dedos orientados 35° hacia dentro y pulgar lateral.\n"
+            "Cuatro dedos anatómicos de longitudes distintas y pulgar opuesto.\n"
             "Sin motores, articulaciones internas ni esqueleto.",
             "Robot Toreto 95 cm",
         )
@@ -738,6 +764,8 @@ def run(context):
             "No se pudieron crear los brazos:\n\n" + traceback.format_exc(),
             "Robot Toreto 95 cm - Error",
         )
+    finally:
+        _GEOMETRY_OFFSET = (0.0, 0.0, 0.0)
 
 
 def stop(context):

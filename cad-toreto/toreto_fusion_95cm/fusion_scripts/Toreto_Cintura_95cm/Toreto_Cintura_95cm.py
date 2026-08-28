@@ -8,8 +8,9 @@ import adsk.fusion
 
 COMPONENT_NAME = "03_CINTURA"
 FEATURE_NAME = "CINTURA_EXTERIOR_TORETO_95CM"
+ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "CINTURA95_"
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 
 _GEOMETRY_Z = 0.0
 
@@ -188,6 +189,10 @@ def _version(component):
 def _replace_old(component):
     if not _has_bodies(component):
         return False
+    for index in range(component.features.moveFeatures.count - 1, -1, -1):
+        move = component.features.moveFeatures.item(index)
+        if move.name == ALIGNMENT_FEATURE_NAME and not move.deleteMe():
+            raise RuntimeError("No se pudo retirar la alineación anterior de la cintura.")
     feature = None
     for index in range(component.features.baseFeatures.count):
         candidate = component.features.baseFeatures.item(index)
@@ -222,16 +227,22 @@ def _build(manager, rs, hs):
     )
     _append(specs, upper, "03_COLLAR_SUPERIOR_NEGRO", BLACK)
 
-    # El frontal queda negro y limpio. La tapa técnica visible en las vistas
-    # de cuatro caras pertenece a la espalda.
+    # Paneles ciegos sutiles: la lámina frontal sí muestra el rectángulo
+    # central del bloque negro, mientras la trasera conserva su propia tapa.
+    front_y = -r(7.38)
+    front_panel = _rounded_panel(
+        manager, 0, front_y, z(5.25), r(8.0), z(4.5), r(0.42), r(0.68)
+    )
+    _append(specs, front_panel, "04_PANEL_FRONTAL_GRAFITO", DARK)
+
     back_y = r(7.38)
     panel = _rounded_panel(
         manager, 0, back_y, z(5.4), r(8.4), z(4.6), r(0.45), r(0.72)
     )
-    _append(specs, panel, "04_TAPA_TRASERA_GRAFITO", DARK)
+    _append(specs, panel, "05_TAPA_TRASERA_GRAFITO", DARK)
 
     seam = _box(manager, 0, back_y + r(0.42), z(5.4), r(0.14), r(0.16), z(3.8))
-    _append(specs, seam, "05_JUNTA_TAPA_TRASERA", BLACK)
+    _append(specs, seam, "06_JUNTA_TAPA_TRASERA", BLACK)
 
     for index, x in enumerate((-2.6, 2.6), start=1):
         fastener = _cylinder(
@@ -240,7 +251,7 @@ def _build(manager, rs, hs):
             _point(r(x), back_y + r(0.62), z(2.9)),
             r(0.22),
         )
-        _append(specs, fastener, f"06_FIJACION_TRASERA_{index:02d}", BLACK)
+        _append(specs, fastener, f"07_FIJACION_TRASERA_{index:02d}", BLACK)
     return specs
 
 
@@ -264,11 +275,11 @@ def run(context):
             return
 
         replaced = _replace_old(component)
-        diameter = _value(design, "diametro_base", 40.0)
-        waist_h = _value(design, "alto_cintura", 10.0)
+        diameter = _value(design, "diametro_base", 45.0)
+        waist_h = _value(design, "alto_cintura", 15.0)
         _GEOMETRY_Z = (
-            _value(design, "alto_base", 22.5)
-            + _value(design, "alto_tronco", 18.5)
+            _value(design, "alto_base", 20.0)
+            + _value(design, "alto_tronco", 19.0)
         )
         rs = diameter / 40.0
         hs = waist_h / 10.0

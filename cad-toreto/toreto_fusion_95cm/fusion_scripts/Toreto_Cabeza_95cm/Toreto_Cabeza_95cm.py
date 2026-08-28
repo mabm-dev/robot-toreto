@@ -6,8 +6,9 @@ import adsk.fusion
 
 COMPONENT_NAME = "06_CABEZA"
 FEATURE_NAME = "CABEZA_EXTERIOR_TORETO_95CM"
+ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "CABEZA95_"
-VERSION = "2.1.0"
+VERSION = "2.2.0"
 _GEOMETRY_Z = 0.0
 WHITE = (238, 239, 237)
 BLACK = (18, 21, 24)
@@ -45,6 +46,16 @@ def _ellipse(m, z1, z2, a1, b1, a2=None):
 
 
 def _cylinder(m, p1, p2, radius): return m.createCylinderOrCone(p1, radius, p2, radius)
+
+
+def _ring_y(m, x, y1, y2, z, outer, inner):
+    body = _cylinder(m, _p(x, y1, z), _p(x, y2, z), outer)
+    low_y = min(y1, y2) - .1
+    high_y = max(y1, y2) + .1
+    tool = _cylinder(m, _p(x, low_y, z), _p(x, high_y, z), inner)
+    if not m.booleanOperation(body, tool, adsk.fusion.BooleanTypes.DifferenceBooleanType):
+        raise RuntimeError("No se pudo formar el aro frontal de la cara.")
+    return body
 
 
 def _box(m, x, y, z, sx, sy, sz):
@@ -124,6 +135,10 @@ def _version(component):
 
 def _replace(component):
     if not _has(component): return False
+    for i in range(component.features.moveFeatures.count - 1, -1, -1):
+        move = component.features.moveFeatures.item(i)
+        if move.name == ALIGNMENT_FEATURE_NAME and not move.deleteMe():
+            raise RuntimeError("No se pudo retirar la alineación anterior de la cabeza.")
     feature = None
     for i in range(component.features.baseFeatures.count):
         f = component.features.baseFeatures.item(i)
@@ -145,17 +160,17 @@ def run(context):
         if _version(component) == VERSION and _has(component):
             ui.messageBox("La cabeza exterior ya existe; no se duplicó."); return
         replaced = _replace(component)
-        width = _value(design, "ancho_cabeza", 28.5)
-        depth = _value(design, "fondo_cabeza", 17.5)
-        height = _value(design, "alto_cabeza", 15.7)
+        width = _value(design, "ancho_cabeza", 26.5)
+        depth = _value(design, "fondo_cabeza", 20.7)
+        height = _value(design, "alto_cabeza", 16.0)
         _GEOMETRY_Z = sum(
             _value(design, name, fallback)
             for name, fallback in (
-                ("alto_base", 22.5),
-                ("alto_tronco", 18.5),
-                ("alto_cintura", 10.0),
+                ("alto_base", 20.0),
+                ("alto_tronco", 19.0),
+                ("alto_cintura", 15.0),
                 ("alto_pecho", 19.0),
-                ("alto_cuello", 5.5),
+                ("alto_cuello", 6.0),
             )
         )
         screen_width = _ensure(design, "cabeza_pantalla_ancho", "192.96 mm", "Anchura del Waveshare LCD 7 en horizontal")
@@ -190,6 +205,37 @@ def run(context):
         _append(specs, bezel, "02_MARCO_FRONTAL_NEGRO", BLACK)
         screen = _rounded(m, 0, bezel_y - d(.30), z(8.15), screen_width, screen_height, d(.34), min(screen_width, screen_height) * .08)
         _append(specs, screen, "03_PANTALLA_GRAFITO", DARK)
+
+        # Los ojos son apliques exteriores ciegos. Hacen que la pieza de
+        # Fusion coincida con el frontal de referencia incluso sin textura.
+        face_y = bezel_y - d(.50)
+        eye_x = min(screen_width * .23, r(4.55))
+        for side, label in ((-1.0, "IZQ"), (1.0, "DER")):
+            ring = _ring_y(
+                m,
+                side * eye_x,
+                face_y,
+                face_y - d(.12),
+                z(8.3),
+                z(1.30),
+                z(.82),
+            )
+            _append(specs, ring, f"03_OJO_CIAN_{label}", CYAN)
+            pupil = _cylinder(
+                m,
+                _p(side * eye_x, face_y - d(.02), z(8.3)),
+                _p(side * eye_x, face_y - d(.15), z(8.3)),
+                z(.23),
+            )
+            _append(specs, pupil, f"03_PUPILA_CIAN_{label}", CYAN)
+
+        face_dot = _cylinder(
+            m,
+            _p(0, face_y - d(.02), z(2.15)),
+            _p(0, face_y - d(.12), z(2.15)),
+            z(.18),
+        )
+        _append(specs, face_dot, "03_PUNTO_FRONTAL", DARK)
 
         # Tapa posterior blanca; el propio borde de Fusion marca una junta
         # fina, sin el marco negro grueso de la versión anterior.

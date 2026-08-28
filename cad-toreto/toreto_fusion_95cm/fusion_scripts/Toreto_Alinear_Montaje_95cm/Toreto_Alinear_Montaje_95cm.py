@@ -5,7 +5,7 @@ import adsk.fusion
 import traceback
 
 
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 
 
@@ -50,17 +50,6 @@ def _minimum_z(component):
     return minimum
 
 
-def _remove_previous_moves(component):
-    """Retira correcciones antiguas antes de medir las cotas actuales."""
-    removed = 0
-    features = component.features.moveFeatures
-    for index in range(features.count - 1, -1, -1):
-        feature = features.item(index)
-        if feature.name == FEATURE_NAME and feature.deleteMe():
-            removed += 1
-    return removed
-
-
 def _move_bodies(component, dz):
     entities = adsk.core.ObjectCollection.create()
     for index in range(component.bRepBodies.count):
@@ -93,11 +82,11 @@ def run(context):
             ui.messageBox("Abre 00_Toreto_Ensamblaje_95cm antes de ejecutar.")
             return
         root = design.rootComponent
-        base_h = _value(design, "alto_base", 22.5)
-        trunk_h = _value(design, "alto_tronco", 18.5)
-        waist_h = _value(design, "alto_cintura", 10.0)
-        chest_h = _value(design, "alto_pecho", 22.8)
-        neck_h = _value(design, "alto_cuello", 5.5)
+        base_h = _value(design, "alto_base", 20.0)
+        trunk_h = _value(design, "alto_tronco", 19.0)
+        waist_h = _value(design, "alto_cintura", 15.0)
+        chest_h = _value(design, "alto_pecho", 19.0)
+        neck_h = _value(design, "alto_cuello", 6.0)
         z_trunk = base_h
         z_waist = z_trunk + trunk_h
         z_chest = z_waist + waist_h
@@ -114,7 +103,6 @@ def run(context):
         moved_modules = []
         already_aligned = []
         missing = []
-        removed_moves = 0
         for name, target_z in targets:
             occurrence = _find_occurrence(root, name)
             if not occurrence:
@@ -122,17 +110,14 @@ def run(context):
                 continue
             _identity_occurrence(occurrence, design)
             component = occurrence.component
-            removed_moves += _remove_previous_moves(component)
             minimum_z = _minimum_z(component)
             if minimum_z is None:
                 missing.append(name + " (sin cuerpos)")
                 continue
-            # El módulo está alineado si su cota mínima ya está más cerca del
-            # destino que del origen local. La base siempre permanece en cero.
-            if target_z == 0.0 or abs(minimum_z - target_z) < 0.15:
-                already_aligned.append(name)
-                continue
-            if abs(minimum_z) > 0.15 and abs(minimum_z - target_z) < abs(minimum_z):
+            # Se mide el estado visible actual, incluidos movimientos previos.
+            # Así una segunda ejecución es neutra y nunca devuelve piezas al
+            # origen antes de calcular su corrección.
+            if abs(minimum_z - target_z) < 0.015:
                 already_aligned.append(name)
                 continue
             body_count = _move_bodies(component, target_z - minimum_z)
@@ -145,8 +130,6 @@ def run(context):
                 _identity_occurrence(occurrence, design)
         app.activeViewport.fit()
         lines = ["Montaje global verificado.", ""]
-        if removed_moves:
-            lines.append(f"Correcciones antiguas retiradas: {removed_moves}")
         if moved_modules:
             lines.append("Módulos desplazados:")
             lines.extend(moved_modules)

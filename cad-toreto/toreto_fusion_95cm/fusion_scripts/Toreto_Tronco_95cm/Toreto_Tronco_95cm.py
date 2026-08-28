@@ -280,9 +280,9 @@ def run(context):
             return
         replaced = _replace_old(component)
 
-        trunk_height = _parameter_value(design, "alto_tronco", 18.5)
-        _GEOMETRY_Z = _parameter_value(design, "alto_base", 22.5)
-        diameter = _parameter_value(design, "diametro_base", 40.0)
+        trunk_height = _parameter_value(design, "alto_tronco", 19.0)
+        _GEOMETRY_Z = _parameter_value(design, "alto_base", 20.0)
+        diameter = _parameter_value(design, "diametro_base", 45.0)
         rs = diameter / 40.0
         hs = trunk_height / 18.5
 

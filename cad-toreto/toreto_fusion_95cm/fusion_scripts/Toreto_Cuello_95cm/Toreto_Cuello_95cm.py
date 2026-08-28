@@ -96,13 +96,13 @@ def run(context):
         if _version(component) == VERSION and _has(component):
             ui.messageBox("El cuello exterior ya existe; no se duplicó."); return
         replaced = _replace(component)
-        height = _value(design, "alto_cuello", 5.5)
+        height = _value(design, "alto_cuello", 6.0)
         _GEOMETRY_Z = sum(
             _value(design, name, fallback)
             for name, fallback in (
-                ("alto_base", 22.5),
-                ("alto_tronco", 18.5),
-                ("alto_cintura", 10.0),
+                ("alto_base", 20.0),
+                ("alto_tronco", 19.0),
+                ("alto_cintura", 15.0),
                 ("alto_pecho", 19.0),
             )
         )

@@ -5,9 +5,7 @@ import adsk.fusion
 import traceback
 
 
-VERSION = "1.1.1"
-ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
-
+VERSION = "1.2.0"
 COMPONENT_NAMES = [
     "00_REFERENCIAS",
     "01_BASE",
@@ -22,15 +20,15 @@ COMPONENT_NAMES = [
 
 
 PLANE_DEFINITIONS = [
-    ("Z_225_BASE_SUPERIOR", "alto_base"),
-    ("Z_410_TRONCO_SUPERIOR", "alto_base+alto_tronco"),
-    ("Z_510_CINTURA_SUPERIOR", "alto_base+alto_tronco+alto_cintura"),
+    ("Z_200_BASE_SUPERIOR", "alto_base"),
+    ("Z_390_TRONCO_SUPERIOR", "alto_base+alto_tronco"),
+    ("Z_540_CINTURA_SUPERIOR", "alto_base+alto_tronco+alto_cintura"),
     (
-        "Z_700_PECHO_SUPERIOR",
+        "Z_730_PECHO_SUPERIOR",
         "alto_base+alto_tronco+alto_cintura+alto_pecho",
     ),
     (
-        "Z_755_CUELLO_SUPERIOR",
+        "Z_790_CUELLO_SUPERIOR",
         "alto_base+alto_tronco+alto_cintura+alto_pecho+alto_cuello",
     ),
     ("Z_950_ALTURA_TOTAL", "altura_total"),
@@ -52,14 +50,17 @@ def _find_occurrence(root, name):
     return None
 
 
-def _reset_occurrence_transforms(occurrences, design):
-    """Deja las ocurrencias en identidad sin recolocar sus cuerpos.
+def _reset_empty_occurrence_transforms(occurrences, design):
+    """Deja en identidad únicamente componentes nuevos o todavía vacíos.
 
-    Los generadores y el alineador trabajan con geometría física. Aplicar
-    además una traslación de ocurrencia duplica X/Z y explota el montaje.
+    Una ocurrencia que ya contiene cuerpos puede incluir una corrección de
+    montaje legítima. Reiniciarla desde este organizador era la causa de que
+    piezas ya montadas reapareciesen en Z=0 al volver a ejecutar Componentes.
     """
     identity = adsk.core.Matrix3D.create()
     for occurrence in occurrences.values():
+        if occurrence.component.bRepBodies.count:
+            continue
         try:
             occurrence.isGroundToParent = False
         except Exception:
@@ -73,22 +74,6 @@ def _reset_occurrence_transforms(occurrences, design):
             design.snapshots.add()
     except Exception:
         pass
-
-
-def _remove_previous_alignment(component):
-    """Retira movimientos horneados anteriores antes de regenerar cuerpos."""
-    removed = 0
-    move_features = component.features.moveFeatures
-    for index in range(move_features.count - 1, -1, -1):
-        feature = move_features.item(index)
-        if feature.name != ALIGNMENT_FEATURE_NAME:
-            continue
-        if not feature.deleteMe():
-            raise RuntimeError(
-                f"No se pudo retirar {ALIGNMENT_FEATURE_NAME} de {component.name}."
-            )
-        removed += 1
-    return removed
 
 
 def _create_or_update_component(root, name):
@@ -169,7 +154,6 @@ def run(context):
 
         created_components = 0
         updated_components = 0
-        removed_alignments = 0
         occurrences = {}
         for name in COMPONENT_NAMES:
             created = _create_or_update_component(root, name)
@@ -179,9 +163,9 @@ def run(context):
             else:
                 updated_components += 1
 
-        for occurrence in occurrences.values():
-            removed_alignments += _remove_previous_alignment(occurrence.component)
-        _reset_occurrence_transforms(occurrences, design)
+        # Este script organiza, pero no recoloca ni modifica geometría ya
+        # creada. Las cotas físicas pertenecen a cada generador y al alineador.
+        _reset_empty_occurrence_transforms(occurrences, design)
 
         created_planes = 0
         for name, expression in PLANE_DEFINITIONS:
@@ -195,9 +179,8 @@ def run(context):
             f"Componentes creados: {created_components}\n"
             f"Componentes actualizados: {updated_components}\n"
             f"Planos de referencia nuevos: {created_planes}\n\n"
-            f"Alineaciones antiguas retiradas: {removed_alignments}\n\n"
-            "No se ha trasladado ni duplicado ninguna geometría.\n"
-            "Las ocurrencias quedan en identidad.\n\n"
+            "No se ha trasladado, borrado ni duplicado geometría existente.\n"
+            "Solo las ocurrencias vacías quedan en identidad.\n\n"
             "Ejecuta los generadores y, al final, "
             "Toreto_Alinear_Montaje_95cm.",
             "Robot Toreto 95 cm",
