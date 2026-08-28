@@ -22,7 +22,11 @@ con IA integrada — el objetivo final.
       `DECISIONES.md`); sin nube, sin Raspberry Pi
 - [x] Ordenador de a bordo — **ROG Ally X Z2 en bahía extraíble en la base**
       (29 ago 2026, sustituye al Jetson Orin Nano; ya en propiedad).
-      Pendiente medirla físicamente antes de diseñar la bahía
+      Cotas confirmadas: 290 × 121 × 50,9 mm, 715 g — **cabe montada**, el
+      fondo es la cota crítica (~2 mm de margen)
+- [ ] Decidir la duplicidad pantalla/audio: la Ally trae pantalla de 7",
+      altavoces y micrófonos que quedan enterrados en la base, mientras la
+      cabeza prevé otra pantalla de 7" (ver `DECISIONES.md`)
 - [ ] Microcontrolador de seguridad (parada de emergencia + control de
       motores) — pasa a ser casi obligatorio al ser extraíble el cerebro
       principal; decidir qué sigue vivo con la bahía vacía

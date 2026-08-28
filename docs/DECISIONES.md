@@ -112,15 +112,47 @@ simplificación mecánica.
    "quizá"— en prácticamente obligatorio, y con él la pregunta de qué debe
    seguir funcionando con la bahía vacía: ¿el robot queda inerte pero
    seguro, o mantiene movimiento básico?
-2. **Cotas pendientes de medida real.** Las dimensiones usadas arriba son
-   aproximadas (de memoria, sin verificar: la búsqueda web falló). Antes de
-   diseñar la bahía hay que medir el aparato físico con regla: ancho, fondo
-   *contando los grips*, grosor máximo y peso.
-3. **Térmica y ventilación**: está diseñada para disipar al aire libre, en
-   las manos. Dentro de una carcasa cerrada necesita conducto propio.
-4. **Dos baterías**: la Ally lleva la suya (~80 Wh). Puede ser una ventaja
-   (dominio eléctrico independiente) o una complicación de gestión — se
-   resuelve al cerrar la arquitectura de alimentación.
+2. **Térmica y ventilación**: está diseñada para disipar al aire libre, en
+   las manos. Dentro de una carcasa cerrada necesita conducto propio, y
+   **tiene que salir hacia arriba** (ver cotas confirmadas más abajo: por
+   los lados solo quedan ~2 mm, por arriba sobran ~68 mm).
+3. **Dos baterías**: la Ally lleva la suya (80 Wh). Puede ser una ventaja
+   (dominio eléctrico independiente) o una complicación de gestión. Su
+   cargador es de **65 W (20 V / 3,5 A)**, lo que fija un requisito duro
+   para la arquitectura de alimentación, todavía sin cerrar: la base tiene
+   que poder entregar 65 W por USB-C PD de forma sostenida.
+4. **Duplicidades que conviene revisar antes de comprar nada.** La Ally trae
+   pantalla táctil de 7" 1080p, altavoces estéreo, matriz de micrófonos con
+   cancelación por IA e IMU de 6 ejes. Metida en la base:
+   - la **IMU** queda justo donde debe estar la de un robot (`base_link`) —
+     ganancia limpia, un componente menos que comprar;
+   - la **pantalla, los altavoces y los micrófonos** quedan enterrados e
+     inservibles, mientras el diseño de la cabeza prevé comprar *otra*
+     pantalla de 7" (Waveshare) y el robot necesitará micro y altavoz en la
+     cabeza de todas formas. La duplicidad de pantalla es la más llamativa:
+     conviene decidir a conciencia, no por inercia.
+
+### Cotas confirmadas (29 ago 2026)
+
+Ficha oficial aportada por el usuario: **290 × 121 × 27,5–50,9 mm, 715 g**,
+batería 80 Wh, cargador 65 W, **dos puertos USB-C** (uno USB4/Thunderbolt 4
+con DP 2.1 y PD 3.0; otro USB-C 3.2 Gen2 con DP 2.1 y PD 3.0), Wi-Fi 6E y
+Bluetooth 5.2.
+
+Los dos USB-C resuelven el reparto limpiamente: uno para alimentación (PD
+desde la batería del robot), otro para el hub de periféricos (LIDAR, cámara
+y microcontrolador). No hace falta ningún adaptador extra.
+
+Envolvente libre medida en `base_exterior_95cm.scad`, alineada con el eje X:
+
+| Eje | Aparato | Bahía (+2 mm holgura, +3,2 mm pared) | Límite real | Margen |
+|---|---:|---:|---:|---|
+| Ancho (X) | 290 mm | 300,4 mm | >320 mm | holgado |
+| Fondo (Y) | 121 mm | 131,4 mm | ~134 mm | **~2 mm — crítico** |
+| Alto (Z) | 50,9 mm | 61,3 mm | ~130 mm | ~68 mm libres |
+
+**Cabe montada, sin desmontar nada.** El fondo es la cota que manda; el
+ancho y el alto sobran. De ahí que la ventilación tenga que ser vertical.
 
 **Nota de método:** es el primer componente físico que existe de verdad en
 el proyecto. Por la regla de [orden de trabajo](#orden-de-trabajo-diseño--componentes--cad),
