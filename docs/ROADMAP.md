@@ -18,8 +18,14 @@ con IA integrada — el objetivo final.
 
 ## v0.2 — Componentes elegidos · fase 2 🟡 en curso
 
-- [x] IA local o en la nube — **todo local, Jetson Orin Nano** (26 ago 2026,
-      ver `DECISIONES.md`); no hace falta Raspberry Pi adicional
+- [x] IA local o en la nube — **todo local** (26 ago 2026, ver
+      `DECISIONES.md`); sin nube, sin Raspberry Pi
+- [x] Ordenador de a bordo — **ROG Ally X Z2 en bahía extraíble en la base**
+      (29 ago 2026, sustituye al Jetson Orin Nano; ya en propiedad).
+      Pendiente medirla físicamente antes de diseñar la bahía
+- [ ] Microcontrolador de seguridad (parada de emergencia + control de
+      motores) — pasa a ser casi obligatorio al ser extraíble el cerebro
+      principal; decidir qué sigue vivo con la bahía vacía
 - [ ] Servos de hombro y codo (los que más carga soportan — definen tamaño de carcasas)
 - [ ] Resto de servos del brazo y la cabeza
 - [ ] Motores + encoders de la base móvil

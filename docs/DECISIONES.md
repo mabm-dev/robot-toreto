@@ -44,6 +44,12 @@ Impresión: más perímetros antes que más relleno — 4-5 paredes con giroide 
 
 ## IA local o en la nube — cerrada: todo local, Jetson Orin Nano (26 ago 2026)
 
+> **Parcialmente superada el 29 ago 2026** por la entrada
+> "[Ordenador de a bordo: ROG Ally X Z2 en bahía extraíble](#ordenador-de-a-bordo-rog-ally-x-z2-en-bahía-extraíble-29-ago-2026)".
+> Sigue vigente lo esencial —**todo local, sin nube**—; lo que cambia es
+> *qué máquina* lo ejecuta.
+
+
 Decisión que bloqueaba el resto de la fase 2. Se barajaron tres opciones
 (nube con Raspberry Pi 5, mixto con Pi 5 + LIDAR local para el reflejo de
 emergencia, y todo local con Jetson) y el usuario eligió **todo local**:
@@ -67,6 +73,59 @@ directamente en el Jetson (Linux, sin tiempo real garantizado) o si conviene
 un microcontrolador aparte (Arduino/STM32/ESP32) dedicado a esa parte
 crítica — no es lo mismo IA local que control en tiempo real, y el Jetson
 resuelve la primera pero no necesariamente la segunda.
+
+## Ordenador de a bordo: ROG Ally X Z2 en bahía extraíble (29 ago 2026)
+
+El usuario **ya tiene** una ASUS ROG Ally X con Ryzen AI Z2 Extreme. Pasa a
+ser el ordenador de a bordo, en lugar del Jetson Orin Nano de la entrada
+anterior. Lo esencial de aquella decisión no cambia: **todo local, sin
+nube**. Cambia la máquina.
+
+**Por qué:** ya está pagada (frente a ~250 € del Jetson), y sus 24 GB de RAM
+frente a los 8 GB del Orin Nano dan margen real para un LLM local de
+conversación decente. Se pierde el ecosistema NVIDIA (CUDA, TensorRT, Isaac
+ROS), que es el estándar de facto en robótica — pero la cámara elegida (tipo
+OAK-D) hace su propia inferencia de visión a bordo, que es justo donde ese
+ecosistema era imbatible.
+
+**Dónde va: en la BASE, no en el pecho.** Medido contra la geometría real de
+`base_exterior_95cm.scad` (no a ojo): alineada con el eje X caben hasta
+**300 × 130 × 55 mm**, y sobran unos 80 mm de altura por encima. Los huecos
+de rueda están a ±45°/135°/225°, así que los ejes X e Y apuntan a los
+espacios *entre* ruedas, donde cabe bastante más que el cilindro central
+libre (⌀260 mm). En el pecho solo entraba en una orientación, sin holgura y
+ocupándolo entero — además de subir el centro de gravedad ~700 g, que con
+base holonómica de mecanum se nota al acelerar.
+
+**Formato: bahía extraíble**, no empotrada. Se desliza dentro de la base con
+un único conector USB-C (alimentación + datos) y se saca cuando el usuario
+quiera usarla como consola. Se descartó empotrarla permanentemente: es el
+componente más caro del robot y perderla como portátil no compensa la
+simplificación mecánica.
+
+### Consecuencias abiertas, para no perderlas de vista
+
+1. **La parada de emergencia ya no puede vivir en el ordenador principal.**
+   Si el cerebro se puede extraer físicamente, un reflejo de seguridad que
+   dependa de él desaparece al sacarlo. Esto convierte el microcontrolador
+   dedicado (Arduino/STM32/ESP32) —que la entrada anterior dejaba como
+   "quizá"— en prácticamente obligatorio, y con él la pregunta de qué debe
+   seguir funcionando con la bahía vacía: ¿el robot queda inerte pero
+   seguro, o mantiene movimiento básico?
+2. **Cotas pendientes de medida real.** Las dimensiones usadas arriba son
+   aproximadas (de memoria, sin verificar: la búsqueda web falló). Antes de
+   diseñar la bahía hay que medir el aparato físico con regla: ancho, fondo
+   *contando los grips*, grosor máximo y peso.
+3. **Térmica y ventilación**: está diseñada para disipar al aire libre, en
+   las manos. Dentro de una carcasa cerrada necesita conducto propio.
+4. **Dos baterías**: la Ally lleva la suya (~80 Wh). Puede ser una ventaja
+   (dominio eléctrico independiente) o una complicación de gestión — se
+   resuelve al cerrar la arquitectura de alimentación.
+
+**Nota de método:** es el primer componente físico que existe de verdad en
+el proyecto. Por la regla de [orden de trabajo](#orden-de-trabajo-diseño--componentes--cad),
+es también la primera restricción interna real, y por tanto lo primero que
+empieza a desbloquear la tabla de cotas Z que sigue congelada.
 
 ## LIDAR y cámara RGB-D — cerrada (26 ago 2026)
 
