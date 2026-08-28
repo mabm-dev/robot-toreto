@@ -1,0 +1,9 @@
+{
+  "autodeskProduct": "Fusion360",
+  "type": "script",
+  "author": "Robot Toreto",
+  "description": "Crea bocetos con el contorno exacto del robot extraido de los cuatro lienzos calibrados, para modelar encima.",
+  "version": "1.0.0",
+  "runOnStartup": false,
+  "supportedOS": "windows"
+}
