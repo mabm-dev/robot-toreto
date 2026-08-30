@@ -18,16 +18,19 @@ No incluye motores, esqueleto, rodamientos, ejes, cableado, electrónica ni
 anclajes definitivos. Los alojamientos funcionales se diseñarán después de
 seleccionar y medir los componentes reales.
 
-## Distribución vertical
+## Distribución vertical de referencia
+
+La tabla actualmente adoptada es la medida sobre la lámina maestra calibrada.
+Las cotas internas y tolerancias siguen pendientes de los componentes reales.
 
 | Módulo | Altura | Cota superior |
 |---|---:|---:|
-| Base | 225 mm | 225 mm |
-| Tronco blanco | 185 mm | 410 mm |
-| Cintura negra | 100 mm | 510 mm |
-| Pecho | 190 mm | 700 mm |
-| Cuello | 55 mm | 755 mm |
-| Cabeza | 195 mm | 950 mm |
+| Base | 200 mm | 200 mm |
+| Tronco blanco | 190 mm | 390 mm |
+| Cintura negra | 150 mm | 540 mm |
+| Pecho | 190 mm | 730 mm |
+| Cuello | 60 mm | 790 mm |
+| Cabeza | 160 mm | 950 mm |
 
 ## Archivos conservados
 
