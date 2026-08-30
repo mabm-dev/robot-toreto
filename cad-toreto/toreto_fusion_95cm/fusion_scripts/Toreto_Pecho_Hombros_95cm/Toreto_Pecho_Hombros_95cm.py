@@ -10,7 +10,7 @@ COMPONENT_NAME = "04_PECHO_HOMBROS"
 FEATURE_NAME = "PECHO_HOMBROS_EXTERIOR_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "PECHO95_"
-VERSION = "2.2.0"
+VERSION = "2.3.0"
 
 _GEOMETRY_Z = 0.0
 
@@ -435,7 +435,21 @@ def run(context):
         if not occurrence:
             raise RuntimeError("Falta 04_PECHO_HOMBROS. Ejecuta Componentes primero.")
         component = occurrence.component
+        # La ocurrencia puede haber quedado apagada al ejecutar Componentes.
+        # Reactivarla aquí evita que el pecho exista pero no sea visible.
+        try:
+            occurrence.isLightBulbOn = True
+        except Exception:
+            pass
+        try:
+            component.isLightBulbOn = True
+        except Exception:
+            pass
         if _version(component) == VERSION and _has_bodies(component):
+            for index in range(component.bRepBodies.count):
+                body = component.bRepBodies.item(index)
+                if body.name.startswith(BODY_PREFIX):
+                    body.isLightBulbOn = True
             ui.messageBox("El pecho exterior ya existe; no se duplicó.")
             return
         replaced = _replace_old(component)
@@ -528,13 +542,18 @@ def run(context):
             feature.finishEdit()
         component.attributes.add("RobotToreto", "pecho_95cm_version", VERSION)
         design.rootComponent.attributes.add("RobotToreto", "ultimo_modulo", "04_PECHO_HOMBROS")
+        try:
+            occurrence.isLightBulbOn = True
+        except Exception:
+            pass
         app.activeViewport.fit()
         ui.messageBox(
             ("Pecho y hombros actualizados." if replaced else "Pecho y hombros creados.")
             + f"\n\nCuerpos exteriores: {len(persisted)}\n"
             f"Hueco dispositivo: {screen_width * 10:.0f} x {screen_height * 10:.0f} mm\n"
             f"Holgura: {clearance * 10:.0f} mm por lado\n\n"
-            "Pantalla y carcasas de hombro incluidas.\nSin mecánica ni esqueleto.",
+            "Pantalla y carcasas de hombro incluidas.\n"
+            "Z inferior global previsto: 540 mm.\nSin mecánica ni esqueleto.",
             "Robot Toreto 95 cm",
         )
     except Exception:
