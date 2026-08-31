@@ -3,7 +3,7 @@
   "type": "script",
   "author": "Robot Toreto / OpenAI Codex",
   "description": "Brazos exteriores ajustados a las cuatro vistas, con mano anatómica de cinco dedos.",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "runOnStartup": false,
   "supportedOS": "windows"
 }

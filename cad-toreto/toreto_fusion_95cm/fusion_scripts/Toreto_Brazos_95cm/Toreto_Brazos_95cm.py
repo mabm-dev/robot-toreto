@@ -10,7 +10,7 @@ COMPONENTS = ("07_BRAZO_IZQUIERDO", "08_BRAZO_DERECHO")
 FEATURE_NAME = "BRAZOS_EXTERIORES_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "BRAZO95_"
-VERSION = "2.4.0"
+VERSION = "2.5.0"
 
 # Desplazamiento de emergencia para Fusion: algunas versiones dejan una
 # ocurrencia recién creada en (0,0,0) aunque transform2 se haya escrito. El
@@ -580,20 +580,20 @@ def _build_v2(manager, side):
         BLACK,
     )
 
-    # Palma compacta. En la vista frontal predomina el núcleo grafito; la
-    # placa blanca de cuatro fijaciones pertenece al dorso, como en la lámina.
+    # Palma anatómica: carcasa blanca redondeada, con una placa oscura
+    # retranqueada. Los dedos nacen del borde inferior, no de un cuadrado.
     palm_x = 0.80
     _append(
         specs,
-        _rounded_panel(manager, side * palm_x, 0, -29.55, 7.2, 6.8, 5.2, 1.35),
-        "09_NUCLEO_PALMA_NEGRO",
-        BLACK,
+        _rounded_panel(manager, side * palm_x, 0, -29.55, 7.2, 6.8, 5.2, 1.45),
+        "09_CARCASA_PALMA_BLANCA",
+        WHITE,
     )
     _append(
         specs,
-        _rounded_panel(manager, side * palm_x, -2.82, -29.55, 6.45, 5.85, 0.46, 1.05),
-        "10_CUBIERTA_FRONTAL_GRAFITO",
-        DARK,
+        _rounded_panel(manager, side * palm_x, -2.70, -29.45, 5.15, 3.80, 0.46, 0.85),
+        "10_INSERTO_PALMA_GRAFITO",
+        BLACK,
     )
     _append(
         specs,
@@ -617,7 +617,7 @@ def _build_v2(manager, side):
 
     # Cuatro dedos de longitudes distintas. La convergencia progresiva hacia
     # el centro reproduce la silueta relajada de las vistas definitivas.
-    finger_offsets = (-2.45, -0.82, 0.82, 2.45)
+    finger_offsets = (-2.35, -0.78, 0.78, 2.35)
     finger_lengths = (
         (1.95, 1.78, 1.55),
         (2.14, 1.95, 1.72),
