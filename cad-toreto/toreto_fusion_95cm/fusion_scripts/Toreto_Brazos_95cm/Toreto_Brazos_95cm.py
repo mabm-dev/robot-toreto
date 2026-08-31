@@ -10,7 +10,7 @@ COMPONENTS = ("07_BRAZO_IZQUIERDO", "08_BRAZO_DERECHO")
 FEATURE_NAME = "BRAZOS_EXTERIORES_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "BRAZO95_"
-VERSION = "2.3.0"
+VERSION = "2.4.0"
 
 # Desplazamiento de emergencia para Fusion: algunas versiones dejan una
 # ocurrencia recién creada en (0,0,0) aunque transform2 se haya escrito. El
@@ -585,19 +585,19 @@ def _build_v2(manager, side):
     palm_x = 0.80
     _append(
         specs,
-        _rounded_panel(manager, side * palm_x, 0, -29.55, 6.2, 5.8, 4.8, 1.30),
+        _rounded_panel(manager, side * palm_x, 0, -29.55, 7.2, 6.8, 5.2, 1.35),
         "09_NUCLEO_PALMA_NEGRO",
         BLACK,
     )
     _append(
         specs,
-        _rounded_panel(manager, side * palm_x, -2.62, -29.55, 5.55, 4.9, 0.46, 1.05),
+        _rounded_panel(manager, side * palm_x, -2.82, -29.55, 6.45, 5.85, 0.46, 1.05),
         "10_CUBIERTA_FRONTAL_GRAFITO",
         DARK,
     )
     _append(
         specs,
-        _rounded_panel(manager, side * palm_x, 2.62, -29.55, 5.6, 4.85, 0.50, 1.05),
+        _rounded_panel(manager, side * palm_x, 2.82, -29.55, 6.55, 5.80, 0.50, 1.05),
         "11_PLACA_POSTERIOR_PALMA",
         WHITE,
     )
@@ -607,8 +607,8 @@ def _build_v2(manager, side):
                 specs,
                 _cylinder(
                     manager,
-                    _point(side * (palm_x + sx * 1.92), 2.88, -29.55 + sz * 1.55),
-                    _point(side * (palm_x + sx * 1.92), 3.08, -29.55 + sz * 1.55),
+                    _point(side * (palm_x + sx * 2.18), 3.08, -29.55 + sz * 1.82),
+                    _point(side * (palm_x + sx * 2.18), 3.28, -29.55 + sz * 1.82),
                     0.19,
                 ),
                 f"12_TORNILLO_PALMA_{int(sx)}_{int(sz)}",
@@ -617,12 +617,12 @@ def _build_v2(manager, side):
 
     # Cuatro dedos de longitudes distintas. La convergencia progresiva hacia
     # el centro reproduce la silueta relajada de las vistas definitivas.
-    finger_offsets = (-2.10, -0.70, 0.70, 2.10)
+    finger_offsets = (-2.45, -0.82, 0.82, 2.45)
     finger_lengths = (
-        (1.70, 1.55, 1.35),
-        (1.88, 1.72, 1.52),
-        (1.78, 1.62, 1.42),
-        (1.48, 1.35, 1.18),
+        (1.95, 1.78, 1.55),
+        (2.14, 1.95, 1.72),
+        (2.05, 1.86, 1.62),
+        (1.72, 1.56, 1.38),
     )
     for index, (offset, lengths) in enumerate(zip(finger_offsets, finger_lengths), 1):
         u0 = palm_x + offset
