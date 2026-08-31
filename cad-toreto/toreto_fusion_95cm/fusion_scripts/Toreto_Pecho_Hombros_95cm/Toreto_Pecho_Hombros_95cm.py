@@ -10,7 +10,7 @@ COMPONENT_NAME = "04_PECHO_HOMBROS"
 FEATURE_NAME = "PECHO_HOMBROS_EXTERIOR_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "PECHO95_"
-VERSION = "2.4.0"
+VERSION = "2.5.0"
 
 _GEOMETRY_Z = 0.0
 
@@ -106,6 +106,14 @@ def _union(manager, target, tool, label):
 
 
 def _rounded_panel(manager, x, y, z, width, height, depth, radius):
+    if min(width, height, depth) <= 0:
+        raise ValueError(
+            "Panel con dimensión no positiva: "
+            f"{width:.3f} x {height:.3f} x {depth:.3f} cm"
+        )
+    # Fusion rechaza una caja si el radio supera la mitad de una dimensión.
+    # Esto ocurría en la línea cian, cuya altura es muy pequeña.
+    radius = min(radius, width * 0.49, height * 0.49, depth * 0.49)
     body = _box(manager, x, y, z, width - 2 * radius, depth, height)
     _union(manager, body, _box(manager, x, y, z, width, depth, height - 2 * radius), "centro panel")
     for sx in (-1.0, 1.0):
