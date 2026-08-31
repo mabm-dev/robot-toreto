@@ -10,7 +10,7 @@ COMPONENTS = ("07_BRAZO_IZQUIERDO", "08_BRAZO_DERECHO")
 FEATURE_NAME = "BRAZOS_EXTERIORES_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "BRAZO95_"
-VERSION = "2.5.0"
+VERSION = "2.6.0"
 
 # Desplazamiento de emergencia para Fusion: algunas versiones dejan una
 # ocurrencia recién creada en (0,0,0) aunque transform2 se haya escrito. El
@@ -589,12 +589,8 @@ def _build_v2(manager, side):
         "09_CARCASA_PALMA_BLANCA",
         WHITE,
     )
-    _append(
-        specs,
-        _rounded_panel(manager, side * palm_x, -2.70, -29.45, 5.15, 3.80, 0.46, 0.85),
-        "10_INSERTO_PALMA_GRAFITO",
-        BLACK,
-    )
+    # No hay un bloque frontal separado: la palma blanca es una sola pieza.
+    # Los pequeños cilindros de los nudillos representan los servos integrados.
     _append(
         specs,
         _rounded_panel(manager, side * palm_x, 2.82, -29.55, 6.55, 5.80, 0.50, 1.05),
@@ -619,15 +615,16 @@ def _build_v2(manager, side):
     # el centro reproduce la silueta relajada de las vistas definitivas.
     finger_offsets = (-2.35, -0.78, 0.78, 2.35)
     finger_lengths = (
-        (1.95, 1.78, 1.55),
-        (2.14, 1.95, 1.72),
-        (2.05, 1.86, 1.62),
-        (1.72, 1.56, 1.38),
+        (2.20, 2.00, 1.70),
+        (2.38, 2.16, 1.86),
+        (2.29, 2.08, 1.76),
+        (1.96, 1.78, 1.56),
     )
     for index, (offset, lengths) in enumerate(zip(finger_offsets, finger_lengths), 1):
         u0 = palm_x + offset
         l1, l2, l3 = lengths
-        p0 = (u0, -2.78, -31.95)
+        # Los dedos nacen en la zona central de la palma, no en su borde.
+        p0 = (u0, -2.82, -29.70)
         p1 = (u0 - offset * 0.10, -2.78, p0[2] - l1)
         p2 = (u0 - offset * 0.22, -2.78, p1[2] - l2)
         p3 = (u0 - offset * 0.36, -2.78, p2[2] - l3)
@@ -650,9 +647,10 @@ def _build_v2(manager, side):
 
     # Pulgar opuesto: sale hacia delante de la palma en vez de quedar dibujado
     # en el mismo plano que los otros cuatro dedos.
-    t0 = (palm_x - 2.75, -2.25, -29.35)
-    t1 = (palm_x - 4.15, -4.10, -30.35)
-    t2 = (palm_x - 5.20, -5.25, -31.75)
+    # Pulgar lateral, con su servo en el centro lateral de la palma.
+    t0 = (palm_x - 2.75, -2.55, -29.35)
+    t1 = (palm_x - 4.15, -4.10, -30.45)
+    t2 = (palm_x - 5.20, -5.25, -32.05)
     _append(specs, _joint_y(manager, side, t0, 1.55, 0.78), "20_PULGAR_NUDILLO", BLACK)
     _append(specs, _finger_box(manager, side, t0, t1, 1.38, 1.58), "21_PULGAR_FALANGE_1", DARK)
     _append(specs, _joint_y(manager, side, t1, 1.45, 0.68), "22_PULGAR_BISAGRA", BLACK)
