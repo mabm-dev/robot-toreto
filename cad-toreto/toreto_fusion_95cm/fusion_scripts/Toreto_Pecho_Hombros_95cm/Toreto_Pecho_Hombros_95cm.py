@@ -10,7 +10,7 @@ COMPONENT_NAME = "04_PECHO_HOMBROS"
 FEATURE_NAME = "PECHO_HOMBROS_EXTERIOR_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "PECHO95_"
-VERSION = "2.3.0"
+VERSION = "2.4.0"
 
 _GEOMETRY_Z = 0.0
 
@@ -192,6 +192,33 @@ def _has_bodies(component):
 def _version(component):
     attr = component.attributes.itemByName("RobotToreto", "pecho_95cm_version")
     return attr.value if attr else None
+
+
+def _show_body(body):
+    for property_name in ("isLightBulbOn", "isVisible"):
+        try:
+            setattr(body, property_name, True)
+        except Exception:
+            pass
+
+
+def _body_report(component):
+    bodies = [
+        component.bRepBodies.item(index)
+        for index in range(component.bRepBodies.count)
+        if component.bRepBodies.item(index).name.startswith(BODY_PREFIX)
+    ]
+    minimum = None
+    maximum = None
+    for body in bodies:
+        try:
+            minimum = body.boundingBox.minPoint.z * 10 if minimum is None else min(minimum, body.boundingBox.minPoint.z * 10)
+            maximum = body.boundingBox.maxPoint.z * 10 if maximum is None else max(maximum, body.boundingBox.maxPoint.z * 10)
+        except Exception:
+            pass
+    if minimum is None:
+        return f"cuerpos {len(bodies)}; Z no disponible"
+    return f"cuerpos {len(bodies)}; Z {minimum:.1f}–{maximum:.1f} mm"
 
 
 def _replace_old(component):
@@ -449,8 +476,8 @@ def run(context):
             for index in range(component.bRepBodies.count):
                 body = component.bRepBodies.item(index)
                 if body.name.startswith(BODY_PREFIX):
-                    body.isLightBulbOn = True
-            ui.messageBox("El pecho exterior ya existe; no se duplicó.")
+                    _show_body(body)
+            ui.messageBox("El pecho exterior ya existe y se ha hecho visible.\n\n" + _body_report(component))
             return
         replaced = _replace_old(component)
         # Valores de la envolvente exterior definida en continuidad.
@@ -536,7 +563,7 @@ def run(context):
                 body.name = name
                 if appearances.get(color):
                     body.appearance = appearances[color]
-                body.isLightBulbOn = True
+                _show_body(body)
                 persisted.append(body)
         finally:
             feature.finishEdit()
@@ -553,7 +580,9 @@ def run(context):
             f"Hueco dispositivo: {screen_width * 10:.0f} x {screen_height * 10:.0f} mm\n"
             f"Holgura: {clearance * 10:.0f} mm por lado\n\n"
             "Pantalla y carcasas de hombro incluidas.\n"
-            "Z inferior global previsto: 540 mm.\nSin mecánica ni esqueleto.",
+            "Z inferior global previsto: 540 mm.\n"
+            + _body_report(component)
+            + "\nSin mecánica ni esqueleto.",
             "Robot Toreto 95 cm",
         )
     except Exception:

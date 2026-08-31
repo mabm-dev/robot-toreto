@@ -3,7 +3,7 @@
   "type": "script",
   "author": "Robot Toreto / OpenAI Codex",
   "description": "PECHO EXTERIOR v2.2.0 - carcasa estrecha de referencia, pantalla y cuello pasante.",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "runOnStartup": false,
   "supportedOS": "windows"
 }
