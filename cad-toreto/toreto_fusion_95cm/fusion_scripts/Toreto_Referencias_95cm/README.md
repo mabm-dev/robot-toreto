@@ -17,11 +17,14 @@ Desde la versión 2.1.0, las cuatro siluetas se calibran de forma independiente
 contra sus límites auditados y ocupan exactamente 1900 intervalos a
 `0,5 mm/píxel`; los márgenes originales de la lámina no afectan a la escala.
 
-La versión 2.4.0 consolida las correcciones comprobadas en Fusion:
+La versión 2.5.0 consolida las correcciones comprobadas en Fusion:
 
 - usa una matriz distinta para XZ y YZ, manteniendo Z vertical;
 - ancla cada vista por el eje central de la base, no por el centro del PNG;
-- conserva el espejo horizontal necesario en la vista posterior;
+- lee los anclajes de eje desde `calibracion_95cm.json`, sin constantes
+  duplicadas;
+- aplica el espejo horizontal necesario en la vista lateral izquierda para
+  que las dos laterales compartan la misma coordenada Y;
 - elimina de `00_REFERENCIAS > Lienzos` cualquier lienzo antiguo y conserva
   exclusivamente los cuatro patrones calibrados de 95 cm.
 

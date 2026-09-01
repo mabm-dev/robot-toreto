@@ -108,6 +108,7 @@ def main() -> None:
     mm_per_px = calibration["mm_per_pixel"]
     z0_px = calibration["robot_bottom_px"]
     views = calibration["views"]
+    per_view = calibration.get("per_view_detection", {})
 
     epsilon_px = SIMPLIFY_EPSILON_MM / mm_per_px
     out: dict[str, dict] = {}
@@ -118,10 +119,19 @@ def main() -> None:
         simplified = cv2.approxPolyDP(contour, epsilon_px, closed=True)
 
         axis_px = _axis_px(mask, z0_px, mm_per_px)
-        drift_mm = (axis_px - width_px / 2.0) * mm_per_px
+        view_meta = per_view.get(name, {})
+        anchor_px = float(view_meta.get("fusion_anchor_x_px", width_px / 2.0))
+        mirror = bool(view_meta.get("mirror_for_fusion", False))
+        # El centro de la imagen no es el eje del robot en un lateral: la
+        # mano adelantada desplaza deliberadamente la composición. El dato
+        # útil para Fusion es el error respecto al anclaje calibrado.
+        axis_error_mm = (axis_px - anchor_px) * mm_per_px
+        horizontal_sign = -1.0 if mirror else 1.0
         points = [
             [
-                round((float(x) - axis_px) * mm_per_px, 2),   # horizontal (X o Y)
+                round((float(x) - axis_px) * mm_per_px * horizontal_sign, 2),
+                # horizontal (X o Y), con la vista izquierda reflejada para
+                # compartir coordenadas Y con la derecha
                 round((z0_px - float(y)) * mm_per_px, 2),     # vertical (Z)
             ]
             for (x, y) in simplified.reshape(-1, 2)
@@ -135,13 +145,19 @@ def main() -> None:
             "point_count": len(points),
             "z_range_mm": [round(min(zs), 1), round(max(zs), 1)],
             "horizontal_range_mm": [round(min(hs), 1), round(max(hs), 1)],
-            "axis_drift_mm": round(drift_mm, 1),
+            # Conservamos el nombre antiguo para no romper consumidores,
+            # pero ahora representa el error contra el anclaje de Fusion,
+            # no el desplazamiento respecto al centro visual de la imagen.
+            "axis_drift_mm": round(axis_error_mm, 1),
+            "axis_error_mm": round(axis_error_mm, 1),
+            "canvas_anchor_x_px": round(anchor_px, 2),
+            "mirror_for_fusion": mirror,
         }
         print(
             f"OK {name:18} {len(points):4} puntos, "
             f"Z {min(zs):6.1f}..{max(zs):6.1f} mm, "
             f"horiz {min(hs):7.1f}..{max(hs):6.1f} mm, "
-            f"eje corrido {drift_mm:+6.1f} mm respecto al centro de imagen"
+            f"error de eje {axis_error_mm:+6.1f} mm respecto al anclaje"
         )
 
     OUTPUT_JSON.write_text(

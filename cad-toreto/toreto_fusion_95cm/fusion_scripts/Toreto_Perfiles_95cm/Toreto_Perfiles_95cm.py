@@ -144,11 +144,12 @@ def run(context):
             sketch = _draw_profile(
                 component, sketch_name, view["plane"], view["points_mm"]
             )
-            drift = view.get("axis_drift_mm", 0.0)
+            drift = view.get("axis_error_mm", view.get("axis_drift_mm", 0.0))
+            mirror = "; espejo horizontal" if view.get("mirror_for_fusion", False) else ""
             warn = "  <-- REVISAR" if abs(drift) > 20 else ""
             lines.append(
                 f"{sketch_name}: {view['point_count']} puntos, plano "
-                f"{view['plane']}, eje corrido {drift:+.1f} mm{warn}"
+                f"{view['plane']}, error de eje {drift:+.1f} mm{mirror}{warn}"
             )
 
         app.activeViewport.fit()
@@ -161,9 +162,10 @@ def run(context):
             "de 450 mm y una caja de 450x450 tienen la misma silueta en las "
             "cuatro vistas. Son guias para modelar encima, no geometria "
             "final.\n\n"
-            "'Eje corrido' es cuanto se desvia el eje del robot respecto al "
-            "centro de esa imagen. Por encima de 20 mm conviene comprobar "
-            "que el lienzo correspondiente esta bien colocado en Fusion.",
+            "'Error de eje' es la diferencia entre la base detectada y el "
+            "anclaje calibrado del lienzo. Por encima de 20 mm conviene "
+            "comprobar que el PNG y su calibracion corresponden a la misma "
+            "lamina.",
             "Robot Toreto 95 cm",
         )
 

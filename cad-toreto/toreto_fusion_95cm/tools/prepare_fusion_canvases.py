@@ -63,6 +63,18 @@ SOURCE_ROBOT_AXIS_X = {
     "lateral_izquierdo": 1800,
 }
 
+# Las dos vistas laterales proceden de lados opuestos del robot. Para que
+# ambas puedan vivir en el mismo plano YZ de Fusion, la izquierda se refleja
+# horizontalmente: así el frente y la trasera conservan la misma coordenada Y
+# que en el lateral derecho. El eje no cambia al reflejarse porque se usa como
+# punto de anclaje.
+VIEW_MIRRORS = {
+    "frontal": False,
+    "posterior": False,
+    "lateral_derecho": False,
+    "lateral_izquierdo": True,
+}
+
 # El rotulo SIDE invade el margen superior del recorte lateral izquierdo.
 # Se elimina por filas copiando el fondo contiguo; no intersecta el robot.
 ERASE_AREAS = {
@@ -237,6 +249,8 @@ def _make_canvas(source: Image.Image, name: str, bg) -> tuple[Image.Image, dict]
         "fusion_anchor_x_px": round(
             x + (SOURCE_ROBOT_AXIS_X[name] - left) * scale, 2
         ),
+        "source_axis_x_px": SOURCE_ROBOT_AXIS_X[name],
+        "mirror_for_fusion": VIEW_MIRRORS[name],
         "content_box_px": [
             x,
             ROBOT_TOP_PX,

@@ -1,5 +1,6 @@
 """Inserta cuatro lienzos ortogonales calibrados del Robot Toreto 95 cm."""
 
+import json
 import os
 import traceback
 
@@ -12,6 +13,7 @@ PROJECT_DIR = (
     r"\toreto_fusion_95cm"
 )
 CANVAS_DIR = os.path.join(PROJECT_DIR, "reference", "lienzos_95cm")
+CALIBRATION_JSON = os.path.join(CANVAS_DIR, "calibracion_95cm.json")
 MESH_PATH = os.path.join(
     PROJECT_DIR, "reference", "toreto_fusion_95cm_assembly.stl"
 )
@@ -29,7 +31,7 @@ ROBOT_TOP_PX = 50.0
 ROBOT_BOTTOM_PX = 1950.0
 ROBOT_HEIGHT_CM = 95.0
 
-CANVAS_SPECS = (
+DEFAULT_CANVAS_SPECS = (
     (
         "PATRON_01_FRONTAL_95CM",
         "toreto_95cm_frontal.png",
@@ -51,7 +53,7 @@ CANVAS_SPECS = (
         "toreto_95cm_lateral_izquierdo.png",
         "YZ",
         1280.00,
-        False,
+        True,
         False,
     ),
     (
@@ -63,6 +65,36 @@ CANVAS_SPECS = (
         False,
     ),
 )
+
+VIEW_ORDER = (
+    ("frontal", "PATRON_01_FRONTAL_95CM", "XZ", False, True),
+    ("posterior", "PATRON_02_POSTERIOR_95CM", "XZ", True, False),
+    ("lateral_izquierdo", "PATRON_03_LATERAL_IZQUIERDO_95CM", "YZ", True, False),
+    ("lateral_derecho", "PATRON_04_LATERAL_DERECHO_95CM", "YZ", False, False),
+)
+
+
+def _load_canvas_specs():
+    """Lee nombres, anclajes y espejado del manifiesto de calibración.
+
+    Los anclajes no se deben volver a escribir a mano en el add-in: salen de
+    la misma calibración que produjo los PNG. Así una nueva lámina no puede
+    dejar el lateral separado del modelo por una constante antigua.
+    """
+    if not os.path.isfile(CALIBRATION_JSON):
+        return DEFAULT_CANVAS_SPECS
+    with open(CALIBRATION_JSON, "r", encoding="utf-8") as handle:
+        calibration = json.load(handle)
+    filenames = calibration.get("views", {})
+    detection = calibration.get("per_view_detection", {})
+    specs = []
+    for view_name, name, plane, fallback_mirror, visible in VIEW_ORDER:
+        meta = detection.get(view_name, {})
+        filename = filenames.get(view_name, f"toreto_95cm_{view_name}.png")
+        anchor = float(meta.get("fusion_anchor_x_px", 1000.0))
+        mirror = bool(meta.get("mirror_for_fusion", fallback_mirror))
+        specs.append((name, filename, plane, anchor, mirror, visible))
+    return tuple(specs)
 
 
 def _find_occurrence(root, component_name):
@@ -81,9 +113,9 @@ def _find_canvas(component, name):
     return None
 
 
-def _remove_other_canvases(component):
+def _remove_other_canvases(component, canvas_specs):
     """Conserva exclusivamente los cuatro patrones 95 cm vigentes."""
-    keep_names = {spec[0] for spec in CANVAS_SPECS}
+    keep_names = {spec[0] for spec in canvas_specs}
     removed = 0
     for index in range(component.canvases.count - 1, -1, -1):
         canvas = component.canvases.item(index)
@@ -193,8 +225,8 @@ def _create_or_update_canvas(
     return True
 
 
-def _prepare_canvases(component):
-    removed = _remove_other_canvases(component)
+def _prepare_canvases(component, canvas_specs):
+    removed = _remove_other_canvases(component, canvas_specs)
 
     created = 0
     updated = 0
@@ -205,7 +237,7 @@ def _prepare_canvases(component):
         anchor_x_px,
         mirror,
         visible,
-    ) in CANVAS_SPECS:
+    ) in canvas_specs:
         image_path = os.path.join(CANVAS_DIR, filename)
         if not os.path.isfile(image_path):
             raise FileNotFoundError("Falta el lienzo:\n" + image_path)
@@ -278,11 +310,12 @@ def run(context):
             )
 
         component = occurrence.component
+        canvas_specs = _load_canvas_specs()
         (
             canvases_created,
             canvases_updated,
             canvases_removed,
-        ) = _prepare_canvases(component)
+        ) = _prepare_canvases(component, canvas_specs)
 
         mesh_status = "pendiente (el STL todavía no está disponible)"
         if os.path.isfile(MESH_PATH):
