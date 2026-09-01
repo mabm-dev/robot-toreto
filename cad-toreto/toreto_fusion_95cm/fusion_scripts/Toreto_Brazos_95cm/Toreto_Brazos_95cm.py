@@ -10,7 +10,7 @@ COMPONENTS = ("07_BRAZO_IZQUIERDO", "08_BRAZO_DERECHO")
 FEATURE_NAME = "BRAZOS_EXTERIORES_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "BRAZO95_"
-VERSION = "2.6.0"
+VERSION = "2.7.0"
 
 # Desplazamiento de emergencia para Fusion: algunas versiones dejan una
 # ocurrencia recién creada en (0,0,0) aunque transform2 se haya escrito. El
@@ -583,12 +583,16 @@ def _build_v2(manager, side):
     # Palma anatómica: carcasa blanca redondeada, con una placa oscura
     # retranqueada. Los dedos nacen del borde inferior, no de un cuadrado.
     palm_x = 0.80
-    _append(
-        specs,
-        _rounded_panel(manager, side * palm_x, 0, -29.55, 7.2, 6.8, 5.2, 1.45),
-        "09_CARCASA_PALMA_BLANCA",
-        WHITE,
+    palm = _rounded_panel(
+        manager, side * palm_x, 0, -29.55, 7.2, 7.4, 5.2, 1.45
     )
+    # Talón integrado: suaviza la transición hacia la muñeca y evita la
+    # lectura de bloque cuadrado. Sigue siendo el mismo cuerpo de palma.
+    heel = _rounded_panel(
+        manager, side * palm_x, 0, -32.05, 6.25, 3.25, 5.0, 1.20
+    )
+    _union(manager, palm, heel, "talón integrado de la palma")
+    _append(specs, palm, "09_CARCASA_PALMA_ORGANICA", WHITE)
     # No hay un bloque frontal separado: la palma blanca es una sola pieza.
     # Los pequeños cilindros de los nudillos representan los servos integrados.
     _append(
@@ -624,7 +628,7 @@ def _build_v2(manager, side):
         u0 = palm_x + offset
         l1, l2, l3 = lengths
         # Los dedos nacen en la zona central de la palma, no en su borde.
-        p0 = (u0, -2.82, -29.70)
+        p0 = (u0, -2.86, -29.55)
         p1 = (u0 - offset * 0.10, -2.78, p0[2] - l1)
         p2 = (u0 - offset * 0.22, -2.78, p1[2] - l2)
         p3 = (u0 - offset * 0.36, -2.78, p2[2] - l3)
