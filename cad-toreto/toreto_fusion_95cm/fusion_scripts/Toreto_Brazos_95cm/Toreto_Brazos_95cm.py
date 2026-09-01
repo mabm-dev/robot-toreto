@@ -10,7 +10,7 @@ COMPONENTS = ("07_BRAZO_IZQUIERDO", "08_BRAZO_DERECHO")
 FEATURE_NAME = "BRAZOS_EXTERIORES_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "BRAZO95_"
-VERSION = "3.1.0"
+VERSION = "3.2.0"
 
 # Desplazamiento de emergencia para Fusion: algunas versiones dejan una
 # ocurrencia recién creada en (0,0,0) aunque transform2 se haya escrito. El
@@ -24,15 +24,18 @@ CYAN = (0, 174, 235)
 
 
 def _point(x, y, z):
+    # El frontal del ensamblaje se ve desde -Y. Las versiones anteriores
+    # modelaron palma, pulgar y detalles hacia posterior; se invierte todo el
+    # modulo sin alterar X ni intercambiar brazo izquierdo y derecho.
     return adsk.core.Point3D.create(
         x + _GEOMETRY_OFFSET[0],
-        y + _GEOMETRY_OFFSET[1],
+        -y + _GEOMETRY_OFFSET[1],
         z + _GEOMETRY_OFFSET[2],
     )
 
 
 def _vector(x, y, z):
-    return adsk.core.Vector3D.create(x, y, z)
+    return adsk.core.Vector3D.create(x, -y, z)
 
 
 def _find_occurrence(root, name):
@@ -622,10 +625,9 @@ def _build_v2(manager, side, upper_length, fore_length):
         _point(side * thumb_root_x, -0.55, thumb_root_z), 1.62
     )
     _union(manager, palm, thumb_bulge, "eminencia tenar integrada")
-    _append(specs, palm, "08_PALMA_ANATOMICA_CONTINUA", DARK)
-
-    # Cuatro raices embebidas dentro de la mitad distal de la palma. Los
-    # dedos no nacen de una arista exterior ni de una placa dorsal.
+    # Cuatro raices embebidas dentro del volumen de la palma. Se fusionan con
+    # ella antes de persistirla: no queda una fila de cilindros apoyada sobre
+    # la superficie y los motores quedan representados como internos.
     finger_offsets = (-2.30, -0.77, 0.77, 2.30)
     finger_lengths = (
         (2.18, 1.95, 1.62),
@@ -633,16 +635,17 @@ def _build_v2(manager, side, upper_length, fore_length):
         (2.38, 2.05, 1.70),
         (2.02, 1.78, 1.48),
     )
-    root_z = palm_bottom[2] + 2.10
+    root_z = palm_bottom[2] + 3.00
     for index, (offset, lengths) in enumerate(zip(finger_offsets, finger_lengths), 1):
         u0 = palm_x + 0.85 + offset
         l1, l2, l3 = lengths
-        p0 = (u0, -2.05, root_z)
+        p0 = (u0, -1.85, root_z)
         p1 = (u0 - offset * 0.08, -2.35, p0[2] - l1)
         p2 = (u0 - offset * 0.18, -2.58, p1[2] - l2)
         p3 = (u0 - offset * 0.30, -2.70, p2[2] - l3)
         g0, g1, g2, g3 = (_global_point(side, p) for p in (p0, p1, p2, p3))
-        _append(specs, _joint_y(manager, side, p0, 1.45, 0.66), f"10_DEDO_{index}_SERVO_BASE", BLACK)
+        root_joint = _joint_y(manager, side, p0, 1.45, 0.66)
+        _union(manager, palm, root_joint, f"raiz interna dedo {index}")
         _append(specs, _elliptical_segment(manager, g0, g1, 1.35, 1.22, 1.20), f"11_DEDO_{index}_FALANGE_1", DARK)
         _append(specs, _joint_y(manager, side, p1, 1.34, 0.59), f"12_DEDO_{index}_BISAGRA_1", BLACK)
         _append(specs, _elliptical_segment(manager, g1, g2, 1.22, 1.12, 1.08), f"13_DEDO_{index}_FALANGE_2", DARK)
@@ -657,12 +660,14 @@ def _build_v2(manager, side, upper_length, fore_length):
     t1 = (thumb_root_x - 1.65, -3.25, thumb_root_z - 1.20)
     t2 = (thumb_root_x - 2.65, -4.15, thumb_root_z - 2.85)
     gt0, gt1, gt2 = (_global_point(side, p) for p in (t0, t1, t2))
-    _append(specs, _joint_y(manager, side, t0, 1.70, 0.82), "17_PULGAR_SERVO_LATERAL", BLACK)
+    thumb_root = _joint_y(manager, side, t0, 1.70, 0.82)
+    _union(manager, palm, thumb_root, "raiz interna pulgar")
     _append(specs, _elliptical_segment(manager, gt0, gt1, 1.55, 1.38, 1.30), "18_PULGAR_FALANGE_1", DARK)
     _append(specs, _joint_y(manager, side, t1, 1.48, 0.70), "19_PULGAR_BISAGRA", BLACK)
     _append(specs, _elliptical_segment(manager, gt1, gt2, 1.32, 1.20, 1.05), "20_PULGAR_FALANGE_2", DARK)
     thumb_tip = (t2[0] - 0.55, t2[1] - 0.25, t2[2] - 0.50)
     _append(specs, _elliptical_segment(manager, gt2, _global_point(side, thumb_tip), 1.06, 0.96, 0.80), "21_PULGAR_PUNTA_BLANCA", WHITE)
+    _append(specs, palm, "08_PALMA_ANATOMICA_CONTINUA", DARK)
     return specs
 
 

@@ -8,7 +8,7 @@ COMPONENT_NAME = "06_CABEZA"
 FEATURE_NAME = "CABEZA_EXTERIOR_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "CABEZA95_"
-VERSION = "3.1.0"
+VERSION = "3.2.0"
 _GEOMETRY_Z = 0.0
 WHITE = (238, 239, 237)
 BLACK = (18, 21, 24)
@@ -36,7 +36,10 @@ def _ensure(design, name, expression, comment):
     return p.value
 
 
-def _p(x, y, z): return adsk.core.Point3D.create(x, y, z + _GEOMETRY_Z)
+def _p(x, y, z):
+    # Gira la cabeza frontal/posterior sin modificar su altura ni anchura.
+    # La pantalla que se veia desde posterior pasa al frontal del ensamblaje.
+    return adsk.core.Point3D.create(x, -y, z + _GEOMETRY_Z)
 def _v(x, y, z): return adsk.core.Vector3D.create(x, y, z)
 
 
