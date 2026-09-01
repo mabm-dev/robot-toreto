@@ -8,7 +8,7 @@ COMPONENT_NAME = "06_CABEZA"
 FEATURE_NAME = "CABEZA_EXTERIOR_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "CABEZA95_"
-VERSION = "3.0.0"
+VERSION = "3.1.0"
 _GEOMETRY_Z = 0.0
 WHITE = (238, 239, 237)
 BLACK = (18, 21, 24)
@@ -108,36 +108,37 @@ def _ellipse_side(m, x, y, z, depth_x, radius_z, radius_y):
     )
 
 
-def _d_side_envelope(m, width_x, height, front_y, back_y):
+def _d_side_envelope(m, width_x, height, curved_y, flat_y):
     """Silueta lateral en D medida en el lienzo derecho.
 
-    El frontal es muy curvo y sobresale; la tapa posterior es casi vertical.
-    Un rectangulo redondeado simetrico no puede reproducir ambas cosas.
+    El dorso es muy curvo y sobresale; el frontal de pantalla es casi
+    vertical. Un rectangulo redondeado simetrico no reproduce ambas cosas.
     """
     center_z = height / 2.0
-    join_y = -3.35
-    front = _ellipse_side(
+    curved_sign = 1.0 if curved_y > flat_y else -1.0
+    join_y = curved_sign * 3.35
+    curved = _ellipse_side(
         m,
         0,
         join_y,
         center_z,
         width_x,
         height / 2.0,
-        join_y - front_y,
+        abs(curved_y - join_y),
     )
-    rear_width = back_y - join_y
-    rear = _rounded_side(
+    flat_width = abs(flat_y - join_y)
+    flat = _rounded_side(
         m,
         0,
-        join_y + rear_width / 2.0,
+        (join_y + flat_y) / 2.0,
         center_z,
-        rear_width,
+        flat_width,
         height - 1.2,
         width_x,
         1.25,
     )
-    _union(m, front, rear, "envolvente lateral asimetrica")
-    return front
+    _union(m, curved, flat, "envolvente lateral asimetrica")
+    return curved
 
 
 def _ring(m, z1, z2, outer, inner):
@@ -230,17 +231,20 @@ def run(context):
         # El frente usa el rectangulo redondeado medido. La segunda envolvente
         # introduce el perfil lateral asimetrico en D: cara curva delante y
         # tapa casi vertical detras. La interseccion es un casco visual 4-vistas.
+        # En Fusion el frontal real del ensamblaje es +Y. La referencia
+        # lateral tiene el dorso curvo en -Y y el plano de pantalla casi
+        # vertical en +Y. Las versiones anteriores los intercambiaron.
         shell = _rounded(
             m, 0, -1.75, z(8.0), width, height, depth, z(2.55)
         )
-        front_y = -12.4
-        back_y = 8.9
-        side_envelope = _d_side_envelope(m, width + r(.6), height, front_y, back_y)
+        back_y = -12.4
+        front_y = 8.9
+        side_envelope = _d_side_envelope(m, width + r(.6), height, back_y, front_y)
         if not m.booleanOperation(shell, side_envelope, adsk.fusion.BooleanTypes.IntersectionBooleanType):
             raise RuntimeError("No se pudo cruzar la silueta frontal y lateral de la cabeza.")
         cavity_w = screen_width + 2 * clearance; cavity_h = screen_height + 2 * clearance
         cutter = _rounded(
-            m, 0, front_y + d(.55), z(8.15), cavity_w, cavity_h, d(2.7), min(cavity_w, cavity_h) * .10
+            m, 0, front_y - d(.55), z(8.15), cavity_w, cavity_h, d(2.7), min(cavity_w, cavity_h) * .10
         )
         if not m.booleanOperation(shell, cutter, adsk.fusion.BooleanTypes.DifferenceBooleanType):
             raise RuntimeError("No se pudo abrir el hueco frontal de la cabeza.")
@@ -248,22 +252,22 @@ def run(context):
         if not m.booleanOperation(shell, neck_cut, adsk.fusion.BooleanTypes.DifferenceBooleanType):
             raise RuntimeError("No se pudo abrir el paso inferior del cuello.")
         _append(specs, shell, "01_CARCASA_BLANCA_REDONDEADA", WHITE)
-        bezel_y = front_y - d(.08)
+        bezel_y = front_y + d(.08)
         bezel = _rounded(m, 0, bezel_y, z(8.15), cavity_w + r(1.0), cavity_h + z(1.0), d(.52), min(cavity_w, cavity_h) * .12)
         _append(specs, bezel, "02_MARCO_FRONTAL_NEGRO", BLACK)
-        screen = _rounded(m, 0, bezel_y - d(.30), z(8.15), screen_width, screen_height, d(.34), min(screen_width, screen_height) * .08)
+        screen = _rounded(m, 0, bezel_y + d(.30), z(8.15), screen_width, screen_height, d(.34), min(screen_width, screen_height) * .08)
         _append(specs, screen, "03_PANTALLA_GRAFITO", DARK)
 
         # Los ojos son apliques exteriores ciegos. Hacen que la pieza de
         # Fusion coincida con el frontal de referencia incluso sin textura.
-        face_y = bezel_y - d(.50)
+        face_y = bezel_y + d(.50)
         eye_x = min(screen_width * .23, r(4.55))
         for side, label in ((-1.0, "IZQ"), (1.0, "DER")):
             ring = _ring_y(
                 m,
                 side * eye_x,
                 face_y,
-                face_y - d(.12),
+                face_y + d(.12),
                 z(8.3),
                 z(1.30),
                 z(.82),
@@ -271,23 +275,23 @@ def run(context):
             _append(specs, ring, f"03_OJO_CIAN_{label}", CYAN)
             pupil = _cylinder(
                 m,
-                _p(side * eye_x, face_y - d(.02), z(8.3)),
-                _p(side * eye_x, face_y - d(.15), z(8.3)),
+                _p(side * eye_x, face_y + d(.02), z(8.3)),
+                _p(side * eye_x, face_y + d(.15), z(8.3)),
                 z(.23),
             )
             _append(specs, pupil, f"03_PUPILA_CIAN_{label}", CYAN)
 
         face_dot = _cylinder(
             m,
-            _p(0, face_y - d(.02), z(2.15)),
-            _p(0, face_y - d(.12), z(2.15)),
+            _p(0, face_y + d(.02), z(2.15)),
+            _p(0, face_y + d(.12), z(2.15)),
             z(.18),
         )
         _append(specs, face_dot, "03_PUNTO_FRONTAL", DARK)
 
         # Tapa posterior blanca; el propio borde de Fusion marca una junta
         # fina, sin el marco negro grueso de la versión anterior.
-        back_panel = _rounded(m, 0, back_y + d(.18), z(8.2), r(22.1), z(11.1), d(.24), z(1.5))
+        back_panel = _rounded(m, 0, back_y - d(.18), z(8.2), r(22.1), z(11.1), d(.24), z(1.5))
         _append(specs, back_panel, "04_TAPA_POSTERIOR_BLANCA", WHITE)
         for side, label in ((-1.0, "IZQ"), (1.0, "DER")):
             cx = side * (width / 2 + r(.12))

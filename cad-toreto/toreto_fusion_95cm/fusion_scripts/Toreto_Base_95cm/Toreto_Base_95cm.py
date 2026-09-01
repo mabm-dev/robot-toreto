@@ -9,7 +9,7 @@ import adsk.fusion
 
 COMPONENT_NAME = "01_BASE"
 BODY_PREFIX = "BASE95_"
-VERSION = "1.6.0"
+VERSION = "1.7.0"
 
 WHITE = (238, 239, 237)
 BLACK = (18, 21, 24)
@@ -556,7 +556,10 @@ def _build_specs(manager, radial_scale, height_scale):
                 ROLLER,
             )
 
-    pod_x = rr(8.8)
+    # La torreta superior esta centrada en X en el lienzo frontal. El valor
+    # antiguo de +88 mm procedia de una composicion previa y la desplazaba a
+    # la derecha del pedestal.
+    pod_x = 0.0
     pod_y = -rr(8.7)
     pod_base = _cylinder(
         manager,

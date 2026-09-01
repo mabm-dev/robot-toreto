@@ -3,7 +3,7 @@
   "type": "script",
   "author": "Robot Toreto / OpenAI Codex",
   "description": "BASE EXTERIOR v1.6.0 - diámetro de referencia y cuatro ruedas mecanum.",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "runOnStartup": false,
   "supportedOS": "windows"
 }

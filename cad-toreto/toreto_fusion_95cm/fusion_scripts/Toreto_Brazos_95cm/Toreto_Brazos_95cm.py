@@ -10,7 +10,7 @@ COMPONENTS = ("07_BRAZO_IZQUIERDO", "08_BRAZO_DERECHO")
 FEATURE_NAME = "BRAZOS_EXTERIORES_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "BRAZO95_"
-VERSION = "3.0.0"
+VERSION = "3.1.0"
 
 # Desplazamiento de emergencia para Fusion: algunas versiones dejan una
 # ocurrencia recién creada en (0,0,0) aunque transform2 se haya escrito. El
@@ -538,14 +538,6 @@ def _build_v2(manager, side, upper_length, fore_length):
         "01_NUCLEO_HOMBRO_EJE_X",
         BLACK,
     )
-    shoulder_p1 = _global_point(side, (0.45, 0, -1.0))
-    shoulder_p2 = _global_point(side, (0.95, 0, -8.2))
-    _append(
-        specs,
-        _elliptical_segment(manager, shoulder_p1, shoulder_p2, 8.4, 7.4, 7.5),
-        "02_CARCASA_HOMBRO_BLANCA",
-        WHITE,
-    )
     _append(
         specs,
         _cylinder(
@@ -554,7 +546,7 @@ def _build_v2(manager, side, upper_length, fore_length):
             _point(side * 4.55, 0, -1.0),
             3.05,
         ),
-        "03_TAPA_CIRCULAR_HOMBRO",
+        "02_TAPA_CIRCULAR_HOMBRO",
         DARK,
     )
     _append(
@@ -565,18 +557,21 @@ def _build_v2(manager, side, upper_length, fore_length):
             _point(side * 4.72, 0, -1.0),
             1.42,
         ),
-        "04_DISCO_CENTRAL_HOMBRO",
+        "03_DISCO_CENTRAL_HOMBRO",
         BLACK,
     )
 
     # Brazo superior afilado: ya no es una capsula rectangular. La cota del
     # codo se calcula siempre desde largo_brazo, sin coordenadas heredadas.
-    upper_p1 = _global_point(side, (0.70, 0, -2.0))
-    upper_p2 = _global_point(side, (1.30, 0, -upper_length))
+    # Centros leidos en el lienzo frontal: la carcasa blanca esta desplazada
+    # hacia fuera respecto al eje negro del hombro y continua abriendose
+    # hasta el codo. Antes se construia casi sobre el pecho.
+    upper_p1 = _global_point(side, (3.15, 0, 0.50))
+    upper_p2 = _global_point(side, (6.45, 0, 0.50 - upper_length))
     _append(
         specs,
-        _elliptical_segment(manager, upper_p1, upper_p2, 7.4, 6.8, 5.8),
-        "05_CARCASA_BRAZO_SUPERIOR",
+        _elliptical_segment(manager, upper_p1, upper_p2, 6.15, 6.7, 5.65),
+        "04_CARCASA_BRAZO_SUPERIOR",
         WHITE,
     )
     _append(
@@ -587,19 +582,19 @@ def _build_v2(manager, side, upper_length, fore_length):
             _point(upper_p2[0] + 3.05, 0, upper_p2[2]),
             1.72,
         ),
-        "06_CODO_EJE_X",
+        "05_CODO_EJE_X",
         BLACK,
     )
 
     # Antebrazo ligeramente abierto hacia fuera en la pose frontal. El
     # lateral de referencia usa otra pose articulada; la geometria es la
     # misma y no se falsea para intentar satisfacer dos poses simultaneas.
-    fore_p1 = _global_point(side, (1.25, 0, upper_p2[2] - 1.1))
-    fore_p2 = _global_point(side, (2.15, 0, fore_p1[2] - fore_length))
+    fore_p1 = _global_point(side, (6.55, 0, upper_p2[2] - 1.30))
+    fore_p2 = _global_point(side, (10.45, 0, fore_p1[2] - fore_length))
     _append(
         specs,
-        _elliptical_segment(manager, fore_p1, fore_p2, 5.8, 5.4, 6.5),
-        "07_CARCASA_ANTEBRAZO",
+        _elliptical_segment(manager, fore_p1, fore_p2, 5.75, 5.55, 6.15),
+        "06_CARCASA_ANTEBRAZO",
         WHITE,
     )
 
@@ -611,13 +606,13 @@ def _build_v2(manager, side, upper_length, fore_length):
     _append(
         specs,
         _elliptical_segment(manager, wrist_top, wrist_bottom, 5.15, 4.85),
-        "08_ANILLO_ROTACION_MUNECA",
+        "07_ANILLO_ROTACION_MUNECA",
         BLACK,
     )
 
     palm_x = abs(wrist_bottom[0])
     palm_top = (side * palm_x, -0.10, wrist_bottom[2] - 0.15)
-    palm_bottom = (side * (palm_x + 0.35), -0.35, palm_top[2] - 7.25)
+    palm_bottom = (side * (palm_x + 0.85), -0.35, palm_top[2] - 7.25)
     palm = _elliptical_segment(manager, palm_top, palm_bottom, 5.3, 4.7, 7.25)
     # Eminencia tenar integrada: forma parte de la palma y recibe el pulgar;
     # no es una placa o un bloque cuadrado independiente.
@@ -627,7 +622,7 @@ def _build_v2(manager, side, upper_length, fore_length):
         _point(side * thumb_root_x, -0.55, thumb_root_z), 1.62
     )
     _union(manager, palm, thumb_bulge, "eminencia tenar integrada")
-    _append(specs, palm, "09_PALMA_ANATOMICA_CONTINUA", DARK)
+    _append(specs, palm, "08_PALMA_ANATOMICA_CONTINUA", DARK)
 
     # Cuatro raices embebidas dentro de la mitad distal de la palma. Los
     # dedos no nacen de una arista exterior ni de una placa dorsal.
@@ -640,7 +635,7 @@ def _build_v2(manager, side, upper_length, fore_length):
     )
     root_z = palm_bottom[2] + 2.10
     for index, (offset, lengths) in enumerate(zip(finger_offsets, finger_lengths), 1):
-        u0 = palm_x + 0.35 + offset
+        u0 = palm_x + 0.85 + offset
         l1, l2, l3 = lengths
         p0 = (u0, -2.05, root_z)
         p1 = (u0 - offset * 0.08, -2.35, p0[2] - l1)
