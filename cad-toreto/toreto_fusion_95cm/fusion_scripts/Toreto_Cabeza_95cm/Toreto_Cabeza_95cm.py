@@ -8,7 +8,7 @@ COMPONENT_NAME = "06_CABEZA"
 FEATURE_NAME = "CABEZA_EXTERIOR_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "CABEZA95_"
-VERSION = "2.2.0"
+VERSION = "2.3.0"
 _GEOMETRY_Z = 0.0
 WHITE = (238, 239, 237)
 BLACK = (18, 21, 24)
@@ -161,7 +161,7 @@ def run(context):
             ui.messageBox("La cabeza exterior ya existe; no se duplicó."); return
         replaced = _replace(component)
         width = _value(design, "ancho_cabeza", 26.5)
-        depth = _value(design, "fondo_cabeza", 20.7)
+        depth = _value(design, "fondo_cabeza", 21.5)
         height = _value(design, "alto_cabeza", 16.0)
         _GEOMETRY_Z = sum(
             _value(design, name, fallback)

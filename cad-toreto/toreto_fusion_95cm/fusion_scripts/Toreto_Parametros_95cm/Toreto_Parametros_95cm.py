@@ -13,7 +13,7 @@ VERSION = "1.1.0"
 
 PARAMETERS = [
     ("altura_total", "950 mm", "Altura exterior total del robot"),
-    ("diametro_base", "400 mm", "Diámetro exterior nominal de la base"),
+    ("diametro_base", "450 mm", "Diámetro exterior nominal de la base medida en el lienzo"),
     ("alto_base", "200 mm", "Altura exterior de la base"),
     ("alto_tronco", "190 mm", "Altura exterior del tronco"),
     ("alto_cintura", "150 mm", "Altura exterior de la cintura"),
@@ -28,7 +28,7 @@ PARAMETERS = [
     ("ancho_carcasa_pecho", "252 mm", "Anchura de la carcasa central del pecho"),
     ("fondo_pecho", "220 mm", "Profundidad máxima del pecho"),
     ("ancho_cabeza", "285 mm", "Anchura exterior de la cabeza"),
-    ("fondo_cabeza", "175 mm", "Fondo exterior de la cabeza"),
+    ("fondo_cabeza", "215 mm", "Fondo exterior de la cabeza medido en los laterales"),
     ("largo_brazo", "170 mm", "Longitud del brazo superior"),
     ("largo_antebrazo", "150 mm", "Longitud del antebrazo"),
     ("espesor_pared", "3.2 mm", "Espesor nominal de las carcasas"),

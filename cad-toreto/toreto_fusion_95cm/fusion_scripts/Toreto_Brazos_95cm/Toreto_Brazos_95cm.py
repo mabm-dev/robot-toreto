@@ -10,7 +10,7 @@ COMPONENTS = ("07_BRAZO_IZQUIERDO", "08_BRAZO_DERECHO")
 FEATURE_NAME = "BRAZOS_EXTERIORES_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "BRAZO95_"
-VERSION = "2.8.0"
+VERSION = "2.9.0"
 
 # Desplazamiento de emergencia para Fusion: algunas versiones dejan una
 # ocurrencia recién creada en (0,0,0) aunque transform2 se haya escrito. El
@@ -490,7 +490,7 @@ def _joint_y(manager, side, point, depth, radius):
     )
 
 
-def _build_v2(manager, side):
+def _build_v2(manager, side, upper_length, fore_length):
     """Brazo exterior basado en las vistas frontal/lateral definitivas."""
     specs = []
 
@@ -513,7 +513,7 @@ def _build_v2(manager, side):
         WHITE,
     )
     upper_p1 = _global_point(side, (.65, 0, -1.5))
-    upper_p2 = _global_point(side, (1.25, 0, -13.0))
+    upper_p2 = _global_point(side, (1.25, 0, -1.5 - upper_length))
     _append(
         specs,
         _capsule(manager, upper_p1, upper_p2, 6.8, 7.8),
@@ -570,8 +570,8 @@ def _build_v2(manager, side):
 
     # Antebrazo inclinado hacia el cuerpo: en la vista frontal las muñecas
     # quedan más juntas que los codos, como en las referencias definitivas.
-    fore_p1 = _global_point(side, (1.35, 0, -14.4))
-    fore_p2 = _global_point(side, (0.80, 0, -25.1))
+    fore_p1 = _global_point(side, (1.35, 0, upper_p2[2] - 1.4))
+    fore_p2 = _global_point(side, (0.80, 0, fore_p1[2] - fore_length))
     _append(
         specs,
         _capsule(manager, fore_p1, fore_p2, 5.9, 6.7),
@@ -720,6 +720,8 @@ def run(context):
         waist_h = _value(design, "alto_cintura", 15.0)
         chest_h = _value(design, "alto_pecho", 19.0)
         chest_w = _value(design, "ancho_pecho", 34.0)
+        upper_length = _value(design, "largo_brazo", 17.0)
+        fore_length = _value(design, "largo_antebrazo", 15.0)
         z_chest = base_h + trunk_h + waist_h
         shoulder_z = z_chest + chest_h * 0.88
         shoulder_x = chest_w / 2.0 + 0.15
@@ -758,7 +760,9 @@ def run(context):
             feature.name = FEATURE_NAME
             feature.startEdit()
             try:
-                for temp_body, name, color in _build_v2(manager, side):
+                for temp_body, name, color in _build_v2(
+                    manager, side, upper_length, fore_length
+                ):
                     body = component.bRepBodies.add(temp_body, feature)
                     if not body:
                         raise RuntimeError(f"Fusion no pudo añadir {name}.")
@@ -778,6 +782,8 @@ def run(context):
             + f"\n\nCuerpos generados: {total}\n"
             f"Posiciones globales integradas en cuerpos: {baked_offsets}\n"
             "Hombros, brazo superior, antebrazo, muñecas y manos segmentadas.\n"
+            f"Longitudes maestras aplicadas: brazo {upper_length * 10:.0f} mm + "
+            f"antebrazo {fore_length * 10:.0f} mm.\n"
             "Cuatro dedos anatómicos de longitudes distintas y pulgar opuesto.\n"
             "Sin motores, articulaciones internas ni esqueleto.",
             "Robot Toreto 95 cm",
