@@ -10,7 +10,7 @@ COMPONENTS = ("07_BRAZO_IZQUIERDO", "08_BRAZO_DERECHO")
 FEATURE_NAME = "BRAZOS_EXTERIORES_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "BRAZO95_"
-VERSION = "3.2.0"
+VERSION = "3.3.0"
 
 # Desplazamiento de emergencia para Fusion: algunas versiones dejan una
 # ocurrencia recién creada en (0,0,0) aunque transform2 se haya escrito. El
@@ -605,18 +605,39 @@ def _build_v2(manager, side, upper_length, fore_length):
     # antebrazo. Este encadenado corrige el desfase que aparecio al pasar a
     # 170 + 150 mm manteniendo las coordenadas antiguas de la mano.
     wrist_top = fore_p2
-    wrist_bottom = (fore_p2[0], fore_p2[1], fore_p2[2] - 1.65)
-    _append(
-        specs,
-        _elliptical_segment(manager, wrist_top, wrist_bottom, 5.15, 4.85),
-        "07_ANILLO_ROTACION_MUNECA",
-        BLACK,
-    )
+    # Tres anillos cortos de diametro constante. Sustituyen el cono largo
+    # que aparecia entre antebrazo y palma y reproducen la muñeca apilada del
+    # lienzo frontal.
+    wrist_cursor = wrist_top
+    for ring_index, (length, diameter) in enumerate(
+        ((0.58, 5.25), (0.54, 4.90), (0.58, 4.62)), 1
+    ):
+        ring_end = (wrist_cursor[0], wrist_cursor[1], wrist_cursor[2] - length)
+        _append(
+            specs,
+            _elliptical_segment(
+                manager, wrist_cursor, ring_end, diameter, diameter * 0.92
+            ),
+            f"07_ANILLO_MUNECA_{ring_index}",
+            BLACK,
+        )
+        wrist_cursor = ring_end
+    wrist_bottom = wrist_cursor
 
     palm_x = abs(wrist_bottom[0])
-    palm_top = (side * palm_x, -0.10, wrist_bottom[2] - 0.15)
-    palm_bottom = (side * (palm_x + 0.85), -0.35, palm_top[2] - 7.25)
-    palm = _elliptical_segment(manager, palm_top, palm_bottom, 5.3, 4.7, 7.25)
+    palm_top = (side * palm_x, -0.10, wrist_bottom[2] - 0.12)
+    palm_bottom = (side * (palm_x + 0.70), -0.28, palm_top[2] - 7.10)
+    # Palma de seccion casi constante con dos lobulos fusionados. Asi tiene
+    # talon, centro y zona de nudillos sin convertirse en otro cono.
+    palm = _elliptical_segment(manager, palm_top, palm_bottom, 6.25, 4.75)
+    heel = manager.createSphere(
+        _point(side * palm_x, -0.18, palm_top[2] - 1.05), 2.42
+    )
+    _union(manager, palm, heel, "talon redondeado de la palma")
+    palm_core = manager.createSphere(
+        _point(side * (palm_x + 0.42), -0.30, palm_bottom[2] + 3.25), 3.42
+    )
+    _union(manager, palm, palm_core, "volumen central de la palma")
     # Eminencia tenar integrada: forma parte de la palma y recibe el pulgar;
     # no es una placa o un bloque cuadrado independiente.
     thumb_root_x = palm_x - 2.35
@@ -630,29 +651,29 @@ def _build_v2(manager, side, upper_length, fore_length):
     # la superficie y los motores quedan representados como internos.
     finger_offsets = (-2.30, -0.77, 0.77, 2.30)
     finger_lengths = (
-        (2.18, 1.95, 1.62),
-        (2.48, 2.15, 1.78),
-        (2.38, 2.05, 1.70),
-        (2.02, 1.78, 1.48),
+        (2.50, 2.30, 1.85),
+        (2.80, 2.50, 2.05),
+        (2.65, 2.40, 1.95),
+        (2.25, 2.05, 1.70),
     )
     root_z = palm_bottom[2] + 3.00
     for index, (offset, lengths) in enumerate(zip(finger_offsets, finger_lengths), 1):
-        u0 = palm_x + 0.85 + offset
+        u0 = palm_x + 0.70 + offset
         l1, l2, l3 = lengths
         p0 = (u0, -1.85, root_z)
-        p1 = (u0 - offset * 0.08, -2.35, p0[2] - l1)
-        p2 = (u0 - offset * 0.18, -2.58, p1[2] - l2)
-        p3 = (u0 - offset * 0.30, -2.70, p2[2] - l3)
+        p1 = (u0 - offset * 0.05, -2.32, p0[2] - l1)
+        p2 = (u0 - offset * 0.14, -2.58, p1[2] - l2)
+        p3 = (u0 - offset * 0.28, -2.74, p2[2] - l3)
         g0, g1, g2, g3 = (_global_point(side, p) for p in (p0, p1, p2, p3))
         root_joint = _joint_y(manager, side, p0, 1.45, 0.66)
         _union(manager, palm, root_joint, f"raiz interna dedo {index}")
-        _append(specs, _elliptical_segment(manager, g0, g1, 1.35, 1.22, 1.20), f"11_DEDO_{index}_FALANGE_1", DARK)
-        _append(specs, _joint_y(manager, side, p1, 1.34, 0.59), f"12_DEDO_{index}_BISAGRA_1", BLACK)
-        _append(specs, _elliptical_segment(manager, g1, g2, 1.22, 1.12, 1.08), f"13_DEDO_{index}_FALANGE_2", DARK)
-        _append(specs, _joint_y(manager, side, p2, 1.24, 0.53), f"14_DEDO_{index}_BISAGRA_2", BLACK)
-        _append(specs, _elliptical_segment(manager, g2, g3, 1.10, 1.00, 0.92), f"15_DEDO_{index}_FALANGE_3", DARK)
+        _append(specs, _finger_box(manager, side, p0, p1, 1.78, 1.58), f"11_DEDO_{index}_FALANGE_1", DARK)
+        _append(specs, _joint_y(manager, side, p1, 1.62, 0.72), f"12_DEDO_{index}_BISAGRA_1", BLACK)
+        _append(specs, _finger_box(manager, side, p1, p2, 1.64, 1.48), f"13_DEDO_{index}_FALANGE_2", DARK)
+        _append(specs, _joint_y(manager, side, p2, 1.52, 0.65), f"14_DEDO_{index}_BISAGRA_2", BLACK)
+        _append(specs, _finger_box(manager, side, p2, p3, 1.48, 1.36), f"15_DEDO_{index}_FALANGE_3", DARK)
         tip = (p3[0] - offset * 0.025, p3[1] - 0.05, p3[2] - 0.82)
-        _append(specs, _elliptical_segment(manager, g3, _global_point(side, tip), 0.92, 0.86, 0.72), f"16_DEDO_{index}_PUNTA_BLANCA", WHITE)
+        _append(specs, _elliptical_segment(manager, g3, _global_point(side, tip), 1.38, 1.26, 1.08), f"16_DEDO_{index}_PUNTA_BLANCA", WHITE)
 
     # Pulgar de dos falanges, anclado en el centro lateral de la palma y
     # adelantado en Y para ser realmente oponible.
