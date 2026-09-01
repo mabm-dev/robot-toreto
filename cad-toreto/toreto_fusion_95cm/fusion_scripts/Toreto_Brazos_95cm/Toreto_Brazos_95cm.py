@@ -10,7 +10,7 @@ COMPONENTS = ("07_BRAZO_IZQUIERDO", "08_BRAZO_DERECHO")
 FEATURE_NAME = "BRAZOS_EXTERIORES_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "BRAZO95_"
-VERSION = "2.7.0"
+VERSION = "2.8.0"
 
 # Desplazamiento de emergencia para Fusion: algunas versiones dejan una
 # ocurrencia recién creada en (0,0,0) aunque transform2 se haya escrito. El
@@ -501,6 +501,17 @@ def _build_v2(manager, side):
         "01_NUCLEO_HOMBRO_EJE_X",
         BLACK,
     )
+    # Carcasa de hombro independiente, blanca y envolvente. En la
+    # referencia ocupa el volumen redondeado alrededor del disco negro; no
+    # debe desaparecer dejando solo un cilindro.
+    _append(
+        specs,
+        _rounded_panel(
+            manager, side * 0.65, 0, -7.0, 8.8, 14.0, 7.8, 3.0
+        ),
+        "02_CARCASA_HOMBRO_BLANCA",
+        WHITE,
+    )
     upper_p1 = _global_point(side, (.65, 0, -1.5))
     upper_p2 = _global_point(side, (1.25, 0, -13.0))
     _append(
@@ -580,8 +591,10 @@ def _build_v2(manager, side):
         BLACK,
     )
 
-    # Palma anatómica: carcasa blanca redondeada, con una placa oscura
-    # retranqueada. Los dedos nacen del borde inferior, no de un cuadrado.
+    # Palma anatómica de una sola pieza: la referencia usa una palma oscura
+    # continua, con los servos y falanges saliendo de su zona central. El
+    # único panel blanco separado es el cuff de muñeca, no un cuadrado pegado
+    # a la palma.
     palm_x = 0.80
     palm = _rounded_panel(
         manager, side * palm_x, 0, -29.55, 7.2, 7.4, 5.2, 1.45
@@ -592,14 +605,22 @@ def _build_v2(manager, side):
         manager, side * palm_x, 0, -32.05, 6.25, 3.25, 5.0, 1.20
     )
     _union(manager, palm, heel, "talón integrado de la palma")
-    _append(specs, palm, "09_CARCASA_PALMA_ORGANICA", WHITE)
-    # No hay un bloque frontal separado: la palma blanca es una sola pieza.
-    # Los pequeños cilindros de los nudillos representan los servos integrados.
+    _append(specs, palm, "09_CARCASA_PALMA_ORGANICA", DARK)
     _append(
         specs,
-        _rounded_panel(manager, side * palm_x, 2.82, -29.55, 6.55, 5.80, 0.50, 1.05),
-        "11_PLACA_POSTERIOR_PALMA",
+        _rounded_panel(
+            manager, side * palm_x, 0, -27.55, 6.6, 3.2, 6.0, 1.0
+        ),
+        "10_CUFF_MUNECA_BLANCO",
         WHITE,
+    )
+    # Cuatro fijaciones visibles del cuff; los motores siguen integrados en
+    # la palma y no se representan como una caja exterior independiente.
+    _append(
+        specs,
+        _rounded_panel(manager, side * palm_x, 2.82, -27.55, 6.1, 2.8, 0.50, 0.8),
+        "11_CUBIERTA_SERVOS_PALMA",
+        DARK,
     )
     for sx in (-1.0, 1.0):
         for sz in (-1.0, 1.0):
@@ -607,8 +628,8 @@ def _build_v2(manager, side):
                 specs,
                 _cylinder(
                     manager,
-                    _point(side * (palm_x + sx * 2.18), 3.08, -29.55 + sz * 1.82),
-                    _point(side * (palm_x + sx * 2.18), 3.28, -29.55 + sz * 1.82),
+                    _point(side * (palm_x + sx * 2.05), 3.08, -27.55 + sz * 0.88),
+                    _point(side * (palm_x + sx * 2.05), 3.28, -27.55 + sz * 0.88),
                     0.19,
                 ),
                 f"12_TORNILLO_PALMA_{int(sx)}_{int(sz)}",
