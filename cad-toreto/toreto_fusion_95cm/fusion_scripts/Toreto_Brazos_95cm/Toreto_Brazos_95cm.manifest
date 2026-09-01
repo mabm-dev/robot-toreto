@@ -2,8 +2,8 @@
   "autodeskProduct": "Fusion360",
   "type": "script",
   "author": "Robot Toreto / OpenAI Codex",
-  "description": "Brazos exteriores ajustados a las cuatro vistas, con mano anatómica de cinco dedos.",
-  "version": "2.9.0",
+  "description": "Brazos encadenados a las cotas maestras, con secciones organicas y mano anatomica integrada.",
+  "version": "3.0.0",
   "runOnStartup": false,
   "supportedOS": "windows"
 }

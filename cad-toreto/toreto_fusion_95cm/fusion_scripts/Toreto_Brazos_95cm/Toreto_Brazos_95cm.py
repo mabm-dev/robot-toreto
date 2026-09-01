@@ -10,7 +10,7 @@ COMPONENTS = ("07_BRAZO_IZQUIERDO", "08_BRAZO_DERECHO")
 FEATURE_NAME = "BRAZOS_EXTERIORES_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "BRAZO95_"
-VERSION = "2.9.0"
+VERSION = "3.0.0"
 
 # Desplazamiento de emergencia para Fusion: algunas versiones dejan una
 # ocurrencia recién creada en (0,0,0) aunque transform2 se haya escrito. El
@@ -490,43 +490,69 @@ def _joint_y(manager, side, point, depth, radius):
     )
 
 
+def _elliptical_segment(manager, p1, p2, width1, depth1, width2=None):
+    """Carcasa eliptica y troncoconica orientada entre dos puntos.
+
+    Fusion conserva la relacion entre los dos radios durante el cono. Esto
+    produce una piel continua y organica, sin la lectura de caja + tapas de
+    las versiones anteriores.
+    """
+    if width2 is None:
+        width2 = width1
+    dx = p2[0] - p1[0]
+    dy = p2[1] - p1[1]
+    dz = p2[2] - p1[2]
+    length = math.sqrt(dx * dx + dy * dy + dz * dz)
+    if length < 0.001:
+        raise RuntimeError("Segmento eliptico demasiado corto.")
+    axis = (dx / length, dy / length, dz / length)
+    # Proyecta X en el plano normal al eje del segmento. En los brazos esta
+    # direccion define la anchura que debe coincidir con el lienzo frontal.
+    dot = axis[0]
+    major = (1.0 - dot * axis[0], -dot * axis[1], -dot * axis[2])
+    major_length = math.sqrt(sum(value * value for value in major))
+    if major_length < 0.001:
+        dot = axis[1]
+        major = (-dot * axis[0], 1.0 - dot * axis[1], -dot * axis[2])
+        major_length = math.sqrt(sum(value * value for value in major))
+    major_axis = _vector(*(value / major_length for value in major))
+    return manager.createEllipticalCylinderOrCone(
+        _point(*p1),
+        width1 / 2.0,
+        depth1 / 2.0,
+        _point(*p2),
+        width2 / 2.0,
+        major_axis,
+    )
+
+
 def _build_v2(manager, side, upper_length, fore_length):
-    """Brazo exterior basado en las vistas frontal/lateral definitivas."""
+    """Brazo neutral frontal, dimensionado y encadenado desde el hombro."""
     specs = []
 
-    # Hombro: el eje es X. La gran cara circular se ve de perfil, no de frente.
+    # El eje del hombro queda detras de una cubierta blanca estrecha. La cara
+    # circular se ve en el lateral, tal como ocurre en los cuatro lienzos.
     _append(
         specs,
-        _cylinder(manager, _point(-4.0, 0, -1.0), _point(4.0, 0, -1.0), 3.55),
+        _cylinder(manager, _point(-4.25, 0, -1.0), _point(4.25, 0, -1.0), 3.65),
         "01_NUCLEO_HOMBRO_EJE_X",
         BLACK,
     )
-    # Carcasa de hombro independiente, blanca y envolvente. En la
-    # referencia ocupa el volumen redondeado alrededor del disco negro; no
-    # debe desaparecer dejando solo un cilindro.
+    shoulder_p1 = _global_point(side, (0.45, 0, -1.0))
+    shoulder_p2 = _global_point(side, (0.95, 0, -8.2))
     _append(
         specs,
-        _rounded_panel(
-            manager, side * 0.65, 0, -7.0, 8.8, 14.0, 7.8, 3.0
-        ),
+        _elliptical_segment(manager, shoulder_p1, shoulder_p2, 8.4, 7.4, 7.5),
         "02_CARCASA_HOMBRO_BLANCA",
-        WHITE,
-    )
-    upper_p1 = _global_point(side, (.65, 0, -1.5))
-    upper_p2 = _global_point(side, (1.25, 0, -1.5 - upper_length))
-    _append(
-        specs,
-        _capsule(manager, upper_p1, upper_p2, 6.8, 7.8),
-        "02_CARCASA_BRAZO_SUPERIOR",
         WHITE,
     )
     _append(
         specs,
         _cylinder(
             manager,
-            _point(side * 3.65, 0, -1.0),
-            _point(side * 4.35, 0, -1.0),
-            3.0,
+            _point(side * 3.75, 0, -1.0),
+            _point(side * 4.55, 0, -1.0),
+            3.05,
         ),
         "03_TAPA_CIRCULAR_HOMBRO",
         DARK,
@@ -535,161 +561,113 @@ def _build_v2(manager, side, upper_length, fore_length):
         specs,
         _cylinder(
             manager,
-            _point(side * 4.30, 0, -1.0),
-            _point(side * 4.55, 0, -1.0),
-            1.45,
+            _point(side * 4.48, 0, -1.0),
+            _point(side * 4.72, 0, -1.0),
+            1.42,
         ),
         "04_DISCO_CENTRAL_HOMBRO",
         BLACK,
     )
 
-    # El codo termina la misma carcasa continua; no se añade un segundo
-    # volumen superpuesto como en las versiones anteriores.
+    # Brazo superior afilado: ya no es una capsula rectangular. La cota del
+    # codo se calcula siempre desde largo_brazo, sin coordenadas heredadas.
+    upper_p1 = _global_point(side, (0.70, 0, -2.0))
+    upper_p2 = _global_point(side, (1.30, 0, -upper_length))
+    _append(
+        specs,
+        _elliptical_segment(manager, upper_p1, upper_p2, 7.4, 6.8, 5.8),
+        "05_CARCASA_BRAZO_SUPERIOR",
+        WHITE,
+    )
     _append(
         specs,
         _cylinder(
             manager,
-            _point(upper_p2[0] - 3.0, 0, upper_p2[2]),
-            _point(upper_p2[0] + 3.0, 0, upper_p2[2]),
-            1.65,
+            _point(upper_p2[0] - 3.05, 0, upper_p2[2]),
+            _point(upper_p2[0] + 3.05, 0, upper_p2[2]),
+            1.72,
         ),
-        "05_CODO_EJE_X",
+        "06_CODO_EJE_X",
         BLACK,
     )
-    _append(
-        specs,
-        _cylinder(
-            manager,
-            _point(upper_p2[0] + side * 2.65, 0, upper_p2[2]),
-            _point(upper_p2[0] + side * 3.15, 0, upper_p2[2]),
-            0.78,
-        ),
-        "06_TAPA_CODO_LATERAL",
-        DARK,
-    )
 
-    # Antebrazo inclinado hacia el cuerpo: en la vista frontal las muñecas
-    # quedan más juntas que los codos, como en las referencias definitivas.
-    fore_p1 = _global_point(side, (1.35, 0, upper_p2[2] - 1.4))
-    fore_p2 = _global_point(side, (0.80, 0, fore_p1[2] - fore_length))
+    # Antebrazo ligeramente abierto hacia fuera en la pose frontal. El
+    # lateral de referencia usa otra pose articulada; la geometria es la
+    # misma y no se falsea para intentar satisfacer dos poses simultaneas.
+    fore_p1 = _global_point(side, (1.25, 0, upper_p2[2] - 1.1))
+    fore_p2 = _global_point(side, (2.15, 0, fore_p1[2] - fore_length))
     _append(
         specs,
-        _capsule(manager, fore_p1, fore_p2, 5.9, 6.7),
+        _elliptical_segment(manager, fore_p1, fore_p2, 5.8, 5.4, 6.5),
         "07_CARCASA_ANTEBRAZO",
         WHITE,
     )
-    # Anillo de muñeca alrededor del eje longitudinal del antebrazo.
+
+    # A partir de aqui todas las cotas dependen del extremo real del
+    # antebrazo. Este encadenado corrige el desfase que aparecio al pasar a
+    # 170 + 150 mm manteniendo las coordenadas antiguas de la mano.
+    wrist_top = fore_p2
+    wrist_bottom = (fore_p2[0], fore_p2[1], fore_p2[2] - 1.65)
     _append(
         specs,
-        _cylinder(
-            manager,
-            _point(side * 0.80, 0, -25.3),
-            _point(side * 0.80, 0, -27.0),
-            2.25,
-        ),
+        _elliptical_segment(manager, wrist_top, wrist_bottom, 5.15, 4.85),
         "08_ANILLO_ROTACION_MUNECA",
         BLACK,
     )
 
-    # Palma anatómica de una sola pieza: la referencia usa una palma oscura
-    # continua, con los servos y falanges saliendo de su zona central. El
-    # único panel blanco separado es el cuff de muñeca, no un cuadrado pegado
-    # a la palma.
-    palm_x = 0.80
-    palm = _rounded_panel(
-        manager, side * palm_x, 0, -29.55, 7.2, 7.4, 5.2, 1.45
+    palm_x = abs(wrist_bottom[0])
+    palm_top = (side * palm_x, -0.10, wrist_bottom[2] - 0.15)
+    palm_bottom = (side * (palm_x + 0.35), -0.35, palm_top[2] - 7.25)
+    palm = _elliptical_segment(manager, palm_top, palm_bottom, 5.3, 4.7, 7.25)
+    # Eminencia tenar integrada: forma parte de la palma y recibe el pulgar;
+    # no es una placa o un bloque cuadrado independiente.
+    thumb_root_x = palm_x - 2.35
+    thumb_root_z = palm_top[2] - 3.65
+    thumb_bulge = manager.createSphere(
+        _point(side * thumb_root_x, -0.55, thumb_root_z), 1.62
     )
-    # Talón integrado: suaviza la transición hacia la muñeca y evita la
-    # lectura de bloque cuadrado. Sigue siendo el mismo cuerpo de palma.
-    heel = _rounded_panel(
-        manager, side * palm_x, 0, -32.05, 6.25, 3.25, 5.0, 1.20
-    )
-    _union(manager, palm, heel, "talón integrado de la palma")
-    _append(specs, palm, "09_CARCASA_PALMA_ORGANICA", DARK)
-    _append(
-        specs,
-        _rounded_panel(
-            manager, side * palm_x, 0, -27.55, 6.6, 3.2, 6.0, 1.0
-        ),
-        "10_CUFF_MUNECA_BLANCO",
-        WHITE,
-    )
-    # Cuatro fijaciones visibles del cuff; los motores siguen integrados en
-    # la palma y no se representan como una caja exterior independiente.
-    _append(
-        specs,
-        _rounded_panel(manager, side * palm_x, 2.82, -27.55, 6.1, 2.8, 0.50, 0.8),
-        "11_CUBIERTA_SERVOS_PALMA",
-        DARK,
-    )
-    for sx in (-1.0, 1.0):
-        for sz in (-1.0, 1.0):
-            _append(
-                specs,
-                _cylinder(
-                    manager,
-                    _point(side * (palm_x + sx * 2.05), 3.08, -27.55 + sz * 0.88),
-                    _point(side * (palm_x + sx * 2.05), 3.28, -27.55 + sz * 0.88),
-                    0.19,
-                ),
-                f"12_TORNILLO_PALMA_{int(sx)}_{int(sz)}",
-                BLACK,
-            )
+    _union(manager, palm, thumb_bulge, "eminencia tenar integrada")
+    _append(specs, palm, "09_PALMA_ANATOMICA_CONTINUA", DARK)
 
-    # Cuatro dedos de longitudes distintas. La convergencia progresiva hacia
-    # el centro reproduce la silueta relajada de las vistas definitivas.
-    finger_offsets = (-2.35, -0.78, 0.78, 2.35)
+    # Cuatro raices embebidas dentro de la mitad distal de la palma. Los
+    # dedos no nacen de una arista exterior ni de una placa dorsal.
+    finger_offsets = (-2.30, -0.77, 0.77, 2.30)
     finger_lengths = (
-        (2.20, 2.00, 1.70),
-        (2.38, 2.16, 1.86),
-        (2.29, 2.08, 1.76),
-        (1.96, 1.78, 1.56),
+        (2.18, 1.95, 1.62),
+        (2.48, 2.15, 1.78),
+        (2.38, 2.05, 1.70),
+        (2.02, 1.78, 1.48),
     )
+    root_z = palm_bottom[2] + 2.10
     for index, (offset, lengths) in enumerate(zip(finger_offsets, finger_lengths), 1):
-        u0 = palm_x + offset
+        u0 = palm_x + 0.35 + offset
         l1, l2, l3 = lengths
-        # Los dedos nacen en la zona central de la palma, no en su borde.
-        p0 = (u0, -2.86, -29.55)
-        p1 = (u0 - offset * 0.10, -2.78, p0[2] - l1)
-        p2 = (u0 - offset * 0.22, -2.78, p1[2] - l2)
-        p3 = (u0 - offset * 0.36, -2.78, p2[2] - l3)
-        _append(specs, _joint_y(manager, side, p0, 1.42, 0.62), f"13_DEDO_{index}_NUDILLO", BLACK)
-        _append(specs, _finger_box(manager, side, p0, p1, 1.18, 1.42), f"14_DEDO_{index}_FALANGE_1", DARK)
-        _append(specs, _joint_y(manager, side, p1, 1.34, 0.57), f"15_DEDO_{index}_BISAGRA_1", BLACK)
-        _append(specs, _finger_box(manager, side, p1, p2, 1.10, 1.34), f"16_DEDO_{index}_FALANGE_2", DARK)
-        _append(specs, _joint_y(manager, side, p2, 1.27, 0.52), f"17_DEDO_{index}_BISAGRA_2", BLACK)
-        _append(specs, _finger_box(manager, side, p2, p3, 1.02, 1.27), f"18_DEDO_{index}_FALANGE_3", DARK)
-        _segment(
-            manager,
-            specs,
-            side,
-            f"19_DEDO_{index}_PUNTA_BLANCA",
-            p3,
-            (p3[0] - offset * 0.025, p3[1], p3[2] - 0.78),
-            0.50,
-            WHITE,
-        )
+        p0 = (u0, -2.05, root_z)
+        p1 = (u0 - offset * 0.08, -2.35, p0[2] - l1)
+        p2 = (u0 - offset * 0.18, -2.58, p1[2] - l2)
+        p3 = (u0 - offset * 0.30, -2.70, p2[2] - l3)
+        g0, g1, g2, g3 = (_global_point(side, p) for p in (p0, p1, p2, p3))
+        _append(specs, _joint_y(manager, side, p0, 1.45, 0.66), f"10_DEDO_{index}_SERVO_BASE", BLACK)
+        _append(specs, _elliptical_segment(manager, g0, g1, 1.35, 1.22, 1.20), f"11_DEDO_{index}_FALANGE_1", DARK)
+        _append(specs, _joint_y(manager, side, p1, 1.34, 0.59), f"12_DEDO_{index}_BISAGRA_1", BLACK)
+        _append(specs, _elliptical_segment(manager, g1, g2, 1.22, 1.12, 1.08), f"13_DEDO_{index}_FALANGE_2", DARK)
+        _append(specs, _joint_y(manager, side, p2, 1.24, 0.53), f"14_DEDO_{index}_BISAGRA_2", BLACK)
+        _append(specs, _elliptical_segment(manager, g2, g3, 1.10, 1.00, 0.92), f"15_DEDO_{index}_FALANGE_3", DARK)
+        tip = (p3[0] - offset * 0.025, p3[1] - 0.05, p3[2] - 0.82)
+        _append(specs, _elliptical_segment(manager, g3, _global_point(side, tip), 0.92, 0.86, 0.72), f"16_DEDO_{index}_PUNTA_BLANCA", WHITE)
 
-    # Pulgar opuesto: sale hacia delante de la palma en vez de quedar dibujado
-    # en el mismo plano que los otros cuatro dedos.
-    # Pulgar lateral, con su servo en el centro lateral de la palma.
-    t0 = (palm_x - 2.75, -2.55, -29.35)
-    t1 = (palm_x - 4.15, -4.10, -30.45)
-    t2 = (palm_x - 5.20, -5.25, -32.05)
-    _append(specs, _joint_y(manager, side, t0, 1.55, 0.78), "20_PULGAR_NUDILLO", BLACK)
-    _append(specs, _finger_box(manager, side, t0, t1, 1.38, 1.58), "21_PULGAR_FALANGE_1", DARK)
-    _append(specs, _joint_y(manager, side, t1, 1.45, 0.68), "22_PULGAR_BISAGRA", BLACK)
-    _append(specs, _finger_box(manager, side, t1, t2, 1.22, 1.48), "23_PULGAR_FALANGE_2", DARK)
-    _segment(
-        manager,
-        specs,
-        side,
-        "24_PULGAR_PUNTA_BLANCA",
-        t2,
-        (t2[0] - 0.48, t2[1], t2[2] - 0.48),
-        0.55,
-        WHITE,
-    )
+    # Pulgar de dos falanges, anclado en el centro lateral de la palma y
+    # adelantado en Y para ser realmente oponible.
+    t0 = (thumb_root_x, -1.65, thumb_root_z)
+    t1 = (thumb_root_x - 1.65, -3.25, thumb_root_z - 1.20)
+    t2 = (thumb_root_x - 2.65, -4.15, thumb_root_z - 2.85)
+    gt0, gt1, gt2 = (_global_point(side, p) for p in (t0, t1, t2))
+    _append(specs, _joint_y(manager, side, t0, 1.70, 0.82), "17_PULGAR_SERVO_LATERAL", BLACK)
+    _append(specs, _elliptical_segment(manager, gt0, gt1, 1.55, 1.38, 1.30), "18_PULGAR_FALANGE_1", DARK)
+    _append(specs, _joint_y(manager, side, t1, 1.48, 0.70), "19_PULGAR_BISAGRA", BLACK)
+    _append(specs, _elliptical_segment(manager, gt1, gt2, 1.32, 1.20, 1.05), "20_PULGAR_FALANGE_2", DARK)
+    thumb_tip = (t2[0] - 0.55, t2[1] - 0.25, t2[2] - 0.50)
+    _append(specs, _elliptical_segment(manager, gt2, _global_point(side, thumb_tip), 1.06, 0.96, 0.80), "21_PULGAR_PUNTA_BLANCA", WHITE)
     return specs
 
 

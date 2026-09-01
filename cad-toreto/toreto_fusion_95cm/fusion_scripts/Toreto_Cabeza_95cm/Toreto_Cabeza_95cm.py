@@ -8,7 +8,7 @@ COMPONENT_NAME = "06_CABEZA"
 FEATURE_NAME = "CABEZA_EXTERIOR_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "CABEZA95_"
-VERSION = "2.3.0"
+VERSION = "3.0.0"
 _GEOMETRY_Z = 0.0
 WHITE = (238, 239, 237)
 BLACK = (18, 21, 24)
@@ -96,6 +96,50 @@ def _rounded_side(m, x, y, z, width_y, height, depth_x, radius):
     return body
 
 
+def _ellipse_side(m, x, y, z, depth_x, radius_z, radius_y):
+    """Prisma eliptico sobre X; su contorno se controla en la vista YZ."""
+    return m.createEllipticalCylinderOrCone(
+        _p(x - depth_x / 2, y, z),
+        radius_z,
+        radius_y,
+        _p(x + depth_x / 2, y, z),
+        radius_z,
+        _v(0, 0, 1),
+    )
+
+
+def _d_side_envelope(m, width_x, height, front_y, back_y):
+    """Silueta lateral en D medida en el lienzo derecho.
+
+    El frontal es muy curvo y sobresale; la tapa posterior es casi vertical.
+    Un rectangulo redondeado simetrico no puede reproducir ambas cosas.
+    """
+    center_z = height / 2.0
+    join_y = -3.35
+    front = _ellipse_side(
+        m,
+        0,
+        join_y,
+        center_z,
+        width_x,
+        height / 2.0,
+        join_y - front_y,
+    )
+    rear_width = back_y - join_y
+    rear = _rounded_side(
+        m,
+        0,
+        join_y + rear_width / 2.0,
+        center_z,
+        rear_width,
+        height - 1.2,
+        width_x,
+        1.25,
+    )
+    _union(m, front, rear, "envolvente lateral asimetrica")
+    return front
+
+
 def _ring(m, z1, z2, outer, inner):
     body = _ellipse(m, z1, z2, *outer); tool = _ellipse(m, z1 - .1, z2 + .1, *inner)
     if not m.booleanOperation(body, tool, adsk.fusion.BooleanTypes.DifferenceBooleanType):
@@ -160,8 +204,11 @@ def run(context):
         if _version(component) == VERSION and _has(component):
             ui.messageBox("La cabeza exterior ya existe; no se duplicó."); return
         replaced = _replace(component)
-        width = _value(design, "ancho_cabeza", 26.5)
-        depth = _value(design, "fondo_cabeza", 21.5)
+        # Medidas del contorno calibrado: X=-132..+132 mm y
+        # Y=-124..+89 mm. Se fijan aqui para no heredar el antiguo ancho de
+        # 285 mm que aun puede existir como parametro en documentos previos.
+        width = 26.4
+        depth = 21.3
         height = _value(design, "alto_cabeza", 16.0)
         _GEOMETRY_Z = sum(
             _value(design, name, fallback)
@@ -177,22 +224,23 @@ def run(context):
         screen_height = _ensure(design, "cabeza_pantalla_alto", "110.76 mm", "Altura del Waveshare LCD 7 en horizontal")
         screen_depth = _ensure(design, "cabeza_pantalla_fondo", "12 mm", "Profundidad del módulo de pantalla")
         clearance = _ensure(design, "cabeza_pantalla_holgura", "2 mm", "Holgura por lado del hueco de cabeza")
-        rs = width / 28.5; ds = depth / 17.5; hs = height / 15.7
+        rs = width / 26.4; ds = depth / 21.3; hs = height / 16.0
         r = lambda x: x * rs; d = lambda x: x * ds; z = lambda x: x * hs
         m = adsk.fusion.TemporaryBRepManager.get(); specs = []
-        # Carcasa prismática redondeada: reproduce el contorno rectangular de
-        # frente y la profundidad compacta visible en las vistas laterales.
+        # El frente usa el rectangulo redondeado medido. La segunda envolvente
+        # introduce el perfil lateral asimetrico en D: cara curva delante y
+        # tapa casi vertical detras. La interseccion es un casco visual 4-vistas.
         shell = _rounded(
-            m, 0, 0, z(8.05), width, height, depth, min(width, height) * .18
+            m, 0, -1.75, z(8.0), width, height, depth, z(2.55)
         )
-        side_envelope = _rounded_side(
-            m, 0, d(.18), z(8.05), depth, height, width + r(.6), min(depth, height) * .22
-        )
+        front_y = -12.4
+        back_y = 8.9
+        side_envelope = _d_side_envelope(m, width + r(.6), height, front_y, back_y)
         if not m.booleanOperation(shell, side_envelope, adsk.fusion.BooleanTypes.IntersectionBooleanType):
-            raise RuntimeError("No se pudo redondear la silueta lateral de la cabeza.")
+            raise RuntimeError("No se pudo cruzar la silueta frontal y lateral de la cabeza.")
         cavity_w = screen_width + 2 * clearance; cavity_h = screen_height + 2 * clearance
         cutter = _rounded(
-            m, 0, -depth / 2 + d(.55), z(8.15), cavity_w, cavity_h, d(2.7), min(cavity_w, cavity_h) * .10
+            m, 0, front_y + d(.55), z(8.15), cavity_w, cavity_h, d(2.7), min(cavity_w, cavity_h) * .10
         )
         if not m.booleanOperation(shell, cutter, adsk.fusion.BooleanTypes.DifferenceBooleanType):
             raise RuntimeError("No se pudo abrir el hueco frontal de la cabeza.")
@@ -200,7 +248,7 @@ def run(context):
         if not m.booleanOperation(shell, neck_cut, adsk.fusion.BooleanTypes.DifferenceBooleanType):
             raise RuntimeError("No se pudo abrir el paso inferior del cuello.")
         _append(specs, shell, "01_CARCASA_BLANCA_REDONDEADA", WHITE)
-        bezel_y = -depth / 2 - d(.08)
+        bezel_y = front_y - d(.08)
         bezel = _rounded(m, 0, bezel_y, z(8.15), cavity_w + r(1.0), cavity_h + z(1.0), d(.52), min(cavity_w, cavity_h) * .12)
         _append(specs, bezel, "02_MARCO_FRONTAL_NEGRO", BLACK)
         screen = _rounded(m, 0, bezel_y - d(.30), z(8.15), screen_width, screen_height, d(.34), min(screen_width, screen_height) * .08)
@@ -239,8 +287,7 @@ def run(context):
 
         # Tapa posterior blanca; el propio borde de Fusion marca una junta
         # fina, sin el marco negro grueso de la versión anterior.
-        back_y = depth / 2 + d(.06)
-        back_panel = _rounded(m, 0, back_y + d(.12), z(8.2), r(22.1), z(11.1), d(.24), z(1.5))
+        back_panel = _rounded(m, 0, back_y + d(.18), z(8.2), r(22.1), z(11.1), d(.24), z(1.5))
         _append(specs, back_panel, "04_TAPA_POSTERIOR_BLANCA", WHITE)
         for side, label in ((-1.0, "IZQ"), (1.0, "DER")):
             cx = side * (width / 2 + r(.12))

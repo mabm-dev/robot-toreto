@@ -3,7 +3,7 @@
   "type": "script",
   "author": "Robot Toreto",
   "description": "Aplica las cotas maestras de la lámina calibrada de 95 cm.",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "runOnStartup": false,
   "supportedOS": "windows"
 }

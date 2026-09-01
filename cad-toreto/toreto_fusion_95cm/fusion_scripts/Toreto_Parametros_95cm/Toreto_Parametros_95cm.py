@@ -9,7 +9,7 @@ import adsk.core
 import adsk.fusion
 
 
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 
 PARAMETERS = [
     ("altura_total", "950 mm", "Altura exterior total del robot"),
@@ -27,8 +27,8 @@ PARAMETERS = [
     ("ancho_pecho", "340 mm", "Separación exterior de hombros"),
     ("ancho_carcasa_pecho", "252 mm", "Anchura de la carcasa central del pecho"),
     ("fondo_pecho", "220 mm", "Profundidad máxima del pecho"),
-    ("ancho_cabeza", "285 mm", "Anchura exterior de la cabeza"),
-    ("fondo_cabeza", "215 mm", "Fondo exterior de la cabeza medido en los laterales"),
+    ("ancho_cabeza", "264 mm", "Anchura exterior medida en el lienzo frontal calibrado"),
+    ("fondo_cabeza", "213 mm", "Fondo exterior medido en el lienzo lateral calibrado"),
     ("largo_brazo", "170 mm", "Longitud del brazo superior"),
     ("largo_antebrazo", "150 mm", "Longitud del antebrazo"),
     ("espesor_pared", "3.2 mm", "Espesor nominal de las carcasas"),
@@ -73,7 +73,8 @@ def run(context):
             "Parámetros maestros 95 cm aplicados.\n\n"
             f"Creados: {created}\nActualizados: {updated}\n"
             "Z: base 200 · tronco 390 · cintura 540 · pecho 730 · cuello 790 · total 950 mm\n"
-            "Cabeza calculada: 160 mm",
+            "Cabeza calculada: 160 mm\n"
+            "Contorno cabeza: 264 mm frontal · 213 mm lateral",
             "Robot Toreto 95 cm",
         )
     except Exception:

@@ -2,8 +2,8 @@
   "autodeskProduct": "Fusion360",
   "type": "script",
   "author": "Robot Toreto / OpenAI Codex",
-  "description": "CABEZA EXTERIOR v2.2.0 - carcasa de referencia, pantalla parametrizada y ojos ciegos.",
-  "version": "2.3.0",
+  "description": "Cabeza reconstruida con casco visual frontal/lateral de los lienzos calibrados.",
+  "version": "3.0.0",
   "runOnStartup": false,
   "supportedOS": "windows"
 }
