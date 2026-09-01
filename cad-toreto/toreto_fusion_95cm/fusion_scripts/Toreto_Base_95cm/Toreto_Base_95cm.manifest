@@ -2,8 +2,8 @@
   "autodeskProduct": "Fusion360",
   "type": "script",
   "author": "Robot Toreto / OpenAI Codex",
-  "description": "BASE EXTERIOR v1.5.0 - separadores laterales, frontal limpio y cuatro ruedas mecanum.",
-  "version": "1.5.0",
+  "description": "BASE EXTERIOR v1.6.0 - diámetro de referencia y cuatro ruedas mecanum.",
+  "version": "1.6.0",
   "runOnStartup": false,
   "supportedOS": "windows"
 }

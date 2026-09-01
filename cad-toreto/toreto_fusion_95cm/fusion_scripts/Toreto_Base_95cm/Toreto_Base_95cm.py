@@ -9,7 +9,7 @@ import adsk.fusion
 
 COMPONENT_NAME = "01_BASE"
 BODY_PREFIX = "BASE95_"
-VERSION = "1.5.0"
+VERSION = "1.6.0"
 
 WHITE = (238, 239, 237)
 BLACK = (18, 21, 24)
