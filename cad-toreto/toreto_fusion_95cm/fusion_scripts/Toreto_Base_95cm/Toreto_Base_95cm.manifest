@@ -2,8 +2,8 @@
   "autodeskProduct": "Fusion360",
   "type": "script",
   "author": "Robot Toreto / OpenAI Codex",
-  "description": "BASE EXTERIOR v1.6.0 - diámetro de referencia y cuatro ruedas mecanum.",
-  "version": "1.7.0",
+  "description": "Base exterior calibrada y cuatro ruedas mecanum de 150 mm.",
+  "version": "1.8.0",
   "runOnStartup": false,
   "supportedOS": "windows"
 }

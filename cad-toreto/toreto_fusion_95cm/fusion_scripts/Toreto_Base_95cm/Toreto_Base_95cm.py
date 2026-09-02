@@ -9,7 +9,7 @@ import adsk.fusion
 
 COMPONENT_NAME = "01_BASE"
 BODY_PREFIX = "BASE95_"
-VERSION = "1.7.0"
+VERSION = "1.8.0"
 
 WHITE = (238, 239, 237)
 BLACK = (18, 21, 24)
@@ -296,8 +296,8 @@ def _build_specs(manager, radial_scale, height_scale):
         math.radians(value) for value in (-135.0, -45.0, 45.0, 135.0)
     )
     wheel_center_radius = rr(18.25)
-    wheel_z = rz(5.0)
-    well_radius = rr(5.05)
+    wheel_z = rz(8.45)
+    well_radius = rr(7.20)
 
     lower_skirt = _elliptical_ring(
         manager,
@@ -488,7 +488,7 @@ def _build_specs(manager, radial_scale, height_scale):
                 cy + axis_y * half_width,
                 wheel_z,
             ),
-            rr(4.35),
+            rr(6.65),
         )
         _append(specs, tire, f"20_RUEDA_{wheel_number}_{label}", BLACK)
 
@@ -504,7 +504,7 @@ def _build_specs(manager, radial_scale, height_scale):
                 cy + axis_y * rr(2.55),
                 wheel_z,
             ),
-            rr(1.95),
+            rr(2.60),
         )
         _append(specs, hub, f"21_BUJE_{wheel_number}", DARK)
 
@@ -525,7 +525,7 @@ def _build_specs(manager, radial_scale, height_scale):
         _append(specs, cap, f"22_LUZ_BUJE_{wheel_number}", CYAN)
 
         roller_count = 10
-        roller_ring = rr(3.88)
+        roller_ring = rr(6.10)
         for roller_index in range(roller_count):
             roller_angle = 2.0 * math.pi * roller_index / roller_count
             ring_offset = roller_ring * math.cos(roller_angle)
@@ -546,8 +546,8 @@ def _build_specs(manager, radial_scale, height_scale):
                 manager,
                 center,
                 direction,
-                rr(2.35),
-                rr(0.84),
+                rr(3.40),
+                rr(1.00),
             )
             _append(
                 specs,

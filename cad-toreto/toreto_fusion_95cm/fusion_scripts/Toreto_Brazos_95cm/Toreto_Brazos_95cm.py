@@ -10,7 +10,7 @@ COMPONENTS = ("07_BRAZO_IZQUIERDO", "08_BRAZO_DERECHO")
 FEATURE_NAME = "BRAZOS_EXTERIORES_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "BRAZO95_"
-VERSION = "3.6.0"
+VERSION = "3.7.0"
 
 # Desplazamiento de emergencia para Fusion: algunas versiones dejan una
 # ocurrencia recién creada en (0,0,0) aunque transform2 se haya escrito. El
@@ -582,8 +582,18 @@ def _build_v2(manager, side, upper_length, fore_length):
     # Centros leidos en el lienzo frontal: la carcasa blanca esta desplazada
     # hacia fuera respecto al eje negro del hombro y continua abriendose
     # hasta el codo. Antes se construia casi sobre el pecho.
-    upper_p1 = _global_point(side, (3.15, 0, 0.50))
-    upper_p2 = _global_point(side, (6.45, 0, 0.50 - upper_length))
+    upper_p1_local = (3.15, 0.0, 0.50)
+    upper_dx = 6.45 - upper_p1_local[0]
+    upper_dy = -4.20 - upper_p1_local[1]
+    upper_dz = math.sqrt(
+        max(
+            0.01,
+            upper_length * upper_length - upper_dx * upper_dx - upper_dy * upper_dy,
+        )
+    )
+    upper_p2_local = (6.45, -4.20, upper_p1_local[2] - upper_dz)
+    upper_p1 = _global_point(side, upper_p1_local)
+    upper_p2 = _global_point(side, upper_p2_local)
     _append(
         specs,
         _elliptical_segment(manager, upper_p1, upper_p2, 6.15, 6.7, 5.65),
@@ -606,13 +616,13 @@ def _build_v2(manager, side, upper_length, fore_length):
     # conserva la silueta casi vertical, mientras que en YZ aparece la
     # articulacion suave de los dos lienzos laterales. La raiz mantiene
     # exactamente los 150 mm del antebrazo en 3D.
-    fore_p1_local = (6.55, 0.35, upper_p2[2] - 1.30)
+    fore_p1_local = (6.55, -4.15, upper_p2[2] - 1.30)
     fore_dx = 10.45 - fore_p1_local[0]
-    fore_dy = 4.55 - fore_p1_local[1]
+    fore_dy = 6.20 - fore_p1_local[1]
     fore_dz = math.sqrt(
         max(0.01, fore_length * fore_length - fore_dx * fore_dx - fore_dy * fore_dy)
     )
-    fore_p2_local = (10.45, 4.55, fore_p1_local[2] - fore_dz)
+    fore_p2_local = (10.45, 6.20, fore_p1_local[2] - fore_dz)
     fore_p1 = _global_point(side, fore_p1_local)
     fore_p2 = _global_point(side, fore_p2_local)
     _append(
@@ -654,7 +664,7 @@ def _build_v2(manager, side, upper_length, fore_length):
     fore_flex = math.atan2(
         abs(fore_p2[1] - fore_p1[1]), abs(fore_p2[2] - fore_p1[2])
     )
-    palm_flex = fore_flex + math.radians(7.5)
+    palm_flex = fore_flex + math.radians(2.0)
     palm_top_local = (
         palm_x,
         wrist_bottom[1] + 0.12 * math.sin(palm_flex),
@@ -712,15 +722,15 @@ def _build_v2(manager, side, upper_length, fore_length):
         palm_bottom_local[2] - palm_top_local[2]
     ) * root_fraction
     finger_flex = tuple(
-        math.degrees(palm_flex) + extra for extra in (8.0, 20.0, 34.0)
+        math.degrees(palm_flex) + extra for extra in (2.0, 8.0, 16.0)
     )
     for index, (offset, lengths) in enumerate(zip(finger_offsets, finger_lengths), 1):
         u0 = root_center_x + offset
         l1, l2, l3 = lengths
         p0 = (u0, root_y, root_z)
-        p1 = _finger_step(p0, l1, finger_flex[0], -offset * 0.05)
-        p2 = _finger_step(p1, l2, finger_flex[1], -offset * 0.12)
-        p3 = _finger_step(p2, l3, finger_flex[2], -offset * 0.20)
+        p1 = _finger_step(p0, l1, finger_flex[0], -offset * 0.025)
+        p2 = _finger_step(p1, l2, finger_flex[1], -offset * 0.07)
+        p3 = _finger_step(p2, l3, finger_flex[2], -offset * 0.12)
         g0, g1, g2, g3 = (_global_point(side, p) for p in (p0, p1, p2, p3))
         root_joint = _joint_y(manager, side, p0, 1.45, 0.66)
         _union(manager, palm, root_joint, f"raiz interna dedo {index}")
@@ -735,8 +745,8 @@ def _build_v2(manager, side, upper_length, fore_length):
     # Pulgar de dos falanges, anclado en el centro lateral de la palma y
     # adelantado en Y para ser realmente oponible.
     t0 = (thumb_root_x, thumb_root_y, thumb_root_z)
-    t1 = _finger_step(t0, 2.48, math.degrees(palm_flex) + 18.0, -1.65)
-    t2 = _finger_step(t1, 2.25, math.degrees(palm_flex) + 34.0, -1.00)
+    t1 = _finger_step(t0, 2.48, math.degrees(palm_flex) + 10.0, -1.65)
+    t2 = _finger_step(t1, 2.25, math.degrees(palm_flex) + 20.0, -1.00)
     gt0, gt1, gt2 = (_global_point(side, p) for p in (t0, t1, t2))
     thumb_root = _joint_y(manager, side, t0, 1.70, 0.82)
     _union(manager, palm, thumb_root, "raiz interna pulgar")
@@ -776,8 +786,8 @@ def run(context):
         waist_h = _value(design, "alto_cintura", 15.0)
         chest_h = _value(design, "alto_pecho", 19.0)
         chest_w = _value(design, "ancho_pecho", 34.0)
-        upper_length = _value(design, "largo_brazo", 17.0)
-        fore_length = _value(design, "largo_antebrazo", 15.0)
+        upper_length = _value(design, "largo_brazo", 17.8)
+        fore_length = _value(design, "largo_antebrazo", 18.6)
         z_chest = base_h + trunk_h + waist_h
         shoulder_z = z_chest + chest_h * 0.88
         shoulder_x = chest_w / 2.0 + 0.15
