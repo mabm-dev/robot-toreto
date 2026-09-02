@@ -10,7 +10,7 @@ COMPONENTS = ("07_BRAZO_IZQUIERDO", "08_BRAZO_DERECHO")
 FEATURE_NAME = "BRAZOS_EXTERIORES_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "BRAZO95_"
-VERSION = "3.4.0"
+VERSION = "3.5.0"
 
 # Desplazamiento de emergencia para Fusion: algunas versiones dejan una
 # ocurrencia recién creada en (0,0,0) aunque transform2 se haya escrito. El
@@ -529,8 +529,21 @@ def _elliptical_segment(manager, p1, p2, width1, depth1, width2=None):
     )
 
 
+def _finger_step(point, length, flex_degrees, x_delta):
+    """Avanza una falange conservando su longitud tridimensional exacta."""
+    if abs(x_delta) >= length:
+        raise RuntimeError("Convergencia lateral mayor que la falange.")
+    projected = math.sqrt(length * length - x_delta * x_delta)
+    angle = math.radians(flex_degrees)
+    return (
+        point[0] + x_delta,
+        point[1] - projected * math.sin(angle),
+        point[2] - projected * math.cos(angle),
+    )
+
+
 def _build_v2(manager, side, upper_length, fore_length):
-    """Brazo neutral frontal, dimensionado y encadenado desde el hombro."""
+    """Brazo en pose ortografica comun a frontal y ambos laterales."""
     specs = []
 
     # El eje del hombro queda detras de una cubierta blanca estrecha. La cara
@@ -589,11 +602,19 @@ def _build_v2(manager, side, upper_length, fore_length):
         BLACK,
     )
 
-    # Antebrazo ligeramente abierto hacia fuera en la pose frontal. El
-    # lateral de referencia usa otra pose articulada; la geometria es la
-    # misma y no se falsea para intentar satisfacer dos poses simultaneas.
-    fore_p1 = _global_point(side, (6.55, 0, upper_p2[2] - 1.30))
-    fore_p2 = _global_point(side, (10.45, 0, fore_p1[2] - fore_length))
+    # La flexion sucede principalmente en profundidad: de frente el brazo
+    # conserva la silueta casi vertical, mientras que en YZ aparece la
+    # articulacion suave de los dos lienzos laterales. La raiz mantiene
+    # exactamente los 150 mm del antebrazo en 3D.
+    fore_p1_local = (6.55, -0.35, upper_p2[2] - 1.30)
+    fore_dx = 10.45 - fore_p1_local[0]
+    fore_dy = -4.55 - fore_p1_local[1]
+    fore_dz = math.sqrt(
+        max(0.01, fore_length * fore_length - fore_dx * fore_dx - fore_dy * fore_dy)
+    )
+    fore_p2_local = (10.45, -4.55, fore_p1_local[2] - fore_dz)
+    fore_p1 = _global_point(side, fore_p1_local)
+    fore_p2 = _global_point(side, fore_p2_local)
     _append(
         specs,
         _elliptical_segment(manager, fore_p1, fore_p2, 5.75, 5.55, 6.15),
@@ -605,6 +626,9 @@ def _build_v2(manager, side, upper_length, fore_length):
     # antebrazo. Este encadenado corrige el desfase que aparecio al pasar a
     # 170 + 150 mm manteniendo las coordenadas antiguas de la mano.
     wrist_top = fore_p2
+    fore_axis = tuple(
+        (fore_p2[index] - fore_p1[index]) / fore_length for index in range(3)
+    )
     # Tres anillos cortos de diametro constante. Sustituyen el cono largo
     # que aparecia entre antebrazo y palma y reproducen la muñeca apilada del
     # lienzo frontal.
@@ -612,7 +636,9 @@ def _build_v2(manager, side, upper_length, fore_length):
     for ring_index, (length, diameter) in enumerate(
         ((0.58, 5.25), (0.54, 4.90), (0.58, 4.62)), 1
     ):
-        ring_end = (wrist_cursor[0], wrist_cursor[1], wrist_cursor[2] - length)
+        ring_end = tuple(
+            wrist_cursor[index] + fore_axis[index] * length for index in range(3)
+        )
         _append(
             specs,
             _elliptical_segment(
@@ -625,8 +651,22 @@ def _build_v2(manager, side, upper_length, fore_length):
     wrist_bottom = wrist_cursor
 
     palm_x = abs(wrist_bottom[0])
-    palm_top = (side * palm_x, -0.08, wrist_bottom[2] - 0.12)
-    palm_bottom = (side * (palm_x + 0.62), -0.18, palm_top[2] - 7.00)
+    fore_flex = math.atan2(
+        abs(fore_p2[1] - fore_p1[1]), abs(fore_p2[2] - fore_p1[2])
+    )
+    palm_flex = fore_flex + math.radians(7.5)
+    palm_top_local = (
+        palm_x,
+        wrist_bottom[1] - 0.12 * math.sin(palm_flex),
+        wrist_bottom[2] - 0.12 * math.cos(palm_flex),
+    )
+    palm_bottom_local = (
+        palm_x + 0.62,
+        palm_top_local[1] - 7.00 * math.sin(palm_flex),
+        palm_top_local[2] - 7.00 * math.cos(palm_flex),
+    )
+    palm_top = _global_point(side, palm_top_local)
+    palm_bottom = _global_point(side, palm_bottom_local)
     # Una unica envolvente fina y ligeramente ensanchada hacia los nudillos.
     # Se eliminan las dos esferas de la 3.3: eran las responsables de la
     # lectura de "bola". El volumen sigue siendo continuo, pero ahora tiene
@@ -637,9 +677,15 @@ def _build_v2(manager, side, upper_length, fore_length):
     # Eminencia tenar integrada: forma parte de la palma y recibe el pulgar;
     # no es una placa o un bloque cuadrado independiente.
     thumb_root_x = palm_x - 2.08
-    thumb_root_z = palm_top[2] - 3.72
+    thumb_fraction = 0.54
+    thumb_root_y = palm_top_local[1] + (
+        palm_bottom_local[1] - palm_top_local[1]
+    ) * thumb_fraction
+    thumb_root_z = palm_top_local[2] + (
+        palm_bottom_local[2] - palm_top_local[2]
+    ) * thumb_fraction
     thumb_bulge = manager.createSphere(
-        _point(side * thumb_root_x, -0.32, thumb_root_z), 1.36
+        _point(side * thumb_root_x, thumb_root_y, thumb_root_z), 1.36
     )
     _union(manager, palm, thumb_bulge, "eminencia tenar integrada")
     # Cuatro raices embebidas dentro del volumen de la palma. Se fusionan con
@@ -655,14 +701,26 @@ def _build_v2(manager, side, upper_length, fore_length):
     # El eje de cada dedo nace dentro del tercio central de la palma. El
     # primer tramo avanza hacia la cara frontal antes de salir, de modo que
     # no parezca pegado al borde inferior ni apoyado sobre la superficie.
-    root_z = palm_bottom[2] + 2.82
+    root_fraction = 0.58
+    root_center_x = palm_top_local[0] + (
+        palm_bottom_local[0] - palm_top_local[0]
+    ) * root_fraction
+    root_y = palm_top_local[1] + (
+        palm_bottom_local[1] - palm_top_local[1]
+    ) * root_fraction
+    root_z = palm_top_local[2] + (
+        palm_bottom_local[2] - palm_top_local[2]
+    ) * root_fraction
+    finger_flex = tuple(
+        math.degrees(palm_flex) + extra for extra in (8.0, 20.0, 34.0)
+    )
     for index, (offset, lengths) in enumerate(zip(finger_offsets, finger_lengths), 1):
-        u0 = palm_x + 0.62 + offset
+        u0 = root_center_x + offset
         l1, l2, l3 = lengths
-        p0 = (u0, -0.52, root_z)
-        p1 = (u0 - offset * 0.05, -2.08, p0[2] - l1)
-        p2 = (u0 - offset * 0.14, -2.58, p1[2] - l2)
-        p3 = (u0 - offset * 0.28, -2.74, p2[2] - l3)
+        p0 = (u0, root_y, root_z)
+        p1 = _finger_step(p0, l1, finger_flex[0], -offset * 0.05)
+        p2 = _finger_step(p1, l2, finger_flex[1], -offset * 0.12)
+        p3 = _finger_step(p2, l3, finger_flex[2], -offset * 0.20)
         g0, g1, g2, g3 = (_global_point(side, p) for p in (p0, p1, p2, p3))
         root_joint = _joint_y(manager, side, p0, 1.45, 0.66)
         _union(manager, palm, root_joint, f"raiz interna dedo {index}")
@@ -676,9 +734,9 @@ def _build_v2(manager, side, upper_length, fore_length):
 
     # Pulgar de dos falanges, anclado en el centro lateral de la palma y
     # adelantado en Y para ser realmente oponible.
-    t0 = (thumb_root_x, -1.65, thumb_root_z)
-    t1 = (thumb_root_x - 1.65, -3.25, thumb_root_z - 1.20)
-    t2 = (thumb_root_x - 2.65, -4.15, thumb_root_z - 2.85)
+    t0 = (thumb_root_x, thumb_root_y, thumb_root_z)
+    t1 = _finger_step(t0, 2.48, math.degrees(palm_flex) + 18.0, -1.65)
+    t2 = _finger_step(t1, 2.25, math.degrees(palm_flex) + 34.0, -1.00)
     gt0, gt1, gt2 = (_global_point(side, p) for p in (t0, t1, t2))
     thumb_root = _joint_y(manager, side, t0, 1.70, 0.82)
     _union(manager, palm, thumb_root, "raiz interna pulgar")
