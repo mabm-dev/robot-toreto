@@ -10,7 +10,7 @@ COMPONENTS = ("07_BRAZO_IZQUIERDO", "08_BRAZO_DERECHO")
 FEATURE_NAME = "BRAZOS_EXTERIORES_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "BRAZO95_"
-VERSION = "3.3.0"
+VERSION = "3.4.0"
 
 # Desplazamiento de emergencia para Fusion: algunas versiones dejan una
 # ocurrencia recién creada en (0,0,0) aunque transform2 se haya escrito. El
@@ -625,25 +625,21 @@ def _build_v2(manager, side, upper_length, fore_length):
     wrist_bottom = wrist_cursor
 
     palm_x = abs(wrist_bottom[0])
-    palm_top = (side * palm_x, -0.10, wrist_bottom[2] - 0.12)
-    palm_bottom = (side * (palm_x + 0.70), -0.28, palm_top[2] - 7.10)
-    # Palma de seccion casi constante con dos lobulos fusionados. Asi tiene
-    # talon, centro y zona de nudillos sin convertirse en otro cono.
-    palm = _elliptical_segment(manager, palm_top, palm_bottom, 6.25, 4.75)
-    heel = manager.createSphere(
-        _point(side * palm_x, -0.18, palm_top[2] - 1.05), 2.42
+    palm_top = (side * palm_x, -0.08, wrist_bottom[2] - 0.12)
+    palm_bottom = (side * (palm_x + 0.62), -0.18, palm_top[2] - 7.00)
+    # Una unica envolvente fina y ligeramente ensanchada hacia los nudillos.
+    # Se eliminan las dos esferas de la 3.3: eran las responsables de la
+    # lectura de "bola". El volumen sigue siendo continuo, pero ahora tiene
+    # el espesor y la silueta alargada del lienzo.
+    palm = _elliptical_segment(
+        manager, palm_top, palm_bottom, 5.15, 2.85, 5.85
     )
-    _union(manager, palm, heel, "talon redondeado de la palma")
-    palm_core = manager.createSphere(
-        _point(side * (palm_x + 0.42), -0.30, palm_bottom[2] + 3.25), 3.42
-    )
-    _union(manager, palm, palm_core, "volumen central de la palma")
     # Eminencia tenar integrada: forma parte de la palma y recibe el pulgar;
     # no es una placa o un bloque cuadrado independiente.
-    thumb_root_x = palm_x - 2.35
-    thumb_root_z = palm_top[2] - 3.65
+    thumb_root_x = palm_x - 2.08
+    thumb_root_z = palm_top[2] - 3.72
     thumb_bulge = manager.createSphere(
-        _point(side * thumb_root_x, -0.55, thumb_root_z), 1.62
+        _point(side * thumb_root_x, -0.32, thumb_root_z), 1.36
     )
     _union(manager, palm, thumb_bulge, "eminencia tenar integrada")
     # Cuatro raices embebidas dentro del volumen de la palma. Se fusionan con
@@ -656,12 +652,15 @@ def _build_v2(manager, side, upper_length, fore_length):
         (2.65, 2.40, 1.95),
         (2.25, 2.05, 1.70),
     )
-    root_z = palm_bottom[2] + 3.00
+    # El eje de cada dedo nace dentro del tercio central de la palma. El
+    # primer tramo avanza hacia la cara frontal antes de salir, de modo que
+    # no parezca pegado al borde inferior ni apoyado sobre la superficie.
+    root_z = palm_bottom[2] + 2.82
     for index, (offset, lengths) in enumerate(zip(finger_offsets, finger_lengths), 1):
-        u0 = palm_x + 0.70 + offset
+        u0 = palm_x + 0.62 + offset
         l1, l2, l3 = lengths
-        p0 = (u0, -1.85, root_z)
-        p1 = (u0 - offset * 0.05, -2.32, p0[2] - l1)
+        p0 = (u0, -0.52, root_z)
+        p1 = (u0 - offset * 0.05, -2.08, p0[2] - l1)
         p2 = (u0 - offset * 0.14, -2.58, p1[2] - l2)
         p3 = (u0 - offset * 0.28, -2.74, p2[2] - l3)
         g0, g1, g2, g3 = (_global_point(side, p) for p in (p0, p1, p2, p3))

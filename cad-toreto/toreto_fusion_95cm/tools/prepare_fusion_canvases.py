@@ -72,7 +72,7 @@ VIEW_MIRRORS = {
     "frontal": False,
     "posterior": False,
     "lateral_derecho": False,
-    "lateral_izquierdo": True,
+    "lateral_izquierdo": False,
 }
 
 # El rotulo SIDE invade el margen superior del recorte lateral izquierdo.

@@ -5598,7 +5598,7 @@
       "axis_drift_mm": 5.6,
       "axis_error_mm": 5.6,
       "canvas_anchor_x_px": 1279.99,
-      "mirror_for_fusion": true
+      "mirror_for_fusion": false
     }
   }
 }

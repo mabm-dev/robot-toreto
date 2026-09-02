@@ -53,7 +53,7 @@ DEFAULT_CANVAS_SPECS = (
         "toreto_95cm_lateral_izquierdo.png",
         "YZ",
         1280.00,
-        True,
+        False,
         False,
     ),
     (
@@ -69,7 +69,7 @@ DEFAULT_CANVAS_SPECS = (
 VIEW_ORDER = (
     ("frontal", "PATRON_01_FRONTAL_95CM", "XZ", False, True),
     ("posterior", "PATRON_02_POSTERIOR_95CM", "XZ", True, False),
-    ("lateral_izquierdo", "PATRON_03_LATERAL_IZQUIERDO_95CM", "YZ", True, False),
+    ("lateral_izquierdo", "PATRON_03_LATERAL_IZQUIERDO_95CM", "YZ", False, False),
     ("lateral_derecho", "PATRON_04_LATERAL_DERECHO_95CM", "YZ", False, False),
 )
 

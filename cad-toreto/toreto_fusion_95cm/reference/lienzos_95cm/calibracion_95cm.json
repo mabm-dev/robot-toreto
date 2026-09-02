@@ -103,7 +103,7 @@
       "canvas_offset_x": 209,
       "fusion_anchor_x_px": 1279.99,
       "source_axis_x_px": 1800,
-      "mirror_for_fusion": true,
+      "mirror_for_fusion": false,
       "content_box_px": [
         209,
         50,
