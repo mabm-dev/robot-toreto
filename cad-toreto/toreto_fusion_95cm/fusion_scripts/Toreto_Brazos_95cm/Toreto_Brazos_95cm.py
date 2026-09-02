@@ -10,7 +10,7 @@ COMPONENTS = ("07_BRAZO_IZQUIERDO", "08_BRAZO_DERECHO")
 FEATURE_NAME = "BRAZOS_EXTERIORES_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "BRAZO95_"
-VERSION = "3.5.0"
+VERSION = "3.6.0"
 
 # Desplazamiento de emergencia para Fusion: algunas versiones dejan una
 # ocurrencia recién creada en (0,0,0) aunque transform2 se haya escrito. El
@@ -537,7 +537,7 @@ def _finger_step(point, length, flex_degrees, x_delta):
     angle = math.radians(flex_degrees)
     return (
         point[0] + x_delta,
-        point[1] - projected * math.sin(angle),
+        point[1] + projected * math.sin(angle),
         point[2] - projected * math.cos(angle),
     )
 
@@ -606,13 +606,13 @@ def _build_v2(manager, side, upper_length, fore_length):
     # conserva la silueta casi vertical, mientras que en YZ aparece la
     # articulacion suave de los dos lienzos laterales. La raiz mantiene
     # exactamente los 150 mm del antebrazo en 3D.
-    fore_p1_local = (6.55, -0.35, upper_p2[2] - 1.30)
+    fore_p1_local = (6.55, 0.35, upper_p2[2] - 1.30)
     fore_dx = 10.45 - fore_p1_local[0]
-    fore_dy = -4.55 - fore_p1_local[1]
+    fore_dy = 4.55 - fore_p1_local[1]
     fore_dz = math.sqrt(
         max(0.01, fore_length * fore_length - fore_dx * fore_dx - fore_dy * fore_dy)
     )
-    fore_p2_local = (10.45, -4.55, fore_p1_local[2] - fore_dz)
+    fore_p2_local = (10.45, 4.55, fore_p1_local[2] - fore_dz)
     fore_p1 = _global_point(side, fore_p1_local)
     fore_p2 = _global_point(side, fore_p2_local)
     _append(
@@ -657,12 +657,12 @@ def _build_v2(manager, side, upper_length, fore_length):
     palm_flex = fore_flex + math.radians(7.5)
     palm_top_local = (
         palm_x,
-        wrist_bottom[1] - 0.12 * math.sin(palm_flex),
+        wrist_bottom[1] + 0.12 * math.sin(palm_flex),
         wrist_bottom[2] - 0.12 * math.cos(palm_flex),
     )
     palm_bottom_local = (
         palm_x + 0.62,
-        palm_top_local[1] - 7.00 * math.sin(palm_flex),
+        palm_top_local[1] + 7.00 * math.sin(palm_flex),
         palm_top_local[2] - 7.00 * math.cos(palm_flex),
     )
     palm_top = _global_point(side, palm_top_local)
@@ -729,7 +729,7 @@ def _build_v2(manager, side, upper_length, fore_length):
         _append(specs, _finger_box(manager, side, p1, p2, 1.64, 1.48), f"13_DEDO_{index}_FALANGE_2", DARK)
         _append(specs, _joint_y(manager, side, p2, 1.52, 0.65), f"14_DEDO_{index}_BISAGRA_2", BLACK)
         _append(specs, _finger_box(manager, side, p2, p3, 1.48, 1.36), f"15_DEDO_{index}_FALANGE_3", DARK)
-        tip = (p3[0] - offset * 0.025, p3[1] - 0.05, p3[2] - 0.82)
+        tip = (p3[0] - offset * 0.025, p3[1] + 0.05, p3[2] - 0.82)
         _append(specs, _elliptical_segment(manager, g3, _global_point(side, tip), 1.38, 1.26, 1.08), f"16_DEDO_{index}_PUNTA_BLANCA", WHITE)
 
     # Pulgar de dos falanges, anclado en el centro lateral de la palma y
@@ -743,7 +743,7 @@ def _build_v2(manager, side, upper_length, fore_length):
     _append(specs, _elliptical_segment(manager, gt0, gt1, 1.55, 1.38, 1.30), "18_PULGAR_FALANGE_1", DARK)
     _append(specs, _joint_y(manager, side, t1, 1.48, 0.70), "19_PULGAR_BISAGRA", BLACK)
     _append(specs, _elliptical_segment(manager, gt1, gt2, 1.32, 1.20, 1.05), "20_PULGAR_FALANGE_2", DARK)
-    thumb_tip = (t2[0] - 0.55, t2[1] - 0.25, t2[2] - 0.50)
+    thumb_tip = (t2[0] - 0.55, t2[1] + 0.25, t2[2] - 0.50)
     _append(specs, _elliptical_segment(manager, gt2, _global_point(side, thumb_tip), 1.06, 0.96, 0.80), "21_PULGAR_PUNTA_BLANCA", WHITE)
     _append(specs, palm, "08_PALMA_ANATOMICA_CONTINUA", DARK)
     return specs
