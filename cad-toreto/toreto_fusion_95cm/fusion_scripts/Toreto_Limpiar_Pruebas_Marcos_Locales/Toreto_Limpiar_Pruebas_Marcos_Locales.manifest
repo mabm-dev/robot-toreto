@@ -1,0 +1,9 @@
+{
+  "autodeskProduct": "Fusion360",
+  "type": "script",
+  "author": "Robot Toreto",
+  "description": "Elimina pruebas antiguas de brazo por marcos locales y conserva la versión 01_35.",
+  "version": "1.0.1",
+  "runOnStartup": false,
+  "supportedOS": "windows"
+}

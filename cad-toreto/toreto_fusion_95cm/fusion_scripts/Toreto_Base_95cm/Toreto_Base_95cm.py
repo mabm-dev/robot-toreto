@@ -9,7 +9,7 @@ import adsk.fusion
 
 COMPONENT_NAME = "01_BASE"
 BODY_PREFIX = "BASE95_"
-VERSION = "1.8.0"
+VERSION = "1.9.1"
 
 WHITE = (238, 239, 237)
 BLACK = (18, 21, 24)
@@ -145,23 +145,24 @@ def _elliptical_ring(
 
 def _cut_wheel_wells(manager, body, wheel_angles, center_radius, z, radius):
     for angle in wheel_angles:
-        axis_x = math.cos(angle)
-        axis_y = math.sin(angle)
+        side = -1.0 if math.cos(angle) < 0 else 1.0
+        cx = side * center_radius
+        cy = (-1.0 if math.sin(angle) < 0 else 1.0) * 14.8
         cutter = _cylinder(
             manager,
             _point(
-                axis_x * (center_radius - 5.0),
-                axis_y * (center_radius - 5.0),
+                cx - 5.0,
+                cy,
                 z,
             ),
             _point(
-                axis_x * (center_radius + 5.0),
-                axis_y * (center_radius + 5.0),
+                cx + 5.0,
+                cy,
                 z,
             ),
             radius,
         )
-        _difference(manager, body, cutter, "paso de rueda radial")
+        _difference(manager, body, cutter, "paso de rueda paralelo a X")
     return body
 
 
@@ -295,9 +296,28 @@ def _build_specs(manager, radial_scale, height_scale):
     wheel_angles = tuple(
         math.radians(value) for value in (-135.0, -45.0, 45.0, 135.0)
     )
-    wheel_center_radius = rr(18.25)
-    wheel_z = rz(8.45)
-    well_radius = rr(7.20)
+    # Centros medidos en la lamina: via 370 mm, batalla 296 mm.
+    # Los ejes son paralelos a X: bujes en laterales, rodillos en frontal.
+    wheel_center_radius = 18.5
+    roller_count = 10
+    roller_length = 3.4
+    roller_radius = 1.0
+    # Diez rodillos: el mas bajo esta a 18 grados de la vertical.
+    # Resolver su envolvente para un diametro exterior de 150 mm.
+    contact_angle = 2 * math.pi * 2 / roller_count
+    roller_ring = (
+        7.5 - roller_radius
+        - roller_length / 2 * 0.72 * abs(math.cos(contact_angle))
+        / math.sqrt(1 + 0.72 ** 2)
+    ) / abs(math.sin(contact_angle))
+    # Incluir las puntas de los rodillos, no solo el disco, al apoyar en Z=0.
+    wheel_z = max(
+        abs(roller_ring * math.sin(2 * math.pi * i / roller_count))
+        + roller_length / 2 * abs(0.72 * math.cos(2 * math.pi * i / roller_count))
+        / math.sqrt(1 + 0.72 ** 2) + roller_radius
+        for i in range(roller_count)
+    )
+    well_radius = wheel_z + 0.4
 
     lower_skirt = _elliptical_ring(
         manager,
@@ -469,13 +489,13 @@ def _build_specs(manager, radial_scale, height_scale):
     for wheel_number, (wheel_angle, label) in enumerate(
         zip(wheel_angles, wheel_labels), start=1
     ):
-        axis_x = math.cos(wheel_angle)
-        axis_y = math.sin(wheel_angle)
+        axis_x = -1.0 if math.cos(wheel_angle) < 0 else 1.0
+        axis_y = 0.0
         tangent_x = -axis_y
         tangent_y = axis_x
         cx = axis_x * wheel_center_radius
-        cy = axis_y * wheel_center_radius
-        half_width = rr(2.2)
+        cy = (-1.0 if math.sin(wheel_angle) < 0 else 1.0) * 14.8
+        half_width = 2.8
         tire = _cylinder(
             manager,
             _point(
@@ -488,7 +508,7 @@ def _build_specs(manager, radial_scale, height_scale):
                 cy + axis_y * half_width,
                 wheel_z,
             ),
-            rr(6.65),
+            5.65,
         )
         _append(specs, tire, f"20_RUEDA_{wheel_number}_{label}", BLACK)
 
@@ -524,8 +544,6 @@ def _build_specs(manager, radial_scale, height_scale):
         )
         _append(specs, cap, f"22_LUZ_BUJE_{wheel_number}", CYAN)
 
-        roller_count = 10
-        roller_ring = rr(6.10)
         for roller_index in range(roller_count):
             roller_angle = 2.0 * math.pi * roller_index / roller_count
             ring_offset = roller_ring * math.cos(roller_angle)
@@ -546,8 +564,8 @@ def _build_specs(manager, radial_scale, height_scale):
                 manager,
                 center,
                 direction,
-                rr(3.40),
-                rr(1.00),
+                roller_length,
+                roller_radius,
             )
             _append(
                 specs,

@@ -1,0 +1,9 @@
+{
+  "autodeskProduct": "Fusion360",
+  "type": "script",
+  "author": "Robot Toreto",
+  "description": "Gira 10 grados el cardan del pulgar y reconstruye solo sus cuatro bisagras para liberar el lateral de la palma.",
+  "version": "1.0.37",
+  "runOnStartup": false,
+  "supportedOS": "windows"
+}

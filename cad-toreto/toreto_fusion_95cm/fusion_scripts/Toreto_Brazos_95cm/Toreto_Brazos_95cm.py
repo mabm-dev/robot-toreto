@@ -10,7 +10,7 @@ COMPONENTS = ("07_BRAZO_IZQUIERDO", "08_BRAZO_DERECHO")
 FEATURE_NAME = "BRAZOS_EXTERIORES_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "BRAZO95_"
-VERSION = "3.7.0"
+VERSION = "3.9.0"
 
 # Desplazamiento de emergencia para Fusion: algunas versiones dejan una
 # ocurrencia recién creada en (0,0,0) aunque transform2 se haya escrito. El
@@ -558,9 +558,9 @@ def _build_v2(manager, side, upper_length, fore_length):
         specs,
         _cylinder(
             manager,
-            _point(side * 3.75, 0, -1.0),
-            _point(side * 4.55, 0, -1.0),
-            3.05,
+            _point(side * 6.18, 0, -1.0),
+            _point(side * 6.42, 0, -1.0),
+            3.85,
         ),
         "02_TAPA_CIRCULAR_HOMBRO",
         DARK,
@@ -569,9 +569,9 @@ def _build_v2(manager, side, upper_length, fore_length):
         specs,
         _cylinder(
             manager,
-            _point(side * 4.48, 0, -1.0),
-            _point(side * 4.72, 0, -1.0),
-            1.42,
+            _point(side * 6.40, 0, -1.0),
+            _point(side * 6.52, 0, -1.0),
+            1.80,
         ),
         "03_DISCO_CENTRAL_HOMBRO",
         BLACK,
@@ -594,9 +594,21 @@ def _build_v2(manager, side, upper_length, fore_length):
     upper_p2_local = (6.45, -4.20, upper_p1_local[2] - upper_dz)
     upper_p1 = _global_point(side, upper_p1_local)
     upper_p2 = _global_point(side, upper_p2_local)
+    upper_shell = _elliptical_segment(
+        manager, upper_p1, upper_p2, 6.15, 6.7, 5.65
+    )
+    # Cabeza circular de la carcasa en YZ, envolviendo el eje del hombro.
+    # El tubo anterior dejaba un corte plano y el motor negro al descubierto.
+    shoulder_shell = _cylinder(
+        manager,
+        _point(side * 0.15, 0, -1.0),
+        _point(side * 6.18, 0, -1.0),
+        4.80,
+    )
+    _union(manager, upper_shell, shoulder_shell, "hombro redondeado continuo")
     _append(
         specs,
-        _elliptical_segment(manager, upper_p1, upper_p2, 6.15, 6.7, 5.65),
+        upper_shell,
         "04_CARCASA_BRAZO_SUPERIOR",
         WHITE,
     )
@@ -604,8 +616,8 @@ def _build_v2(manager, side, upper_length, fore_length):
         specs,
         _cylinder(
             manager,
-            _point(upper_p2[0] - 3.05, 0, upper_p2[2]),
-            _point(upper_p2[0] + 3.05, 0, upper_p2[2]),
+            _point(upper_p2[0] - 3.05, upper_p2[1], upper_p2[2]),
+            _point(upper_p2[0] + 3.05, upper_p2[1], upper_p2[2]),
             1.72,
         ),
         "05_CODO_EJE_X",
@@ -659,6 +671,7 @@ def _build_v2(manager, side, upper_length, fore_length):
         )
         wrist_cursor = ring_end
     wrist_bottom = wrist_cursor
+    hand_spec_start = len(specs)
 
     palm_x = abs(wrist_bottom[0])
     fore_flex = math.atan2(
@@ -682,7 +695,7 @@ def _build_v2(manager, side, upper_length, fore_length):
     # lectura de "bola". El volumen sigue siendo continuo, pero ahora tiene
     # el espesor y la silueta alargada del lienzo.
     palm = _elliptical_segment(
-        manager, palm_top, palm_bottom, 5.15, 2.85, 5.85
+        manager, palm_top, palm_bottom, 5.15, 2.40, 6.40
     )
     # Eminencia tenar integrada: forma parte de la palma y recibe el pulgar;
     # no es una placa o un bloque cuadrado independiente.
@@ -727,6 +740,9 @@ def _build_v2(manager, side, upper_length, fore_length):
     for index, (offset, lengths) in enumerate(zip(finger_offsets, finger_lengths), 1):
         u0 = root_center_x + offset
         l1, l2, l3 = lengths
+        # Dos centimetros discurren dentro de la palma como raiz motriz;
+        # no deben descontarse de la longitud visible de la primera falange.
+        l1 += 2.0
         p0 = (u0, root_y, root_z)
         p1 = _finger_step(p0, l1, finger_flex[0], -offset * 0.025)
         p2 = _finger_step(p1, l2, finger_flex[1], -offset * 0.07)
@@ -756,6 +772,17 @@ def _build_v2(manager, side, upper_length, fore_length):
     thumb_tip = (t2[0] - 0.55, t2[1] + 0.25, t2[2] - 0.50)
     _append(specs, _elliptical_segment(manager, gt2, _global_point(side, thumb_tip), 1.06, 0.96, 0.80), "21_PULGAR_PUNTA_BLANCA", WHITE)
     _append(specs, palm, "08_PALMA_ANATOMICA_CONTINUA", DARK)
+    # Pronacion: el dorso se ve en el lateral y la mano algo de canto en el
+    # frontal, como en los lienzos. Girar la mano completa conserva juntas
+    # y raices; no se recolocan dedos individualmente sobre la superficie.
+    rotation = adsk.core.Matrix3D.create()
+    if not rotation.setToRotation(
+        math.radians(-side * 45.0), _vector(*fore_axis), _point(*wrist_bottom)
+    ):
+        raise RuntimeError("No se pudo definir el giro de la mano.")
+    for body, name, _ in specs[hand_spec_start:]:
+        if not manager.transform(body, rotation):
+            raise RuntimeError(f"No se pudo orientar {name}.")
     return specs
 
 

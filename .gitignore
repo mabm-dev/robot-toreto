@@ -23,3 +23,6 @@ __pycache__/
 *.bak
 *~
 docs/CUADERNO.md
+
+# Artefactos locales de desarrollo y validacion
+work/

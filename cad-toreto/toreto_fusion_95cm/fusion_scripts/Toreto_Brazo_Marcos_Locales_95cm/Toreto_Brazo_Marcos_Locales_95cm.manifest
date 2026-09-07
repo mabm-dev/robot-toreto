@@ -1,0 +1,9 @@
+{
+  "autodeskProduct": "Fusion360",
+  "type": "script",
+  "author": "Robot Toreto",
+  "description": "Invierte el cierre de los cuatro dedos principales y conserva el pulgar en su lado con giro hacia dentro.",
+  "version": "1.0.35",
+  "runOnStartup": false,
+  "supportedOS": "windows"
+}
