@@ -1,0 +1,10 @@
+{
+  "autodeskProduct": "Fusion360",
+  "type": "script",
+  "author": "Robot Toreto",
+  "description": {
+    "": "Prueba aislada de holguras de palma. Solo documentos vacios; no guarda."
+  },
+  "version": "1.0.44",
+  "supportedOS": "windows"
+}

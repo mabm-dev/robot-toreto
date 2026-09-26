@@ -1,0 +1,913 @@
+{
+  "status": "collisions_detected",
+  "intervals": 12,
+  "tolerance_mm3": 0.01,
+  "excluded": "Main palm and same-rigid-group pairs",
+  "limitation": "Discrete synchronized closing only; not independent digit motion or continuous clearance",
+  "axes_deg": [
+    0.0,
+    76.0
+  ],
+  "pairs": [
+    {
+      "a": "07_DEDO_1_FALANGE_4",
+      "b": "09_PULGAR_FALANGE_2",
+      "group_a": "MANO_01_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 1632.2034014376538,
+      "worst_sample": 11
+    },
+    {
+      "a": "07_DEDO_2_FALANGE_4",
+      "b": "09_PULGAR_FALANGE_2",
+      "group_a": "MANO_02_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 1244.337462883486,
+      "worst_sample": 12
+    },
+    {
+      "a": "07_DEDO_1_FALANGE_4",
+      "b": "10_PULGAR_NUDILLO_3_CASQUILLO_CENTRAL",
+      "group_a": "MANO_01_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 849.6825125714364,
+      "worst_sample": 12
+    },
+    {
+      "a": "07_DEDO_2_FALANGE_4",
+      "b": "09_PULGAR_FALANGE_3",
+      "group_a": "MANO_02_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 827.0333970024404,
+      "worst_sample": 10
+    },
+    {
+      "a": "07_DEDO_2_FALANGE_3",
+      "b": "09_PULGAR_FALANGE_3",
+      "group_a": "MANO_02_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 588.1383139866623,
+      "worst_sample": 12
+    },
+    {
+      "a": "07_DEDO_1_FALANGE_4",
+      "b": "10_PULGAR_NUDILLO_3_CASQUILLO_B",
+      "group_a": "MANO_01_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_01",
+      "max_volume_mm3": 506.5789515117496,
+      "worst_sample": 12
+    },
+    {
+      "a": "07_DEDO_2_FALANGE_4",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_A",
+      "group_a": "MANO_02_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 480.62477097273916,
+      "worst_sample": 11
+    },
+    {
+      "a": "08_DEDO_2_NUDILLO_4_CASQUILLO_CENTRAL",
+      "b": "09_PULGAR_FALANGE_3",
+      "group_a": "MANO_02_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 456.90041086618425,
+      "worst_sample": 11
+    },
+    {
+      "a": "07_DEDO_2_FALANGE_4",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_CENTRAL",
+      "group_a": "MANO_02_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 415.14854846422367,
+      "worst_sample": 11
+    },
+    {
+      "a": "07_DEDO_1_FALANGE_4",
+      "b": "09_PULGAR_FALANGE_1",
+      "group_a": "MANO_01_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_01",
+      "max_volume_mm3": 388.40072437958196,
+      "worst_sample": 12
+    },
+    {
+      "a": "07_DEDO_1_FALANGE_4",
+      "b": "09_PULGAR_FALANGE_3",
+      "group_a": "MANO_01_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 371.26074928777973,
+      "worst_sample": 9
+    },
+    {
+      "a": "07_DEDO_3_FALANGE_3",
+      "b": "09_PULGAR_FALANGE_3",
+      "group_a": "MANO_03_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 319.6656628990342,
+      "worst_sample": 12
+    },
+    {
+      "a": "08_DEDO_2_NUDILLO_4_CASQUILLO_CENTRAL",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_CENTRAL",
+      "group_a": "MANO_02_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 315.99207219755243,
+      "worst_sample": 12
+    },
+    {
+      "a": "08_DEDO_2_NUDILLO_4_CASQUILLO_A",
+      "b": "09_PULGAR_FALANGE_3",
+      "group_a": "MANO_02_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 293.72757462745096,
+      "worst_sample": 11
+    },
+    {
+      "a": "07_DEDO_2_FALANGE_3",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_B",
+      "group_a": "MANO_02_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 274.4844717132109,
+      "worst_sample": 12
+    },
+    {
+      "a": "07_DEDO_1_FALANGE_4",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_CENTRAL",
+      "group_a": "MANO_01_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 251.1564074530388,
+      "worst_sample": 10
+    },
+    {
+      "a": "09_PULGAR_CARDAN_INTERMEDIO",
+      "b": "10_PULGAR_NUDILLO_2_CASQUILLO_CENTRAL",
+      "group_a": "MANO_05_PULGAR_CARDAN",
+      "group_b": "MANO_05_PULGAR_FALANGE_01",
+      "max_volume_mm3": 235.15771361037534,
+      "worst_sample": 5
+    },
+    {
+      "a": "10_PULGAR_NUDILLO_1_CASQUILLO_CENTRAL",
+      "b": "10_PULGAR_NUDILLO_2_CASQUILLO_CENTRAL",
+      "group_a": "MANO_05_PULGAR_CARDAN",
+      "group_b": "MANO_05_PULGAR_FALANGE_01",
+      "max_volume_mm3": 231.11155489104408,
+      "worst_sample": 0
+    },
+    {
+      "a": "07_DEDO_1_FALANGE_4",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_A",
+      "group_a": "MANO_01_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 211.6364310314638,
+      "worst_sample": 10
+    },
+    {
+      "a": "09_PULGAR_FALANGE_1",
+      "b": "10_PULGAR_NUDILLO_3_CASQUILLO_CENTRAL",
+      "group_a": "MANO_05_PULGAR_FALANGE_01",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 207.5236550281354,
+      "worst_sample": 3
+    },
+    {
+      "a": "09_PULGAR_FALANGE_2",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_CENTRAL",
+      "group_a": "MANO_05_PULGAR_FALANGE_02",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 207.40931041876732,
+      "worst_sample": 2
+    },
+    {
+      "a": "07_DEDO_1_FALANGE_4",
+      "b": "10_PULGAR_NUDILLO_3_PASADOR",
+      "group_a": "MANO_01_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_01",
+      "max_volume_mm3": 190.6749616586545,
+      "worst_sample": 12
+    },
+    {
+      "a": "08_DEDO_3_NUDILLO_4_CASQUILLO_B",
+      "b": "09_PULGAR_FALANGE_3",
+      "group_a": "MANO_03_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 179.59329984540423,
+      "worst_sample": 12
+    },
+    {
+      "a": "08_DEDO_2_NUDILLO_4_CASQUILLO_B",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_CENTRAL",
+      "group_a": "MANO_02_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 173.8616404873564,
+      "worst_sample": 12
+    },
+    {
+      "a": "08_DEDO_2_NUDILLO_4_CASQUILLO_B",
+      "b": "09_PULGAR_FALANGE_2",
+      "group_a": "MANO_02_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 153.78391341347117,
+      "worst_sample": 12
+    },
+    {
+      "a": "07_DEDO_2_FALANGE_4",
+      "b": "10_PULGAR_NUDILLO_4_PASADOR",
+      "group_a": "MANO_02_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 147.60516292244841,
+      "worst_sample": 11
+    },
+    {
+      "a": "08_DEDO_2_NUDILLO_4_PASADOR",
+      "b": "09_PULGAR_FALANGE_3",
+      "group_a": "MANO_02_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 144.25666613380776,
+      "worst_sample": 11
+    },
+    {
+      "a": "08_DEDO_2_NUDILLO_4_CASQUILLO_B",
+      "b": "09_PULGAR_FALANGE_3",
+      "group_a": "MANO_02_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 130.29956882282735,
+      "worst_sample": 10
+    },
+    {
+      "a": "08_DEDO_1_NUDILLO_4_CASQUILLO_A",
+      "b": "09_PULGAR_FALANGE_2",
+      "group_a": "MANO_01_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 122.89197645079814,
+      "worst_sample": 12
+    },
+    {
+      "a": "07_DEDO_3_FALANGE_4",
+      "b": "09_PULGAR_FALANGE_3",
+      "group_a": "MANO_03_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 122.6118125524227,
+      "worst_sample": 12
+    },
+    {
+      "a": "07_DEDO_1_FALANGE_4",
+      "b": "10_PULGAR_NUDILLO_3_CASQUILLO_A",
+      "group_a": "MANO_01_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_01",
+      "max_volume_mm3": 104.6047124368168,
+      "worst_sample": 11
+    },
+    {
+      "a": "08_DEDO_2_NUDILLO_4_PASADOR",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_CENTRAL",
+      "group_a": "MANO_02_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 104.00733097718661,
+      "worst_sample": 12
+    },
+    {
+      "a": "07_DEDO_3_FALANGE_4",
+      "b": "07_DEDO_4_FALANGE_4",
+      "group_a": "MANO_03_FALANGE_04",
+      "group_b": "MANO_04_FALANGE_04",
+      "max_volume_mm3": 97.17895754921369,
+      "worst_sample": 11
+    },
+    {
+      "a": "09_PULGAR_FALANGE_1",
+      "b": "10_PULGAR_NUDILLO_2_CASQUILLO_B",
+      "group_a": "MANO_05_PULGAR_FALANGE_01",
+      "group_b": "MANO_05_PULGAR_CARDAN",
+      "max_volume_mm3": 92.43494614217607,
+      "worst_sample": 8
+    },
+    {
+      "a": "07_DEDO_2_FALANGE_4",
+      "b": "07_DEDO_3_FALANGE_4",
+      "group_a": "MANO_02_FALANGE_04",
+      "group_b": "MANO_03_FALANGE_04",
+      "max_volume_mm3": 92.42339806358402,
+      "worst_sample": 0
+    },
+    {
+      "a": "09_PULGAR_FALANGE_1",
+      "b": "10_PULGAR_NUDILLO_2_CASQUILLO_A",
+      "group_a": "MANO_05_PULGAR_FALANGE_01",
+      "group_b": "MANO_05_PULGAR_CARDAN",
+      "max_volume_mm3": 91.48434023011731,
+      "worst_sample": 11
+    },
+    {
+      "a": "08_DEDO_2_NUDILLO_4_CASQUILLO_CENTRAL",
+      "b": "10_PULGAR_NUDILLO_4_PASADOR",
+      "group_a": "MANO_02_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 91.33201082773034,
+      "worst_sample": 12
+    },
+    {
+      "a": "08_DEDO_2_NUDILLO_4_CASQUILLO_A",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_CENTRAL",
+      "group_a": "MANO_02_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 89.54753428004325,
+      "worst_sample": 12
+    },
+    {
+      "a": "09_PULGAR_FALANGE_3",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_B",
+      "group_a": "MANO_05_PULGAR_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 89.1318486935817,
+      "worst_sample": 9
+    },
+    {
+      "a": "09_PULGAR_FALANGE_3",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_A",
+      "group_a": "MANO_05_PULGAR_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 88.21550199889793,
+      "worst_sample": 6
+    },
+    {
+      "a": "07_DEDO_1_FALANGE_4",
+      "b": "07_DEDO_2_FALANGE_4",
+      "group_a": "MANO_01_FALANGE_04",
+      "group_b": "MANO_02_FALANGE_04",
+      "max_volume_mm3": 85.19824481641348,
+      "worst_sample": 12
+    },
+    {
+      "a": "08_DEDO_1_NUDILLO_4_CASQUILLO_CENTRAL",
+      "b": "09_PULGAR_FALANGE_2",
+      "group_a": "MANO_01_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 81.23581515178135,
+      "worst_sample": 12
+    },
+    {
+      "a": "09_PULGAR_FALANGE_2",
+      "b": "10_PULGAR_NUDILLO_3_CASQUILLO_B",
+      "group_a": "MANO_05_PULGAR_FALANGE_02",
+      "group_b": "MANO_05_PULGAR_FALANGE_01",
+      "max_volume_mm3": 79.4072476691534,
+      "worst_sample": 4
+    },
+    {
+      "a": "09_PULGAR_FALANGE_2",
+      "b": "10_PULGAR_NUDILLO_3_CASQUILLO_A",
+      "group_a": "MANO_05_PULGAR_FALANGE_02",
+      "group_b": "MANO_05_PULGAR_FALANGE_01",
+      "max_volume_mm3": 77.92113153438774,
+      "worst_sample": 12
+    },
+    {
+      "a": "07_DEDO_2_FALANGE_3",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_CENTRAL",
+      "group_a": "MANO_02_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 59.37515288167505,
+      "worst_sample": 12
+    },
+    {
+      "a": "09_PULGAR_CARDAN_INTERMEDIO",
+      "b": "10_PULGAR_NUDILLO_1_PASADOR",
+      "group_a": "MANO_05_PULGAR_CARDAN",
+      "group_b": "MANO_00_PALMA",
+      "max_volume_mm3": 58.331943982767974,
+      "worst_sample": 11
+    },
+    {
+      "a": "08_DEDO_1_NUDILLO_4_PASADOR",
+      "b": "09_PULGAR_FALANGE_2",
+      "group_a": "MANO_01_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 50.23413878641525,
+      "worst_sample": 12
+    },
+    {
+      "a": "08_DEDO_2_NUDILLO_4_CASQUILLO_CENTRAL",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_A",
+      "group_a": "MANO_02_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 47.35314883185326,
+      "worst_sample": 11
+    },
+    {
+      "a": "08_DEDO_2_NUDILLO_4_CASQUILLO_A",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_A",
+      "group_a": "MANO_02_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 46.58990420034548,
+      "worst_sample": 12
+    },
+    {
+      "a": "08_DEDO_3_NUDILLO_4_PASADOR",
+      "b": "09_PULGAR_FALANGE_3",
+      "group_a": "MANO_03_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 43.35833027281596,
+      "worst_sample": 12
+    },
+    {
+      "a": "08_DEDO_3_NUDILLO_4_CASQUILLO_CENTRAL",
+      "b": "09_PULGAR_FALANGE_3",
+      "group_a": "MANO_03_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 41.93749176925643,
+      "worst_sample": 12
+    },
+    {
+      "a": "08_DEDO_2_NUDILLO_4_PASADOR",
+      "b": "10_PULGAR_NUDILLO_4_PASADOR",
+      "group_a": "MANO_02_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 39.76585057508425,
+      "worst_sample": 12
+    },
+    {
+      "a": "07_DEDO_2_FALANGE_4",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_B",
+      "group_a": "MANO_02_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 37.16837111998483,
+      "worst_sample": 12
+    },
+    {
+      "a": "08_DEDO_2_NUDILLO_4_CASQUILLO_CENTRAL",
+      "b": "09_PULGAR_FALANGE_2",
+      "group_a": "MANO_02_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 36.411348518161304,
+      "worst_sample": 12
+    },
+    {
+      "a": "07_DEDO_1_FALANGE_4",
+      "b": "10_PULGAR_NUDILLO_4_PASADOR",
+      "group_a": "MANO_01_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 35.634700480148055,
+      "worst_sample": 10
+    },
+    {
+      "a": "08_DEDO_2_NUDILLO_4_CASQUILLO_B",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_A",
+      "group_a": "MANO_02_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 33.61929663300705,
+      "worst_sample": 11
+    },
+    {
+      "a": "07_DEDO_2_FALANGE_3",
+      "b": "10_PULGAR_NUDILLO_4_PASADOR",
+      "group_a": "MANO_02_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 31.06724244706882,
+      "worst_sample": 12
+    },
+    {
+      "a": "08_DEDO_2_NUDILLO_4_PASADOR",
+      "b": "09_PULGAR_FALANGE_2",
+      "group_a": "MANO_02_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 23.280007887801602,
+      "worst_sample": 12
+    },
+    {
+      "a": "08_DEDO_1_NUDILLO_4_CASQUILLO_A",
+      "b": "09_PULGAR_FALANGE_3",
+      "group_a": "MANO_01_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 21.728316092994525,
+      "worst_sample": 10
+    },
+    {
+      "a": "07_DEDO_1_FALANGE_4",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_B",
+      "group_a": "MANO_01_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 21.31121506126954,
+      "worst_sample": 11
+    },
+    {
+      "a": "07_DEDO_4_FALANGE_1",
+      "b": "07_DEDO_4_FALANGE_2",
+      "group_a": "MANO_04_FALANGE_01",
+      "group_b": "MANO_04_FALANGE_02",
+      "max_volume_mm3": 19.49651112994033,
+      "worst_sample": 12
+    },
+    {
+      "a": "07_DEDO_1_FALANGE_1",
+      "b": "07_DEDO_1_FALANGE_2",
+      "group_a": "MANO_01_FALANGE_01",
+      "group_b": "MANO_01_FALANGE_02",
+      "max_volume_mm3": 19.48048630092325,
+      "worst_sample": 12
+    },
+    {
+      "a": "07_DEDO_3_FALANGE_1",
+      "b": "07_DEDO_3_FALANGE_2",
+      "group_a": "MANO_03_FALANGE_01",
+      "group_b": "MANO_03_FALANGE_02",
+      "max_volume_mm3": 19.419574812773455,
+      "worst_sample": 12
+    },
+    {
+      "a": "07_DEDO_2_FALANGE_1",
+      "b": "07_DEDO_2_FALANGE_2",
+      "group_a": "MANO_02_FALANGE_01",
+      "group_b": "MANO_02_FALANGE_02",
+      "max_volume_mm3": 19.327664822599733,
+      "worst_sample": 12
+    },
+    {
+      "a": "09_PULGAR_FALANGE_1",
+      "b": "10_PULGAR_NUDILLO_1_CASQUILLO_B",
+      "group_a": "MANO_05_PULGAR_FALANGE_01",
+      "group_b": "MANO_00_PALMA",
+      "max_volume_mm3": 14.53753804626512,
+      "worst_sample": 12
+    },
+    {
+      "a": "08_DEDO_2_NUDILLO_4_CASQUILLO_B",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_B",
+      "group_a": "MANO_02_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 13.682376593076084,
+      "worst_sample": 12
+    },
+    {
+      "a": "10_PULGAR_NUDILLO_1_CASQUILLO_A",
+      "b": "10_PULGAR_NUDILLO_2_CASQUILLO_CENTRAL",
+      "group_a": "MANO_00_PALMA",
+      "group_b": "MANO_05_PULGAR_FALANGE_01",
+      "max_volume_mm3": 12.729676629842368,
+      "worst_sample": 12
+    },
+    {
+      "a": "10_PULGAR_NUDILLO_1_CASQUILLO_B",
+      "b": "10_PULGAR_NUDILLO_2_CASQUILLO_CENTRAL",
+      "group_a": "MANO_00_PALMA",
+      "group_b": "MANO_05_PULGAR_FALANGE_01",
+      "max_volume_mm3": 12.390152027498713,
+      "worst_sample": 12
+    },
+    {
+      "a": "08_DEDO_2_NUDILLO_4_CASQUILLO_B",
+      "b": "10_PULGAR_NUDILLO_4_PASADOR",
+      "group_a": "MANO_02_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 10.719401802270045,
+      "worst_sample": 11
+    },
+    {
+      "a": "07_DEDO_2_FALANGE_3",
+      "b": "09_PULGAR_FALANGE_2",
+      "group_a": "MANO_02_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 9.317920633442611,
+      "worst_sample": 12
+    },
+    {
+      "a": "08_DEDO_1_NUDILLO_4_CASQUILLO_A",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_CENTRAL",
+      "group_a": "MANO_01_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 6.536305954357724,
+      "worst_sample": 11
+    },
+    {
+      "a": "07_DEDO_1_FALANGE_3",
+      "b": "09_PULGAR_FALANGE_3",
+      "group_a": "MANO_01_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 5.230665752214536,
+      "worst_sample": 10
+    },
+    {
+      "a": "10_PULGAR_NUDILLO_1_CASQUILLO_A",
+      "b": "10_PULGAR_NUDILLO_2_CASQUILLO_A",
+      "group_a": "MANO_00_PALMA",
+      "group_b": "MANO_05_PULGAR_CARDAN",
+      "max_volume_mm3": 4.173029529752292,
+      "worst_sample": 6
+    },
+    {
+      "a": "10_PULGAR_NUDILLO_1_CASQUILLO_B",
+      "b": "10_PULGAR_NUDILLO_2_CASQUILLO_B",
+      "group_a": "MANO_00_PALMA",
+      "group_b": "MANO_05_PULGAR_CARDAN",
+      "max_volume_mm3": 2.7586839585590495,
+      "worst_sample": 12
+    },
+    {
+      "a": "08_DEDO_1_NUDILLO_4_CASQUILLO_A",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_B",
+      "group_a": "MANO_01_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 1.5610237138847793,
+      "worst_sample": 11
+    },
+    {
+      "a": "07_DEDO_2_FALANGE_4",
+      "b": "09_PULGAR_FALANGE_1",
+      "group_a": "MANO_02_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_01",
+      "max_volume_mm3": 1.2544990049931926,
+      "worst_sample": 12
+    },
+    {
+      "a": "07_DEDO_2_FALANGE_4",
+      "b": "10_PULGAR_NUDILLO_3_CASQUILLO_A",
+      "group_a": "MANO_02_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_01",
+      "max_volume_mm3": 0.6465048498771608,
+      "worst_sample": 12
+    },
+    {
+      "a": "07_DEDO_1_FALANGE_3",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_B",
+      "group_a": "MANO_01_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 0.5825119535920464,
+      "worst_sample": 11
+    },
+    {
+      "a": "10_PULGAR_NUDILLO_1_PASADOR",
+      "b": "10_PULGAR_NUDILLO_2_CASQUILLO_CENTRAL",
+      "group_a": "MANO_00_PALMA",
+      "group_b": "MANO_05_PULGAR_FALANGE_01",
+      "max_volume_mm3": 0.5487403536924562,
+      "worst_sample": 12
+    },
+    {
+      "a": "07_DEDO_2_FALANGE_2",
+      "b": "07_DEDO_2_FALANGE_3",
+      "group_a": "MANO_02_FALANGE_02",
+      "group_b": "MANO_02_FALANGE_03",
+      "max_volume_mm3": 0.532002792385633,
+      "worst_sample": 12
+    },
+    {
+      "a": "08_DEDO_2_NUDILLO_4_CASQUILLO_CENTRAL",
+      "b": "10_PULGAR_NUDILLO_4_CASQUILLO_B",
+      "group_a": "MANO_02_FALANGE_04",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 0.47771982622724085,
+      "worst_sample": 12
+    },
+    {
+      "a": "07_DEDO_4_FALANGE_2",
+      "b": "07_DEDO_4_FALANGE_3",
+      "group_a": "MANO_04_FALANGE_02",
+      "group_b": "MANO_04_FALANGE_03",
+      "max_volume_mm3": 0.37684815073202316,
+      "worst_sample": 12
+    },
+    {
+      "a": "07_DEDO_3_FALANGE_2",
+      "b": "07_DEDO_3_FALANGE_3",
+      "group_a": "MANO_03_FALANGE_02",
+      "group_b": "MANO_03_FALANGE_03",
+      "max_volume_mm3": 0.3658391241900816,
+      "worst_sample": 12
+    },
+    {
+      "a": "08_DEDO_1_NUDILLO_4_CASQUILLO_B",
+      "b": "09_PULGAR_FALANGE_2",
+      "group_a": "MANO_01_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 0.31835317009776265,
+      "worst_sample": 12
+    },
+    {
+      "a": "08_DEDO_1_NUDILLO_4_PASADOR",
+      "b": "09_PULGAR_FALANGE_3",
+      "group_a": "MANO_01_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_03",
+      "max_volume_mm3": 0.10947599845639866,
+      "worst_sample": 10
+    },
+    {
+      "a": "07_DEDO_1_FALANGE_2",
+      "b": "07_DEDO_1_FALANGE_3",
+      "group_a": "MANO_01_FALANGE_02",
+      "group_b": "MANO_01_FALANGE_03",
+      "max_volume_mm3": 0.1011370679919743,
+      "worst_sample": 12
+    },
+    {
+      "a": "07_DEDO_1_FALANGE_3",
+      "b": "09_PULGAR_FALANGE_2",
+      "group_a": "MANO_01_FALANGE_03",
+      "group_b": "MANO_05_PULGAR_FALANGE_02",
+      "max_volume_mm3": 0.05350636775425244,
+      "worst_sample": 12
+    }
+  ],
+  "errors": [],
+  "sample": 12,
+  "finger_supports": [
+    {
+      "phalanx": "07_DEDO_1_FALANGE_1",
+      "sleeve": "08_DEDO_1_NUDILLO_1_CASQUILLO_CENTRAL",
+      "overlap_mm3": 115.81047796394861
+    },
+    {
+      "phalanx": "07_DEDO_1_FALANGE_1",
+      "sleeve": "08_DEDO_1_NUDILLO_2_CASQUILLO_A",
+      "overlap_mm3": 69.11351813640509
+    },
+    {
+      "phalanx": "07_DEDO_1_FALANGE_1",
+      "sleeve": "08_DEDO_1_NUDILLO_2_CASQUILLO_B",
+      "overlap_mm3": 69.11351813640599
+    },
+    {
+      "phalanx": "07_DEDO_1_FALANGE_2",
+      "sleeve": "08_DEDO_1_NUDILLO_2_CASQUILLO_CENTRAL",
+      "overlap_mm3": 115.8104779639475
+    },
+    {
+      "phalanx": "07_DEDO_1_FALANGE_2",
+      "sleeve": "08_DEDO_1_NUDILLO_3_CASQUILLO_A",
+      "overlap_mm3": 69.11351754759609
+    },
+    {
+      "phalanx": "07_DEDO_1_FALANGE_2",
+      "sleeve": "08_DEDO_1_NUDILLO_3_CASQUILLO_B",
+      "overlap_mm3": 69.11351754759765
+    },
+    {
+      "phalanx": "07_DEDO_1_FALANGE_3",
+      "sleeve": "08_DEDO_1_NUDILLO_3_CASQUILLO_CENTRAL",
+      "overlap_mm3": 115.8104779639464
+    },
+    {
+      "phalanx": "07_DEDO_1_FALANGE_3",
+      "sleeve": "08_DEDO_1_NUDILLO_4_CASQUILLO_A",
+      "overlap_mm3": 69.11351899799745
+    },
+    {
+      "phalanx": "07_DEDO_1_FALANGE_3",
+      "sleeve": "08_DEDO_1_NUDILLO_4_CASQUILLO_B",
+      "overlap_mm3": 69.11351899799745
+    },
+    {
+      "phalanx": "07_DEDO_1_FALANGE_4",
+      "sleeve": "08_DEDO_1_NUDILLO_4_CASQUILLO_CENTRAL",
+      "overlap_mm3": 115.8104779639495
+    },
+    {
+      "phalanx": "07_DEDO_2_FALANGE_1",
+      "sleeve": "08_DEDO_2_NUDILLO_1_CASQUILLO_CENTRAL",
+      "overlap_mm3": 115.81047796394816
+    },
+    {
+      "phalanx": "07_DEDO_2_FALANGE_1",
+      "sleeve": "08_DEDO_2_NUDILLO_2_CASQUILLO_A",
+      "overlap_mm3": 69.11351626724115
+    },
+    {
+      "phalanx": "07_DEDO_2_FALANGE_1",
+      "sleeve": "08_DEDO_2_NUDILLO_2_CASQUILLO_B",
+      "overlap_mm3": 69.11351626724161
+    },
+    {
+      "phalanx": "07_DEDO_2_FALANGE_2",
+      "sleeve": "08_DEDO_2_NUDILLO_2_CASQUILLO_CENTRAL",
+      "overlap_mm3": 115.81047796394861
+    },
+    {
+      "phalanx": "07_DEDO_2_FALANGE_2",
+      "sleeve": "08_DEDO_2_NUDILLO_3_CASQUILLO_A",
+      "overlap_mm3": 69.11351877495653
+    },
+    {
+      "phalanx": "07_DEDO_2_FALANGE_2",
+      "sleeve": "08_DEDO_2_NUDILLO_3_CASQUILLO_B",
+      "overlap_mm3": 69.11351877495831
+    },
+    {
+      "phalanx": "07_DEDO_2_FALANGE_3",
+      "sleeve": "08_DEDO_2_NUDILLO_3_CASQUILLO_CENTRAL",
+      "overlap_mm3": 115.81047796394728
+    },
+    {
+      "phalanx": "07_DEDO_2_FALANGE_3",
+      "sleeve": "08_DEDO_2_NUDILLO_4_CASQUILLO_A",
+      "overlap_mm3": 69.11351828401368
+    },
+    {
+      "phalanx": "07_DEDO_2_FALANGE_3",
+      "sleeve": "08_DEDO_2_NUDILLO_4_CASQUILLO_B",
+      "overlap_mm3": 69.11351828401457
+    },
+    {
+      "phalanx": "07_DEDO_2_FALANGE_4",
+      "sleeve": "08_DEDO_2_NUDILLO_4_CASQUILLO_CENTRAL",
+      "overlap_mm3": 115.81047796395083
+    },
+    {
+      "phalanx": "07_DEDO_3_FALANGE_1",
+      "sleeve": "08_DEDO_3_NUDILLO_1_CASQUILLO_CENTRAL",
+      "overlap_mm3": 115.81047796394772
+    },
+    {
+      "phalanx": "07_DEDO_3_FALANGE_1",
+      "sleeve": "08_DEDO_3_NUDILLO_2_CASQUILLO_A",
+      "overlap_mm3": 69.11351621749695
+    },
+    {
+      "phalanx": "07_DEDO_3_FALANGE_1",
+      "sleeve": "08_DEDO_3_NUDILLO_2_CASQUILLO_B",
+      "overlap_mm3": 69.11351621749739
+    },
+    {
+      "phalanx": "07_DEDO_3_FALANGE_2",
+      "sleeve": "08_DEDO_3_NUDILLO_2_CASQUILLO_CENTRAL",
+      "overlap_mm3": 115.8104779639455
+    },
+    {
+      "phalanx": "07_DEDO_3_FALANGE_2",
+      "sleeve": "08_DEDO_3_NUDILLO_3_CASQUILLO_A",
+      "overlap_mm3": 69.11351577629921
+    },
+    {
+      "phalanx": "07_DEDO_3_FALANGE_2",
+      "sleeve": "08_DEDO_3_NUDILLO_3_CASQUILLO_B",
+      "overlap_mm3": 69.11351577630055
+    },
+    {
+      "phalanx": "07_DEDO_3_FALANGE_3",
+      "sleeve": "08_DEDO_3_NUDILLO_3_CASQUILLO_CENTRAL",
+      "overlap_mm3": 115.8104779639495
+    },
+    {
+      "phalanx": "07_DEDO_3_FALANGE_3",
+      "sleeve": "08_DEDO_3_NUDILLO_4_CASQUILLO_A",
+      "overlap_mm3": 69.11351730050174
+    },
+    {
+      "phalanx": "07_DEDO_3_FALANGE_3",
+      "sleeve": "08_DEDO_3_NUDILLO_4_CASQUILLO_B",
+      "overlap_mm3": 69.11351730050264
+    },
+    {
+      "phalanx": "07_DEDO_3_FALANGE_4",
+      "sleeve": "08_DEDO_3_NUDILLO_4_CASQUILLO_CENTRAL",
+      "overlap_mm3": 115.81047796395083
+    },
+    {
+      "phalanx": "07_DEDO_4_FALANGE_1",
+      "sleeve": "08_DEDO_4_NUDILLO_1_CASQUILLO_CENTRAL",
+      "overlap_mm3": 115.81047796394816
+    },
+    {
+      "phalanx": "07_DEDO_4_FALANGE_1",
+      "sleeve": "08_DEDO_4_NUDILLO_2_CASQUILLO_A",
+      "overlap_mm3": 69.11351808666043
+    },
+    {
+      "phalanx": "07_DEDO_4_FALANGE_1",
+      "sleeve": "08_DEDO_4_NUDILLO_2_CASQUILLO_B",
+      "overlap_mm3": 69.11351808666222
+    },
+    {
+      "phalanx": "07_DEDO_4_FALANGE_2",
+      "sleeve": "08_DEDO_4_NUDILLO_2_CASQUILLO_CENTRAL",
+      "overlap_mm3": 115.81047796394728
+    },
+    {
+      "phalanx": "07_DEDO_4_FALANGE_2",
+      "sleeve": "08_DEDO_4_NUDILLO_3_CASQUILLO_A",
+      "overlap_mm3": 69.11351803854427
+    },
+    {
+      "phalanx": "07_DEDO_4_FALANGE_2",
+      "sleeve": "08_DEDO_4_NUDILLO_3_CASQUILLO_B",
+      "overlap_mm3": 69.11351803854427
+    },
+    {
+      "phalanx": "07_DEDO_4_FALANGE_3",
+      "sleeve": "08_DEDO_4_NUDILLO_3_CASQUILLO_CENTRAL",
+      "overlap_mm3": 115.81047796394705
+    },
+    {
+      "phalanx": "07_DEDO_4_FALANGE_3",
+      "sleeve": "08_DEDO_4_NUDILLO_4_CASQUILLO_A",
+      "overlap_mm3": 69.1135180144824
+    },
+    {
+      "phalanx": "07_DEDO_4_FALANGE_3",
+      "sleeve": "08_DEDO_4_NUDILLO_4_CASQUILLO_B",
+      "overlap_mm3": 69.11351801448373
+    },
+    {
+      "phalanx": "07_DEDO_4_FALANGE_4",
+      "sleeve": "08_DEDO_4_NUDILLO_4_CASQUILLO_CENTRAL",
+      "overlap_mm3": 115.81047796395039
+    }
+  ]
+}

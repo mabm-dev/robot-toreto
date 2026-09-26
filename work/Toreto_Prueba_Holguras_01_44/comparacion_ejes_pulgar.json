@@ -1,0 +1,594 @@
+{
+  "status": "comparison_complete_not_full_hand_validation",
+  "scope": "thumb_to_palm_only_no_clearance",
+  "open_centers_preserved": true,
+  "candidates": [
+    {
+      "angles_deg": [
+        52,
+        128
+      ],
+      "status": "sampled",
+      "samples_per_body": 25,
+      "max_intrusion_mm3": 2484.1087410958808,
+      "sum_body_maxima_mm3": 6549.395142201803,
+      "bodies": [
+        {
+          "body": "09_PULGAR_CARDAN_INTERMEDIO",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "09_PULGAR_FALANGE_1",
+          "max_intrusion_mm3": 353.5779446079488,
+          "worst_sample": 24
+        },
+        {
+          "body": "09_PULGAR_FALANGE_2",
+          "max_intrusion_mm3": 1480.1513295369944,
+          "worst_sample": 24
+        },
+        {
+          "body": "09_PULGAR_FALANGE_3",
+          "max_intrusion_mm3": 2484.1087410958808,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_1_CASQUILLO_CENTRAL",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_2_CASQUILLO_A",
+          "max_intrusion_mm3": 111.64178233127586,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_2_CASQUILLO_CENTRAL",
+          "max_intrusion_mm3": 0.8323493345727684,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_2_CASQUILLO_B",
+          "max_intrusion_mm3": 9.003523214929032,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_2_PASADOR",
+          "max_intrusion_mm3": 23.8677267221874,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_3_CASQUILLO_A",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_3_CASQUILLO_CENTRAL",
+          "max_intrusion_mm3": 19.28476615663044,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_3_CASQUILLO_B",
+          "max_intrusion_mm3": 221.94957707677077,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_3_PASADOR",
+          "max_intrusion_mm3": 27.940304230270385,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_4_CASQUILLO_A",
+          "max_intrusion_mm3": 256.4416583400373,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_4_CASQUILLO_CENTRAL",
+          "max_intrusion_mm3": 776.7409431551755,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_4_CASQUILLO_B",
+          "max_intrusion_mm3": 553.9582989484586,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_4_PASADOR",
+          "max_intrusion_mm3": 229.89619745067102,
+          "worst_sample": 24
+        }
+      ]
+    },
+    {
+      "angles_deg": [
+        30,
+        106
+      ],
+      "status": "sampled",
+      "samples_per_body": 25,
+      "max_intrusion_mm3": 107.05431572198165,
+      "sum_body_maxima_mm3": 344.00916049726504,
+      "bodies": [
+        {
+          "body": "09_PULGAR_CARDAN_INTERMEDIO",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "09_PULGAR_FALANGE_1",
+          "max_intrusion_mm3": 104.10231345346688,
+          "worst_sample": 2
+        },
+        {
+          "body": "09_PULGAR_FALANGE_2",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "09_PULGAR_FALANGE_3",
+          "max_intrusion_mm3": 50.50709744654114,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_1_CASQUILLO_CENTRAL",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_2_CASQUILLO_A",
+          "max_intrusion_mm3": 107.05431572198165,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_2_CASQUILLO_CENTRAL",
+          "max_intrusion_mm3": 0.8315999043020383,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_2_CASQUILLO_B",
+          "max_intrusion_mm3": 43.85196224953347,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_2_PASADOR",
+          "max_intrusion_mm3": 23.987227710108527,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_3_CASQUILLO_A",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_3_CASQUILLO_CENTRAL",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_3_CASQUILLO_B",
+          "max_intrusion_mm3": 6.398534982650972,
+          "worst_sample": 7
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_3_PASADOR",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_4_CASQUILLO_A",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_4_CASQUILLO_CENTRAL",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_4_CASQUILLO_B",
+          "max_intrusion_mm3": 7.2761090286803665,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_4_PASADOR",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        }
+      ]
+    },
+    {
+      "angles_deg": [
+        15,
+        91
+      ],
+      "status": "sampled",
+      "samples_per_body": 25,
+      "max_intrusion_mm3": 258.73242653409534,
+      "sum_body_maxima_mm3": 442.0941010706798,
+      "bodies": [
+        {
+          "body": "09_PULGAR_CARDAN_INTERMEDIO",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "09_PULGAR_FALANGE_1",
+          "max_intrusion_mm3": 258.73242653409534,
+          "worst_sample": 3
+        },
+        {
+          "body": "09_PULGAR_FALANGE_2",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "09_PULGAR_FALANGE_3",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_1_CASQUILLO_CENTRAL",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_2_CASQUILLO_A",
+          "max_intrusion_mm3": 112.94697712429524,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_2_CASQUILLO_CENTRAL",
+          "max_intrusion_mm3": 0.8414497014683775,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_2_CASQUILLO_B",
+          "max_intrusion_mm3": 51.49913640968862,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_2_PASADOR",
+          "max_intrusion_mm3": 16.4818525134649,
+          "worst_sample": 21
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_3_CASQUILLO_A",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_3_CASQUILLO_CENTRAL",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_3_CASQUILLO_B",
+          "max_intrusion_mm3": 1.5922587876673333,
+          "worst_sample": 3
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_3_PASADOR",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_4_CASQUILLO_A",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_4_CASQUILLO_CENTRAL",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_4_CASQUILLO_B",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_4_PASADOR",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        }
+      ]
+    },
+    {
+      "angles_deg": [
+        0,
+        76
+      ],
+      "status": "sampled",
+      "samples_per_body": 25,
+      "max_intrusion_mm3": 112.5218788280904,
+      "sum_body_maxima_mm3": 295.7033432173404,
+      "bodies": [
+        {
+          "body": "09_PULGAR_CARDAN_INTERMEDIO",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "09_PULGAR_FALANGE_1",
+          "max_intrusion_mm3": 93.57058836349097,
+          "worst_sample": 0
+        },
+        {
+          "body": "09_PULGAR_FALANGE_2",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "09_PULGAR_FALANGE_3",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_1_CASQUILLO_CENTRAL",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_2_CASQUILLO_A",
+          "max_intrusion_mm3": 112.5218788280904,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_2_CASQUILLO_CENTRAL",
+          "max_intrusion_mm3": 0.8291764040677663,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_2_CASQUILLO_B",
+          "max_intrusion_mm3": 64.72053136707245,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_2_PASADOR",
+          "max_intrusion_mm3": 19.89546065901493,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_3_CASQUILLO_A",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_3_CASQUILLO_CENTRAL",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_3_CASQUILLO_B",
+          "max_intrusion_mm3": 4.1657075956038625,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_3_PASADOR",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_4_CASQUILLO_A",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_4_CASQUILLO_CENTRAL",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_4_CASQUILLO_B",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_4_PASADOR",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        }
+      ]
+    },
+    {
+      "angles_deg": [
+        -15,
+        61
+      ],
+      "status": "sampled",
+      "samples_per_body": 25,
+      "max_intrusion_mm3": 108.82006160107949,
+      "sum_body_maxima_mm3": 307.2259190499125,
+      "bodies": [
+        {
+          "body": "09_PULGAR_CARDAN_INTERMEDIO",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "09_PULGAR_FALANGE_1",
+          "max_intrusion_mm3": 93.57058836349097,
+          "worst_sample": 0
+        },
+        {
+          "body": "09_PULGAR_FALANGE_2",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "09_PULGAR_FALANGE_3",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_1_CASQUILLO_CENTRAL",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_2_CASQUILLO_A",
+          "max_intrusion_mm3": 108.82006160107949,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_2_CASQUILLO_CENTRAL",
+          "max_intrusion_mm3": 0.8297695069927613,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_2_CASQUILLO_B",
+          "max_intrusion_mm3": 81.39567538655967,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_2_PASADOR",
+          "max_intrusion_mm3": 19.571813480354194,
+          "worst_sample": 24
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_3_CASQUILLO_A",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_3_CASQUILLO_CENTRAL",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_3_CASQUILLO_B",
+          "max_intrusion_mm3": 3.0380107114353905,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_3_PASADOR",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_4_CASQUILLO_A",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_4_CASQUILLO_CENTRAL",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_4_CASQUILLO_B",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        },
+        {
+          "body": "10_PULGAR_NUDILLO_4_PASADOR",
+          "max_intrusion_mm3": 0.0,
+          "worst_sample": 0
+        }
+      ]
+    }
+  ],
+  "current_angles_deg": [
+    -15,
+    61
+  ],
+  "current_body": "",
+  "best_coarse_angles_deg": [
+    0,
+    76
+  ],
+  "fine_result": {
+    "status": "sampled",
+    "samples_per_body": 121,
+    "max_intrusion_mm3": 112.5218788280904,
+    "sum_body_maxima_mm3": 295.9523236329318,
+    "bodies": [
+      {
+        "body": "09_PULGAR_CARDAN_INTERMEDIO",
+        "max_intrusion_mm3": 0.0,
+        "worst_sample": 0
+      },
+      {
+        "body": "09_PULGAR_FALANGE_1",
+        "max_intrusion_mm3": 93.57058836349097,
+        "worst_sample": 0
+      },
+      {
+        "body": "09_PULGAR_FALANGE_2",
+        "max_intrusion_mm3": 0.0,
+        "worst_sample": 0
+      },
+      {
+        "body": "09_PULGAR_FALANGE_3",
+        "max_intrusion_mm3": 0.0,
+        "worst_sample": 0
+      },
+      {
+        "body": "10_PULGAR_NUDILLO_1_CASQUILLO_CENTRAL",
+        "max_intrusion_mm3": 0.0,
+        "worst_sample": 0
+      },
+      {
+        "body": "10_PULGAR_NUDILLO_2_CASQUILLO_A",
+        "max_intrusion_mm3": 112.5218788280904,
+        "worst_sample": 120
+      },
+      {
+        "body": "10_PULGAR_NUDILLO_2_CASQUILLO_CENTRAL",
+        "max_intrusion_mm3": 0.8291764040677663,
+        "worst_sample": 120
+      },
+      {
+        "body": "10_PULGAR_NUDILLO_2_CASQUILLO_B",
+        "max_intrusion_mm3": 64.72053136707245,
+        "worst_sample": 0
+      },
+      {
+        "body": "10_PULGAR_NUDILLO_2_PASADOR",
+        "max_intrusion_mm3": 20.144441074606334,
+        "worst_sample": 92
+      },
+      {
+        "body": "10_PULGAR_NUDILLO_3_CASQUILLO_A",
+        "max_intrusion_mm3": 0.0,
+        "worst_sample": 0
+      },
+      {
+        "body": "10_PULGAR_NUDILLO_3_CASQUILLO_CENTRAL",
+        "max_intrusion_mm3": 0.0,
+        "worst_sample": 0
+      },
+      {
+        "body": "10_PULGAR_NUDILLO_3_CASQUILLO_B",
+        "max_intrusion_mm3": 4.1657075956038625,
+        "worst_sample": 0
+      },
+      {
+        "body": "10_PULGAR_NUDILLO_3_PASADOR",
+        "max_intrusion_mm3": 0.0,
+        "worst_sample": 0
+      },
+      {
+        "body": "10_PULGAR_NUDILLO_4_CASQUILLO_A",
+        "max_intrusion_mm3": 0.0,
+        "worst_sample": 0
+      },
+      {
+        "body": "10_PULGAR_NUDILLO_4_CASQUILLO_CENTRAL",
+        "max_intrusion_mm3": 0.0,
+        "worst_sample": 0
+      },
+      {
+        "body": "10_PULGAR_NUDILLO_4_CASQUILLO_B",
+        "max_intrusion_mm3": 0.0,
+        "worst_sample": 0
+      },
+      {
+        "body": "10_PULGAR_NUDILLO_4_PASADOR",
+        "max_intrusion_mm3": 0.0,
+        "worst_sample": 0
+      }
+    ]
+  }
+}

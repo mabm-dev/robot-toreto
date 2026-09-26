@@ -1,0 +1,507 @@
+{
+  "units": "cm",
+  "front_axis": [
+    [
+      256.28144940919987,
+      0,
+      393.9197023814869
+    ],
+    [
+      294.5794122568292,
+      0,
+      261.18117729656063
+    ]
+  ],
+  "side_axis": [
+    [
+      0,
+      -83.98728269259901,
+      408.52264092633203
+    ],
+    [
+      0,
+      -160.48728269259902,
+      288.02264092633203
+    ]
+  ],
+  "front_axis_length_mm": 138.15299490058115,
+  "sections": [
+    [
+      8.012873704233707,
+      1.480302147344218,
+      -1.6303969647187924,
+      4.489255066457479,
+      5.2647139390006545,
+      3.0
+    ],
+    [
+      8.565485683836032,
+      1.4803230556135052,
+      -1.5304170470627465,
+      4.36613197736621,
+      5.2415540323881205,
+      3.0
+    ],
+    [
+      9.256250658338939,
+      1.4803491909501147,
+      -1.3242766037199403,
+      4.212228116002124,
+      5.1314386028497045,
+      3.0
+    ],
+    [
+      9.947015632841843,
+      1.5589710645812198,
+      -1.1181361603771343,
+      3.9797285163435427,
+      5.021323173311288,
+      3.0
+    ],
+    [
+      10.63778060734475,
+      1.6378515791307209,
+      -0.8050830302236186,
+      3.726382497670887,
+      4.804295056962162,
+      3.0
+    ],
+    [
+      11.328545581847655,
+      1.6658169476258124,
+      -0.45884038308038666,
+      3.338195306948636,
+      4.526020345549258,
+      3.0
+    ],
+    [
+      12.019310556350561,
+      1.6439721070138789,
+      -0.091508004652313,
+      2.8374509570882953,
+      3.826232603816257,
+      3.0
+    ],
+    [
+      12.571922535952886,
+      1.2452260268933095,
+      0.03501313951460965,
+      2.8181256848310454,
+      3.2604492465105963,
+      3.0
+    ],
+    [
+      12.986381520654627,
+      0.9971154099889946,
+      0.07910943315162591,
+      2.9311612989760647,
+      3.0031782418431057,
+      3.0
+    ],
+    [
+      13.40084050535637,
+      0.9102781358099533,
+      0.18175524052605516,
+      3.0635579982279304,
+      2.294901541208929,
+      3.0
+    ],
+    [
+      13.815299490058116,
+      0.5951090547062116,
+      -0.06370999006306537,
+      2.897658969715897,
+      1.1291933091651123,
+      3.0
+    ]
+  ],
+  "details": [
+    {
+      "q": 0.58,
+      "width_mm": 89.78510132914957,
+      "depth_mm": 105.29427878001309,
+      "front_intervals": 2,
+      "side_intervals": 1
+    },
+    {
+      "q": 0.62,
+      "width_mm": 87.3226395473242,
+      "depth_mm": 104.8310806477624,
+      "front_intervals": 2,
+      "side_intervals": 1
+    },
+    {
+      "q": 0.67,
+      "width_mm": 84.24456232004248,
+      "depth_mm": 102.62877205699408,
+      "front_intervals": 1,
+      "side_intervals": 1
+    },
+    {
+      "q": 0.72,
+      "width_mm": 79.59457032687085,
+      "depth_mm": 100.42646346622575,
+      "front_intervals": 1,
+      "side_intervals": 1
+    },
+    {
+      "q": 0.77,
+      "width_mm": 74.52764995341774,
+      "depth_mm": 96.08590113924323,
+      "front_intervals": 1,
+      "side_intervals": 1
+    },
+    {
+      "q": 0.82,
+      "width_mm": 66.76390613897271,
+      "depth_mm": 90.52040691098514,
+      "front_intervals": 1,
+      "side_intervals": 1
+    },
+    {
+      "q": 0.87,
+      "width_mm": 56.7490191417659,
+      "depth_mm": 76.52465207632514,
+      "front_intervals": 1,
+      "side_intervals": 1
+    },
+    {
+      "q": 0.91,
+      "width_mm": 56.36251369662091,
+      "depth_mm": 65.20898493021193,
+      "front_intervals": 1,
+      "side_intervals": 1
+    },
+    {
+      "q": 0.94,
+      "width_mm": 58.623225979521294,
+      "depth_mm": 60.063564836862106,
+      "front_intervals": 1,
+      "side_intervals": 1
+    },
+    {
+      "q": 0.97,
+      "width_mm": 61.271159964558606,
+      "depth_mm": 45.898030824178576,
+      "front_intervals": 1,
+      "side_intervals": 1
+    },
+    {
+      "q": 1.0,
+      "width_mm": 57.95317939431794,
+      "depth_mm": 22.583866183302245,
+      "front_intervals": 1,
+      "side_intervals": 1
+    }
+  ],
+  "palm_sections": [
+    [
+      6.5,
+      1.65,
+      0.35,
+      3.8,
+      1.0,
+      3.0
+    ],
+    [
+      8.1,
+      1.65,
+      0.4,
+      3.6,
+      1.05,
+      3.0
+    ],
+    [
+      9.8,
+      1.65,
+      0.45,
+      3.3,
+      1.1,
+      3.0
+    ],
+    [
+      11.2,
+      1.65,
+      0.52,
+      2.35,
+      1.2,
+      3.0
+    ],
+    [
+      12.5,
+      1.65,
+      0.6,
+      1.9,
+      1.3,
+      3.0
+    ]
+  ],
+  "palm_method": "flat humanoid palm: 20 mm deep at the finger sockets, increasing smoothly to 26 mm at the wrist connector; centre-depth drift limited to 2.5 mm",
+  "wrist_center_mm": [
+    266.5009968738799,
+    54.45952468855596,
+    418.02011633913685
+  ],
+  "master_plane_y_mm": 48.45952468855596,
+  "palm_connector_mm": [
+    [
+      266.5009968738799,
+      54.45952468855596,
+      418.02011633913685
+    ],
+    [
+      275.78098017129025,
+      54.45952468855596,
+      385.8562307400037
+    ]
+  ],
+  "finger_paths_mm": [
+    [
+      [
+        270.85153928075283,
+        53.45952468855596,
+        313.66022591628297
+      ],
+      [
+        276.47702942517344,
+        53.45952468855596,
+        294.16260230583015
+      ],
+      [
+        281.6697895584848,
+        53.45952468855596,
+        276.1647958961813
+      ],
+      [
+        286.6461846862415,
+        53.45952468855596,
+        258.91689808693457
+      ],
+      [
+        292.4880398362168,
+        53.45952468855596,
+        238.66936587607972
+      ]
+    ],
+    [
+      [
+        286.70487395132875,
+        51.95952468855596,
+        318.2342591280901
+      ],
+      [
+        292.9396027969016,
+        51.95952468855596,
+        296.6250494017555
+      ],
+      [
+        298.694737115892,
+        51.95952468855596,
+        276.6780865774467
+      ],
+      [
+        304.2100741715911,
+        51.95952468855596,
+        257.56224720415076
+      ],
+      [
+        310.68460028045524,
+        51.95952468855596,
+        235.12191402680332
+      ]
+    ],
+    [
+      [
+        302.55820862190467,
+        54.45952468855596,
+        322.8082923398973
+      ],
+      [
+        309.0366329479385,
+        54.45952468855596,
+        300.3544481672101
+      ],
+      [
+        315.01671694120046,
+        54.45952468855596,
+        279.62782277703724
+      ],
+      [
+        320.7476307680765,
+        54.45952468855596,
+        259.7648067781216
+      ],
+      [
+        327.4752252604962,
+        54.45952468855596,
+        236.44735321417718
+      ]
+    ],
+    [
+      [
+        318.4115432924806,
+        56.95952468855596,
+        327.38232555170447
+      ],
+      [
+        324.2807289173621,
+        56.95952468855596,
+        307.04006749489895
+      ],
+      [
+        329.69843872494505,
+        56.95952468855596,
+        288.2625985193862
+      ],
+      [
+        334.8904106238787,
+        56.95952468855596,
+        270.2675240845198
+      ],
+      [
+        340.98533415740957,
+        56.95952468855596,
+        249.1428714870679
+      ]
+    ]
+  ],
+  "thumb_path_mm": [
+    [
+      256.39566625350653,
+      68.06408607807148,
+      364.96244326994946
+    ],
+    [
+      246.86047923597417,
+      70.91701447147074,
+      337.27426152894634
+    ],
+    [
+      240.2012238272194,
+      72.90946399549179,
+      317.9371815452673
+    ],
+    [
+      235.0841926010318,
+      74.44047997328634,
+      303.0783968874981
+    ]
+  ],
+  "wrist_connector_radius_mm": 13.0,
+  "thumb_anchor_mm": [
+    269.13385477267997,
+    58.45952468855596,
+    376.220265139654
+  ],
+  "thumb_base_radius_mm": 12.0,
+  "thumb_method": "three robust phalanges reflected to the positive-Y face opposite the main-finger closure; anchor and chain share the same exterior side; broad lateral base opened as a 10 mm gimbal fork",
+  "wrist_center_method": "terminal longitudinal position with transverse center from the first stable forearm core profile; complete hand translated by the same delta",
+  "wrist_center_delta_mm_from_1013": [
+    0.08207335795373183,
+    -23.492282692599005,
+    0.02264092633203063
+  ],
+  "finger_pose": "neutral_open_straight",
+  "finger_segment_ratios": [
+    0.26,
+    0.24,
+    0.23,
+    0.27
+  ],
+  "finger_method": "four straight parallel wrist-aligned rays; separated 7 mm palm sockets; ulnar-biased transverse arch of 0 to 5 mm; terminal white phalanges use a four-section domed loft without spherical end bodies",
+  "finger_fan_degrees": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "thumb_pose": "neutral_opposition_straight",
+  "finger_root_spacing_mm": 16.5,
+  "palm_arch_y_mm": [
+    1.5,
+    0.0,
+    2.5,
+    5.0
+  ],
+  "wrist_to_finger_axis": [
+    0.277214134048919,
+    0.0,
+    -0.960808161853087
+  ],
+  "finger_socket_radius_mm": 7.0,
+  "finger_socket_depth_mm": 6.0,
+  "palm_depth_mm": [
+    20.0,
+    21.0,
+    22.0,
+    24.0,
+    26.0
+  ],
+  "finger_shift_y_mm_for_flat_palm": 5.5,
+  "mechanical_joint_spec": {
+    "architecture": "three coaxial sleeves and independent through pin",
+    "outer_knuckle_radius_mm": {
+      "main": 5.8,
+      "thumb": 6.2
+    },
+    "pin_radius_mm": 2.0,
+    "bore_radius_mm": 2.35,
+    "radial_clearance_mm": 0.35,
+    "axial_gap_each_side_mm": 0.4,
+    "pin_overhang_each_side_mm": 1.0,
+    "center_sleeve_fraction": 0.42,
+    "nominal_flexion_limits_deg": [
+      60,
+      60,
+      50,
+      40
+    ],
+    "main_flexion_signed_limits_deg": [
+      -60,
+      -60,
+      -50,
+      -40
+    ],
+    "main_flexion_direction": "opposite angular side from version 1.0.34; physical stops and Fusion limits both inverted",
+    "thumb_flexion_limits_deg": [
+      30,
+      40,
+      35,
+      20
+    ],
+    "physical_stop": {
+      "architecture": "moving longitudinal rail fused to center sleeve against fixed longitudinal rails fused to both outer sleeves",
+      "rail_radius_mm": 1.25,
+      "radial_overlap_mm": 0.75,
+      "contact_angle_compensated": true,
+      "integrated_body_count_change": 0
+    },
+    "status": "inverted progressive main-finger stops and unchanged four-axis thumb stops with crossed base axes; bodies assigned to proximal and distal kinematic components"
+  },
+  "component_structure": {
+    "assembly": "06_MANO_ARTICULABLE",
+    "component_count": 21,
+    "components": {
+      "palm": 1,
+      "thumb_gimbal": 1,
+      "main_finger_phalanges": 16,
+      "thumb_phalanges": 3
+    },
+    "body_assignment": "outer sleeves and removable pin to proximal component; center sleeve to distal component",
+    "occurrence_transform": "identity; transient bodies retain validated global coordinates",
+    "next_stage": "actuation channels after revolute joint validation"
+  },
+  "fusion_joint_structure": {
+    "type": "as-built revolute",
+    "joint_count": 20,
+    "occurrence_order": "distal phalanx first, proximal component second",
+    "axis_source": "circular edge of each 4 mm removable pin",
+    "axis_alignment_threshold": 0.98,
+    "palm_grounded_to_hand_assembly": true,
+    "hand_assembly_temporarily_grounded_to_arm": true,
+    "limits_follow_physical_stops": true,
+    "open_pose_preserved_during_creation": true,
+    "digit_motion_links": "15 links; each joint 1 drives the remaining joints using positive travel magnitudes while the joint limits determine the signed direction",
+    "thumb_joint_axes": "four axes mirrored with the thumb placement: two crossed base axes separated by about 76 degrees keep the proximal chain on positive Y and direct the tip inward toward the palm and finger pads; the two distal axes remain parallel to the opposition axis"
+  }
+}

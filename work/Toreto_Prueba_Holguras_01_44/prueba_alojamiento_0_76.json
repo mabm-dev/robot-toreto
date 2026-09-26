@@ -1,0 +1,11 @@
+{
+  "status": "geometry_checks_passed_not_full_validation",
+  "axes_deg": [
+    0.0,
+    76.0
+  ],
+  "body": "CHECK_SUPPORT_10_PULGAR_NUDILLO_1_CASQUILLO_B",
+  "cuts": 4513,
+  "retained_volume_percent": 94.67406208180364,
+  "report": "Holguras de prueba: 4513 cortes; 94.7% volumen conservado; envolventes conservadoras, 121 posturas por cadena y margen 0.35 mm. Ejes y cuerpos moviles intactos. NO validado para fabricar. Reintentos con margen adicional (mm): [('09_PULGAR_FALANGE_1', 63, 0.01), ('09_PULGAR_FALANGE_1', 99, 0.01)]"
+}
