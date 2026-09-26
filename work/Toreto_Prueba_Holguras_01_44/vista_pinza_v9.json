@@ -1,0 +1,407 @@
+{
+  "version": "v9",
+  "modo": "ver_pinza",
+  "estado": "publicado",
+  "fracciones": {
+    "pulgar_rotacion": 1.0,
+    "indice": 0.75,
+    "pulgar_flexion": 0.75
+  },
+  "aviso": "Solo para mirar. Palma sin recorte y NO validada; sin holgura continua, resistencia ni tendones.",
+  "cuerpos_mano": 101,
+  "juntas": 20,
+  "relaciones": 16,
+  "signos_eje": {
+    "JUNTA_DEDO_1_1": -1,
+    "JUNTA_DEDO_1_2": -1,
+    "JUNTA_DEDO_1_3": -1,
+    "JUNTA_DEDO_1_4": -1,
+    "JUNTA_DEDO_2_1": -1,
+    "JUNTA_DEDO_2_2": -1,
+    "JUNTA_DEDO_2_3": -1,
+    "JUNTA_DEDO_2_4": -1,
+    "JUNTA_DEDO_3_1": -1,
+    "JUNTA_DEDO_3_2": -1,
+    "JUNTA_DEDO_3_3": -1,
+    "JUNTA_DEDO_3_4": -1,
+    "JUNTA_DEDO_4_1": -1,
+    "JUNTA_DEDO_4_2": -1,
+    "JUNTA_DEDO_4_3": -1,
+    "JUNTA_DEDO_4_4": -1,
+    "JUNTA_PULGAR_1": -1,
+    "JUNTA_PULGAR_2": -1,
+    "JUNTA_PULGAR_3": -1,
+    "JUNTA_PULGAR_4": -1
+  },
+  "juntas_en_pinza": {
+    "JUNTA_DEDO_1_1": {
+      "esperado_deg": -40.5,
+      "fusion_deg": -40.5,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_1_2": {
+      "esperado_deg": -40.5,
+      "fusion_deg": -40.5,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_1_3": {
+      "esperado_deg": -33.75,
+      "fusion_deg": -33.75,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_1_4": {
+      "esperado_deg": -27.0,
+      "fusion_deg": -27.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_2_1": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_2_2": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_2_3": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_2_4": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_3_1": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_3_2": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_3_3": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_3_4": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_4_1": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_4_2": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_4_3": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_4_4": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_PULGAR_1": {
+      "esperado_deg": 30.0,
+      "fusion_deg": 30.0,
+      "diferencia_deg": -0.0
+    },
+    "JUNTA_PULGAR_2": {
+      "esperado_deg": 30.0,
+      "fusion_deg": 30.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_PULGAR_3": {
+      "esperado_deg": 26.25,
+      "fusion_deg": 26.25,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_PULGAR_4": {
+      "esperado_deg": 15.0,
+      "fusion_deg": 15.0,
+      "diferencia_deg": 0.0
+    }
+  },
+  "falanges_frente_al_ensayo": {
+    "07_DEDO_1_FALANGE_1": {
+      "ensayo_mm": [
+        272.737,
+        59.884,
+        306.435
+      ],
+      "fusion_mm": [
+        273.441,
+        53.46,
+        303.976
+      ],
+      "distancia_mm": 6.914
+    },
+    "07_DEDO_1_FALANGE_2": {
+      "ensayo_mm": [
+        275.311,
+        75.857,
+        297.676
+      ],
+      "fusion_mm": [
+        278.857,
+        53.46,
+        285.226
+      ],
+      "distancia_mm": 25.869
+    },
+    "07_DEDO_1_FALANGE_3": {
+      "ensayo_mm": [
+        275.149,
+        93.207,
+        299.404
+      ],
+      "fusion_mm": [
+        283.949,
+        53.46,
+        267.601
+      ],
+      "distancia_mm": 51.659
+    },
+    "07_DEDO_1_FALANGE_4": {
+      "ensayo_mm": [
+        271.768,
+        108.071,
+        311.365
+      ],
+      "fusion_mm": [
+        289.306,
+        53.46,
+        247.637
+      ],
+      "distancia_mm": 85.739
+    },
+    "07_DEDO_2_FALANGE_1": {
+      "ensayo_mm": [
+        289.599,
+        51.96,
+        307.494
+      ],
+      "fusion_mm": [
+        289.599,
+        51.96,
+        307.494
+      ],
+      "distancia_mm": 0.0
+    },
+    "07_DEDO_2_FALANGE_2": {
+      "ensayo_mm": [
+        295.601,
+        51.96,
+        286.714
+      ],
+      "fusion_mm": [
+        295.601,
+        51.96,
+        286.714
+      ],
+      "distancia_mm": 0.0
+    },
+    "07_DEDO_2_FALANGE_3": {
+      "ensayo_mm": [
+        301.243,
+        51.96,
+        267.18
+      ],
+      "fusion_mm": [
+        301.243,
+        51.96,
+        267.18
+      ],
+      "distancia_mm": 0.0
+    },
+    "07_DEDO_2_FALANGE_4": {
+      "ensayo_mm": [
+        307.077,
+        51.96,
+        245.239
+      ],
+      "fusion_mm": [
+        307.077,
+        51.96,
+        245.239
+      ],
+      "distancia_mm": 0.0
+    },
+    "07_DEDO_3_FALANGE_1": {
+      "ensayo_mm": [
+        305.574,
+        54.46,
+        311.646
+      ],
+      "fusion_mm": [
+        305.574,
+        54.46,
+        311.646
+      ],
+      "distancia_mm": 0.0
+    },
+    "07_DEDO_3_FALANGE_2": {
+      "ensayo_mm": [
+        311.81,
+        54.46,
+        290.054
+      ],
+      "fusion_mm": [
+        311.81,
+        54.46,
+        290.054
+      ],
+      "distancia_mm": 0.0
+    },
+    "07_DEDO_3_FALANGE_3": {
+      "ensayo_mm": [
+        317.673,
+        54.46,
+        269.757
+      ],
+      "fusion_mm": [
+        317.673,
+        54.46,
+        269.757
+      ],
+      "distancia_mm": 0.0
+    },
+    "07_DEDO_3_FALANGE_4": {
+      "ensayo_mm": [
+        323.7,
+        54.46,
+        247.023
+      ],
+      "fusion_mm": [
+        323.7,
+        54.46,
+        247.023
+      ],
+      "distancia_mm": 0.0
+    },
+    "07_DEDO_4_FALANGE_1": {
+      "ensayo_mm": [
+        321.123,
+        56.96,
+        317.276
+      ],
+      "fusion_mm": [
+        321.123,
+        56.96,
+        317.276
+      ],
+      "distancia_mm": 0.0
+    },
+    "07_DEDO_4_FALANGE_2": {
+      "ensayo_mm": [
+        326.773,
+        56.96,
+        297.714
+      ],
+      "fusion_mm": [
+        326.773,
+        56.96,
+        297.714
+      ],
+      "distancia_mm": 0.0
+    },
+    "07_DEDO_4_FALANGE_3": {
+      "ensayo_mm": [
+        332.085,
+        56.96,
+        279.325
+      ],
+      "fusion_mm": [
+        332.085,
+        56.96,
+        279.325
+      ],
+      "distancia_mm": 0.0
+    },
+    "07_DEDO_4_FALANGE_4": {
+      "ensayo_mm": [
+        337.633,
+        56.96,
+        258.571
+      ],
+      "fusion_mm": [
+        337.633,
+        56.96,
+        258.571
+      ],
+      "distancia_mm": 0.0
+    },
+    "09_PULGAR_CARDAN_INTERMEDIO": {
+      "ensayo_mm": [
+        254.802,
+        71.786,
+        360.04
+      ],
+      "fusion_mm": [
+        254.322,
+        68.685,
+        358.94
+      ],
+      "distancia_mm": 3.325
+    },
+    "09_PULGAR_FALANGE_1": {
+      "ensayo_mm": [
+        256.561,
+        78.62,
+        351.245
+      ],
+      "fusion_mm": [
+        248.742,
+        69.591,
+        347.93
+      ],
+      "distancia_mm": 12.396
+    },
+    "09_PULGAR_FALANGE_2": {
+      "ensayo_mm": [
+        266.189,
+        90.462,
+        336.868
+      ],
+      "fusion_mm": [
+        243.938,
+        71.689,
+        327.702
+      ],
+      "distancia_mm": 30.521
+    },
+    "09_PULGAR_FALANGE_3": {
+      "ensayo_mm": [
+        279.669,
+        98.281,
+        327.717
+      ],
+      "fusion_mm": [
+        237.728,
+        73.608,
+        310.035
+      ],
+      "distancia_mm": 51.773
+    }
+  },
+  "hueco_puntas_mm": null,
+  "resumen": {
+    "peor_diferencia_junta_deg": 0.0,
+    "peor_distancia_falange_mm": 85.739,
+    "pose_igual_al_ensayo": false,
+    "hueco_puntas_en_ensayo_mm": 0.28
+  }
+}

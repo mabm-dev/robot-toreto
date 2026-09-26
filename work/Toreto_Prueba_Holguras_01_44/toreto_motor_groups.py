@@ -101,6 +101,42 @@ def joint_angles(chain, fractions, signed_travel):
             for spec in reversed(chain)]
 
 
+# Articulación maestra de cada motor en Fusion. Las demás del mismo motor la
+# siguen con una relación de movimiento directa (nunca en cadena).
+MOTOR_MASTERS = {
+    'indice': 'JUNTA_DEDO_{}_1'.format(INDEX_FINGER),
+    'resto': 'JUNTA_DEDO_2_1',
+    'pulgar_flexion': 'JUNTA_PULGAR_2',
+    'pulgar_rotacion': 'JUNTA_PULGAR_1',
+}
+
+# Vista de la pinza (v9): muestra 9 de 12 del ensayo de la v8, la última
+# antes del contacto (hueco entre puntas 0,28 mm). En la 10 ya solapan.
+PINCH_VIEW_FRACTION = 9 / 12
+
+
+def motion_link_plan(specs):
+    """Pares (maestra, seguidora) de la mano de 4 motores: 3 + 11 + 2 + 0."""
+    names = {spec['name'] for spec in specs}
+    for master in MOTOR_MASTERS.values():
+        if master not in names:
+            raise ValueError('Falta la articulacion maestra ' + master)
+    return [(MOTOR_MASTERS[motor_of(spec['name'])], spec['name'])
+            for spec in specs
+            if spec['name'] != MOTOR_MASTERS[motor_of(spec['name'])]]
+
+
+def pose_angles(specs, fractions, signed_travel):
+    """Ángulo (grados, sobre el eje de `spec`) de cada articulación en una
+    postura. Son los mismos que aplica `joint_angles` en el ensayo."""
+    return {spec['name']: signed_travel(spec) * fractions.get(motor_of(spec['name']), 0.0)
+            for spec in specs}
+
+
+def pinch_view_fractions():
+    return _pinch(PINCH_VIEW_FRACTION)
+
+
 def moves_in(chain, fraction_fn, intervals):
     """True si algún eslabón de la cadena sale de la postura abierta en algún
     momento del escenario. Si dos cuerpos no se mueven, su par ya está

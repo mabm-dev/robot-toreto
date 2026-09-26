@@ -149,5 +149,62 @@ class IndexLimitTests(unittest.TestCase):
         self.assertEqual(hand.INDEX_FINGER, groups.INDEX_FINGER)
 
 
+class PinchViewTests(unittest.TestCase):
+    """v9: publicar la mano con 4 motores y colocarla en la pinza."""
+
+    def setUp(self):
+        self.specs = hand.joint_specs(DATA)
+        self.by_name = {s['name']: s for s in self.specs}
+
+    def test_link_plan_is_one_relation_per_follower(self):
+        plan = groups.motion_link_plan(self.specs)
+        self.assertEqual(len(plan), 16)
+        followers = [f for _, f in plan]
+        self.assertEqual(len(followers), len(set(followers)))
+        # Nunca en cadena: ninguna maestra es a la vez seguidora.
+        self.assertFalse(set(m for m, _ in plan) & set(followers))
+        # El cardan va suelto.
+        self.assertNotIn('JUNTA_PULGAR_1', followers)
+        self.assertNotIn('JUNTA_PULGAR_1', [m for m, _ in plan])
+
+    def test_links_never_cross_motors(self):
+        for master, follower in groups.motion_link_plan(self.specs):
+            self.assertEqual(groups.motor_of(master), groups.motor_of(follower))
+
+    def test_link_ratio_reproduces_the_trial_pose(self):
+        # Una relacion lineal maestra->seguidora con los recorridos de cada
+        # junta da, a cualquier fraccion, el mismo angulo que el ensayo.
+        for master, follower in groups.motion_link_plan(self.specs):
+            m, f = self.by_name[master], self.by_name[follower]
+            for t in (0.25, 0.75, 1.0):
+                angles = groups.pose_angles(self.specs, {groups.motor_of(master): t},
+                                            clearance.signed_travel)
+                ratio = f['travel_deg'] / m['travel_deg']
+                self.assertAlmostEqual(abs(angles[follower]),
+                                       abs(angles[master]) * ratio, places=9)
+
+    def test_view_is_sample_nine_of_the_v8_pinch(self):
+        self.assertEqual(groups.PINCH_VIEW_FRACTION, 0.75)
+        pinch = next(fn for name, _, fn in groups.SCENARIOS if name == 'pinza_boli')
+        self.assertEqual(groups.pinch_view_fractions(), pinch(9 / 12))
+
+    def test_pose_angles_match_the_trial_chains(self):
+        fractions = groups.pinch_view_fractions()
+        angles = groups.pose_angles(self.specs, fractions, clearance.signed_travel)
+        specs = {s['child']: s for s in self.specs}
+        for group in specs:
+            chain = clearance.chain_for(group, specs)
+            for name, degrees in groups.joint_angles(chain, fractions, clearance.signed_travel):
+                self.assertEqual(angles[name], degrees, name)
+
+    def test_pinch_view_angles(self):
+        angles = groups.pose_angles(self.specs, groups.pinch_view_fractions(),
+                                    clearance.signed_travel)
+        self.assertAlmostEqual(angles['JUNTA_PULGAR_1'], 30.0)
+        self.assertAlmostEqual(angles['JUNTA_PULGAR_2'], 30.0)
+        self.assertAlmostEqual(angles['JUNTA_DEDO_1_1'], -40.5)
+        self.assertEqual(angles['JUNTA_DEDO_2_1'], 0.0)
+
+
 if __name__ == '__main__':
     unittest.main()

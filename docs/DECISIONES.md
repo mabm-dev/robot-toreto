@@ -226,6 +226,14 @@ cuánto pesa la mano.
   lugar cada motor por separado (criterio: cero choques) y la pinza del boli.
   Detalle en `work/Toreto_Prueba_Holguras_01_44/`.
 
+**Cómo debe tocar la pinza del boli (26 sept 2026, tras verla en 3D):** el
+**pulgar** debe apoyar con la **cara plana de su última falange**, no con la
+punta curva: la curva deja poca superficie y el boli gira o resbala. Hoy
+(v8) toca de punta, contra la cara interior de la última falange del
+índice. **El índice está bien así** y no se cambia. Además, las caras de
+agarre serán **rugosas o con textura** para mejorar la sujeción. Cambiar la
+postura del pulgar exige un ensayo nuevo; no se ha tocado todavía.
+
 ## Identidad visual: CAD 3D interactivo (23 ago 2026)
 
 Estándar de documentación técnica para todo el material visual del proyecto:

@@ -9,6 +9,10 @@ import adsk.fusion
 
 ROOT=Path(__file__).resolve().parent
 NAME='94_BRAZO_HOLGURAS_PRUEBA_01_44'
+SCRIPT_VERSION='v9'
+# 'ensayo'    -> ensayo de colisiones de la v8, sin crear piezas.
+# 'ver_pinza' -> publica la mano (4 motores) en la pinza al 75%, para mirarla.
+MODE='ver_pinza'
 
 
 def placement(axis,y_mm):
@@ -55,7 +59,7 @@ def import_temp_bodies(component,items,feature_name,design):
     return {label:results.item(index) for index,(_,label,_) in enumerate(items)}
 
 
-def pin_axis_edge(body_proxy,expected_axis,pin_radius_cm=.2):
+def pin_axis_edge(body_proxy,expected_axis,pin_radius_cm):
     """Find a circular pin edge and report whether its normal matches the axis."""
     best=None
     for edge in body_proxy.edges:
@@ -70,11 +74,12 @@ def pin_axis_edge(body_proxy,expected_axis,pin_radius_cm=.2):
         if best is None or abs(alignment)>abs(best[1]):
             best=(edge,alignment)
     if best is None or abs(best[1])<.98:
-        raise RuntimeError('No se encontro un borde circular alineado en el pasador')
+        raise RuntimeError('No se encontro un borde circular alineado de radio {} mm'.format(
+            round(pin_radius_cm*10,3)))
     return best
 
 
-def create_revolute_joints(hand_component,occurrences,bodies,specs):
+def create_revolute_joints(hand_component,occurrences,bodies,specs,pin_radius_mm):
     """Create 20 as-built revolute joints without moving the validated pose."""
     collection=hand_component.asBuiltJoints
     created=[]
@@ -86,7 +91,12 @@ def create_revolute_joints(hand_component,occurrences,bodies,specs):
         proxy=native_body.createForAssemblyContext(owner_occurrence)
         if not proxy:
             raise RuntimeError('No se pudo contextualizar '+spec['pin_label'])
-        edge,alignment=pin_axis_edge(proxy,spec['axis'])
+        # Cada pasador con su radio: el cardan y la base del pulgar son de
+        # 2,8 mm, el resto de 4 mm (toreto_hand.hinge_dimensions).
+        try:
+            edge,alignment=pin_axis_edge(proxy,spec['axis'],pin_radius_mm(spec)*.1)
+        except RuntimeError as error:
+            raise RuntimeError(spec['name']+': '+str(error))
         geometry=adsk.fusion.JointGeometry.createByCurve(
             edge,adsk.fusion.JointKeyPointTypes.CenterKeyPoint)
         if not geometry:
@@ -123,40 +133,194 @@ def create_revolute_joints(hand_component,occurrences,bodies,specs):
     return created,flexion_signs
 
 
-def create_digit_motion_links(hand_component,joints,flexion_signs,travel_degrees):
-    """Couple every digit using the requested progressive flexion ratios."""
+def create_digit_motion_links(hand_component,joints,flexion_signs,travel_degrees,plan):
+    """Mano de 4 motores (v9): cada seguidora enlazada directamente a la
+    maestra de su motor; el cardan (JUNTA_PULGAR_1) va suelto."""
     collection=hand_component.motionLinks
     by_name={joint.name:joint for joint in joints}
     rotation=adsk.fusion.JointMotionTypes.RevoluteJointRotateMotionType
     created=[]
-    chains=[('JUNTA_DEDO_{}'.format(index),4) for index in range(1,5)]
-    chains.append(('JUNTA_PULGAR',4))
-    for prefix,joint_count in chains:
-        master_name=prefix+'_1'
-        master=by_name[master_name]
-        for joint_index in range(2,joint_count+1):
-            follower_name=prefix+'_{}'.format(joint_index)
-            follower=by_name[follower_name]
-            link_input=collection.createInput(master,follower)
-            if not link_input:
-                raise RuntimeError('No se pudo preparar la relacion '+follower_name)
-            link_input.motionOne=rotation
-            link_input.motionTwo=rotation
-            link_input.valueOne=adsk.core.ValueInput.createByString(
-                '{} deg'.format(travel_degrees[master_name]))
-            link_input.valueTwo=adsk.core.ValueInput.createByString(
-                '{} deg'.format(travel_degrees[follower_name]))
-            link_input.isReversed=(
-                flexion_signs[master_name]!=flexion_signs[follower_name])
-            link=collection.add(link_input)
-            if not link:
-                raise RuntimeError('No se pudo crear la relacion '+follower_name)
-            link.name='RELACION_CIERRE_{}_1_A_{}'.format(
-                prefix.replace('JUNTA_',''),joint_index)
-            created.append(link)
-    if len(created)!=15 or collection.count!=15:
-        raise RuntimeError('No se crearon las 15 relaciones de cierre previstas')
+    for master_name,follower_name in plan:
+        link_input=collection.createInput(by_name[master_name],by_name[follower_name])
+        if not link_input:
+            raise RuntimeError('No se pudo preparar la relacion '+follower_name)
+        link_input.motionOne=rotation
+        link_input.motionTwo=rotation
+        link_input.valueOne=adsk.core.ValueInput.createByString(
+            '{} deg'.format(travel_degrees[master_name]))
+        link_input.valueTwo=adsk.core.ValueInput.createByString(
+            '{} deg'.format(travel_degrees[follower_name]))
+        link_input.isReversed=(
+            flexion_signs[master_name]!=flexion_signs[follower_name])
+        link=collection.add(link_input)
+        if not link:
+            raise RuntimeError('No se pudo crear la relacion '+follower_name)
+        link.name='RELACION_{}_A_{}'.format(
+            master_name.replace('JUNTA_',''),follower_name.replace('JUNTA_',''))
+        created.append(link)
+    if len(created)!=len(plan) or collection.count!=len(plan):
+        raise RuntimeError('No se crearon las {} relaciones previstas'.format(len(plan)))
     return created
+
+
+def _center_mm(box):
+    return [round((box.minPoint.x+box.maxPoint.x)*5,3),
+            round((box.minPoint.y+box.maxPoint.y)*5,3),
+            round((box.minPoint.z+box.maxPoint.z)*5,3)]
+
+
+def expected_pinch_centers(manager,hand,clearance,groups,motor_validation,
+                           hand_bodies,hand_data,fractions):
+    """Centro de cada falange en la pinza segun el MISMO calculo del ensayo,
+    para comprobar despues que Fusion ha colocado la mano igual."""
+    specs={s['child']:s for s in hand.joint_specs(hand_data)}
+    centers={}
+    for temp,label,_,group in hand_bodies:
+        if not (label.startswith('07_DEDO_') or label.startswith('09_PULGAR_')):
+            continue
+        chain=clearance.chain_for(group,specs)
+        posed=motor_validation._pose(manager,groups,clearance,temp,chain,fractions)
+        centers[label]=_center_mm(posed.boundingBox)
+    return centers
+
+
+def apply_pose(joints,flexion_signs,plan,angles):
+    """Mueve solo las maestras (las seguidoras van por sus relaciones) y
+    devuelve lo que Fusion dice que ha quedado en cada junta."""
+    by_name={joint.name:joint for joint in joints}
+    followers={follower for _,follower in plan}
+    for name,degrees in angles.items():
+        if name in followers or degrees==0.0:
+            continue
+        motion=adsk.fusion.RevoluteJointMotion.cast(by_name[name].jointMotion)
+        motion.rotationValue=math.radians(degrees*flexion_signs[name])
+    adsk.doEvents()
+    readback={}
+    for name,degrees in angles.items():
+        motion=adsk.fusion.RevoluteJointMotion.cast(by_name[name].jointMotion)
+        got=math.degrees(motion.rotationValue)*flexion_signs[name]
+        readback[name]=dict(esperado_deg=round(degrees,3),fusion_deg=round(got,3),
+                            diferencia_deg=round(got-degrees,3))
+    return readback
+
+
+def compare_centers(expected,body_records):
+    result={}
+    for label,center in expected.items():
+        native_body,occurrence=body_records[label]
+        proxy=native_body.createForAssemblyContext(occurrence)
+        got=_center_mm(proxy.boundingBox)
+        result[label]=dict(ensayo_mm=center,fusion_mm=got,
+                           distancia_mm=round(math.dist(center,got),3))
+    return result
+
+
+def tip_gap_mm(body_records,groups):
+    try:
+        a=body_records[groups.THUMB_TIP]
+        b=body_records[groups.INDEX_TIP]
+        result=adsk.core.Application.get().measureManager.measureMinimumDistance(
+            a[0].createForAssemblyContext(a[1]),b[0].createForAssemblyContext(b[1]))
+        return round(result.value*10,3) if result else None
+    except Exception:
+        return None
+
+
+def publish_pinch_view(design,root,pending,hand_bodies,hand,clearance,groups,
+                       motor_validation,hand_data,manager,report_path):
+    """v9: publica brazo y mano en el documento VACIO y deja la mano en la
+    pinza al 75%. Sin clearance.repair(): la palma NO esta recortada ni
+    validada. Devuelve el informe (tambien escrito en report_path)."""
+    fractions=groups.pinch_view_fractions()
+    joint_definitions=hand.joint_specs(hand_data)
+    plan=groups.motion_link_plan(joint_definitions)
+    angles=groups.pose_angles(joint_definitions,fractions,clearance.signed_travel)
+    # Antes de importar: los cuerpos temporales siguen intactos.
+    expected=expected_pinch_centers(manager,hand,clearance,groups,motor_validation,
+                                    hand_bodies,hand_data,fractions)
+    report=dict(version='v9',modo='ver_pinza',estado='publicando',
+                fracciones=fractions,
+                aviso=('Solo para mirar. Palma sin recorte y NO validada; sin '
+                       'holgura continua, resistencia ni tendones.'))
+
+    def record():
+        report_path.write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf-8')
+    record()
+
+    output=root.occurrences.addNewComponent(adsk.core.Matrix3D.create())
+    if not output:
+        raise RuntimeError('No se pudo crear el componente superior del brazo')
+    output.isGroundToParent=True
+    component=output.component
+    component.name=NAME
+    arm_bodies=import_temp_bodies(
+        component,pending,'SECCIONES_LOCALES_POSTURA_FRONTAL',design)
+
+    hand_occurrence=component.occurrences.addNewComponent(adsk.core.Matrix3D.create())
+    if not hand_occurrence:
+        raise RuntimeError('No se pudo crear el conjunto de la mano')
+    hand_component=hand_occurrence.component
+    hand_component.name='06_MANO_ARTICULABLE'
+    hand_occurrence.isGroundToParent=True
+    grouped={}
+    for temp,label,appearance_name,group_name in hand_bodies:
+        grouped.setdefault(group_name,[]).append((temp,label,appearance_name))
+    if len(grouped)!=21:
+        raise RuntimeError('La mano no produjo los 21 grupos mecanicos previstos')
+    hand_count=0
+    occurrences={}
+    body_records={}
+    for group_name,items in grouped.items():
+        occurrence=hand_component.occurrences.addNewComponent(adsk.core.Matrix3D.create())
+        if not occurrence:
+            raise RuntimeError('No se pudo crear '+group_name)
+        occurrence.component.name=group_name
+        occurrence.component.attributes.add('RobotToreto','grupo_cinematico',group_name)
+        occurrences[group_name]=occurrence
+        imported=import_temp_bodies(
+            occurrence.component,items,'GEOMETRIA_'+group_name,design)
+        hand_count+=len(imported)
+        for label,native_body in imported.items():
+            body_records[label]=(native_body,occurrence)
+    if len(arm_bodies)!=len(pending) or hand_count!=len(hand_bodies):
+        raise RuntimeError('Recuento inesperado al organizar los componentes')
+    occurrences['MANO_00_PALMA'].isGroundToParent=True
+    report.update(estado='piezas_creadas',cuerpos_mano=hand_count)
+    record()
+
+    joints,flexion_signs=create_revolute_joints(
+        hand_component,occurrences,body_records,joint_definitions,
+        lambda spec:hand.hinge_dimensions(spec)[2])
+    travel_degrees={d['name']:d['travel_deg'] for d in joint_definitions}
+    links=create_digit_motion_links(
+        hand_component,joints,flexion_signs,travel_degrees,plan)
+    report.update(estado='juntas_creadas',juntas=len(joints),relaciones=len(links),
+                  signos_eje={k:v for k,v in flexion_signs.items() if v<0})
+    record()
+
+    report['juntas_en_pinza']=apply_pose(joints,flexion_signs,plan,angles)
+    report['estado']='pose_aplicada'
+    record()
+    report['falanges_frente_al_ensayo']=compare_centers(expected,body_records)
+    worst=max(v['distancia_mm'] for v in report['falanges_frente_al_ensayo'].values())
+    worst_joint=max(abs(v['diferencia_deg']) for v in report['juntas_en_pinza'].values())
+    report['hueco_puntas_mm']=tip_gap_mm(body_records,groups)
+    report['resumen']=dict(
+        peor_diferencia_junta_deg=worst_joint,
+        peor_distancia_falange_mm=worst,
+        pose_igual_al_ensayo=(worst_joint<.05 and worst<.5),
+        hueco_puntas_en_ensayo_mm=0.28)
+    report['estado']='publicado'
+    record()
+
+    hand_component.attributes.add('RobotToreto','estructura','PALMA_CARDAN_MAS_19_FALANGES')
+    hand_component.attributes.add('RobotToreto','motores','INDICE_RESTO_FLEXION_PULGAR_CARDAN')
+    hand_component.attributes.add('RobotToreto','juntas_revolutas',str(len(joints)))
+    hand_component.attributes.add('RobotToreto','relaciones_motor',str(len(links)))
+    hand_component.attributes.add('RobotToreto','palma','SIN_RECORTE_NO_VALIDADA')
+    component.attributes.add('RobotToreto','estado','VISTA_PINZA_V9_NO_VALIDADA')
+    component.attributes.add('RobotToreto','topes_dedos','INDICE_NEG_54_54_45_36_RESTO_NEG_60_60_50_40_PULGAR_POS_30_40_35_20')
+    return output,report
 
 
 def run(context):
@@ -166,6 +330,13 @@ def run(context):
         design=adsk.fusion.Design.cast(app.activeProduct)
         if not design: raise RuntimeError('Abre el documento del robot')
         root=design.rootComponent
+        # Un diseno de PIEZA solo admite un componente; el script crea varios.
+        intent=getattr(design,'designIntent',None)
+        part_intent=getattr(getattr(adsk.fusion,'DesignIntentTypes',None),
+                            'PartDesignIntentType',None)
+        if intent is not None and part_intent is not None and intent==part_intent:
+            raise RuntimeError('Este documento es un DISENO DE PIEZA. Hace falta un '
+                               'documento vacio de diseno HIBRIDO (o de ensamblaje).')
         if root.occurrences.count or root.bRepBodies.count:
             raise RuntimeError('SOLO documento nuevo vacio: no se modifica el montaje existente')
         if any(o.component.name==NAME for o in root.occurrences):
@@ -235,6 +406,40 @@ def run(context):
         slots_spec=importlib.util.spec_from_file_location('toreto_finger_slots',ROOT/'toreto_finger_slots.py')
         slots=importlib.util.module_from_spec(slots_spec)
         slots_spec.loader.exec_module(slots)
+        if MODE=='ver_pinza':
+            # Misma geometria que midio la v8: slots.repair() si, clearance.repair() NO.
+            hand_bodies,_=slots.repair(manager,hand,hand_bodies,hand_data)
+            view_path=ROOT/'vista_pinza_v9.json'
+            try:
+                output,view=publish_pinch_view(
+                    design,root,pending,hand_bodies,hand,clearance,motor_groups,
+                    motor_validation,hand_data,manager,view_path)
+            except Exception:
+                try:
+                    partial=json.loads(view_path.read_text(encoding='utf-8'))
+                except Exception:
+                    partial={'version':'v9','modo':'ver_pinza'}
+                partial.update(estado_alcanzado=partial.get('estado'),estado='error',
+                               traceback=traceback.format_exc())
+                view_path.write_text(json.dumps(partial,indent=2,ensure_ascii=False),encoding='utf-8')
+                raise
+            summary=view['resumen']
+            app.userInterface.messageBox(
+                'Mano publicada en la pinza al 75% (v9, 4 motores).\n\n'
+                'Pose igual a la del ensayo: {}\n'
+                'Peor diferencia en juntas: {} grados\n'
+                'Peor distancia de falange: {} mm\n'
+                'Hueco entre puntas: {} mm (ensayo: 0,28 mm)\n\n'
+                'Maestras para mover a mano: JUNTA_DEDO_1_1 (indice), JUNTA_DEDO_2_1 '
+                '(resto), JUNTA_PULGAR_2 (flexion pulgar), JUNTA_PULGAR_1 (cardan).\n\n'
+                'SOLO PARA MIRAR: palma sin recorte y NO validada.\n'
+                'Detalles: vista_pinza_v9.json'.format(
+                    'SI' if summary['pose_igual_al_ensayo'] else 'NO - revisar',
+                    summary['peor_diferencia_junta_deg'],
+                    summary['peor_distancia_falange_mm'],
+                    view['hueco_puntas_mm']),
+                'Toreto '+SCRIPT_VERSION+' - vista de la pinza')
+            return
         # v8: el indice con su propio recorrido (90%), ver toreto_hand.py.
         diagnostic_path=ROOT/'prueba_mano_4_motores_v8.json'
         try:
@@ -258,92 +463,7 @@ def run(context):
             lines.append(diagnostic['error'])
         lines.append('Detalles: prueba_mano_4_motores_v8.json')
         app.userInterface.messageBox('\n'.join(lines),'Mano de 4 motores v8')
-        return  # Diagnostic mode deliberately cannot publish an unvalidated hand.
-        hand_bodies,clearance_report=clearance.repair(manager,hand,hand_bodies,hand_data)
-        reports.append(clearance_report)
-        reports.append(hand_report)
-        output=root.occurrences.addNewComponent(adsk.core.Matrix3D.create())
-        if not output:
-            raise RuntimeError('No se pudo crear el componente superior del brazo')
-        output.isGroundToParent=True
-        component=output.component
-        component.name=NAME
-        arm_bodies=import_temp_bodies(
-            component,pending,'SECCIONES_LOCALES_POSTURA_FRONTAL',design)
-
-        hand_occurrence=component.occurrences.addNewComponent(adsk.core.Matrix3D.create())
-        if not hand_occurrence:
-            raise RuntimeError('No se pudo crear el conjunto de la mano')
-        hand_component=hand_occurrence.component
-        hand_component.name='06_MANO_ARTICULABLE'
-        hand_occurrence.isGroundToParent=True
-        grouped={}
-        for temp,label,appearance_name,group_name in hand_bodies:
-            grouped.setdefault(group_name,[]).append((temp,label,appearance_name))
-        if len(grouped)!=21:
-            raise RuntimeError('La mano no produjo los 21 grupos mecanicos previstos')
-        hand_count=0
-        occurrences={}
-        body_records={}
-        for group_name,items in grouped.items():
-            occurrence=hand_component.occurrences.addNewComponent(adsk.core.Matrix3D.create())
-            if not occurrence:
-                raise RuntimeError('No se pudo crear '+group_name)
-            occurrence.component.name=group_name
-            occurrence.component.attributes.add('RobotToreto','grupo_cinematico',group_name)
-            occurrences[group_name]=occurrence
-            imported=import_temp_bodies(
-                occurrence.component,items,'GEOMETRIA_'+group_name,design)
-            hand_count+=len(imported)
-            for label,native_body in imported.items():
-                body_records[label]=(native_body,occurrence)
-        if len(arm_bodies)!=len(pending) or hand_count!=len(hand_bodies):
-            raise RuntimeError('Recuento inesperado al organizar los componentes')
-        occurrences['MANO_00_PALMA'].isGroundToParent=True
-        joint_definitions=hand.joint_specs(hand_data)
-        joints,flexion_signs=create_revolute_joints(
-            hand_component,occurrences,body_records,joint_definitions)
-        travel_degrees={
-            definition['name']:definition['travel_deg']
-            for definition in joint_definitions}
-        motion_links=create_digit_motion_links(
-            hand_component,joints,flexion_signs,travel_degrees)
-        hand_component.attributes.add('RobotToreto','estructura','PALMA_CARDAN_MAS_19_FALANGES')
-        hand_component.attributes.add('RobotToreto','juntas_revolutas',str(len(joints)))
-        hand_component.attributes.add('RobotToreto','relaciones_cierre',str(len(motion_links)))
-        component.attributes.add('RobotToreto','estado','PRUEBA_20_JUNTAS_PULGAR_CARDAN')
-        component.attributes.add('RobotToreto','referencia','FRONTAL_POSTURA_MAESTRA_LATERAL_SOLO_PROFUNDIDAD')
-        component.attributes.add('RobotToreto','filtrado_terminal','RATIO_CAMBIO_LOCAL_MAX_1_5')
-        component.attributes.add('RobotToreto','articulacion_dedos','PASADOR_D4_BORE_D4_7_GAP_AXIAL_0_4')
-        component.attributes.add('RobotToreto','topes_dedos','INDICE_NEG_54_54_45_36_RESTO_NEG_60_60_50_40_PULGAR_POS_30_40_35_20')
-        app.userInterface.messageBox(
-            'Creado 94_BRAZO_HOLGURAS_PRUEBA_01_44.\n\n'
-            'Brazo y antebrazo se midieron perpendicularmente a sus propios ejes y se emparejaron por posicion normalizada. '
-            'Se colocan en la postura frontal, sobre un plano Y=45 mm. El lateral aporta profundidad, no postura.\n\n'
-            'Fusion autointersectaba el loft al plegar los perfiles terminales. Esta ejecucion conserva las medidas en el JSON, '
-            'crea los tramos estables y trata los perfiles extremos abruptos como articulaciones separadas. El codo validado se conserva; '
-            'el alojamiento blanco de hombro conserva su geometria. La muneca usa una envolvente blanca cerrada en todas sus caras, '
-            'con cavidad de rotula y una unica salida inferior centrada para el conector negro R13 mm. '
-            'El centro transversal de la muneca se toma del primer perfil estable del nucleo del antebrazo, eliminando el desplazamiento lateral de 23,49 mm que introducia el perfil terminal. '
-            'La mano usa otra parametrizacion local. La palma negra se alarga y se estrecha desde los nudillos hasta la muneca para eliminar la silueta de campana; '
-            'el conector de muneca y la base lateral reforzada del pulgar forman parte de la palma, con una horquilla abierta de 10 mm para liberar el cardan; '
-            'la palma se orienta con el eje del conector de muneca y elimina su desplazamiento lateral interno; '
-            'la fila de nudillos queda perpendicular a ese eje y los cuatro dedos salen rectos y paralelos a el; '
-            'los ejes cilindricos atraviesan el ancho local de cada dedo, por lo que su giro produce flexion hacia la palma; '
-            'las terminales blancas se construyen como lofts alargados y abombados, sin esferas independientes; '
-            'cuatro cunas separadas suavizan la salida desde una palma negra aplanada: 20 mm de profundidad junto a dedos de 14-15 mm, aumentando solo hasta 26 mm en la conexion de muneca; '
-            'el lado cubital conserva un arco progresivo de hasta 5 mm para permitir el cierre; '
-            'cada uno de los 20 nudillos se divide en dos casquillos exteriores, uno central y un pasador desmontable de 4 mm; '
-            'los taladros tienen 4,70 mm, con 0,35 mm de holgura radial y 0,40 mm entre casquillos; '
-            'cada casquillo central incorpora un tope movil y los dos exteriores un tope fijo: los cuatro dedos principales invierten su cierre con limites -60/-60/-50/-40 grados (el indice -54/-54/-45/-36), mientras el pulgar conserva 30/40/35/20 grados y su giro hacia dentro; '
-            'el pulgar aumenta su seccion y termina en una falange blanca redondeada; anclaje, cardan y falanges se reflejan juntos hacia la cara Y positiva, opuesta al cierre ascendente de los dedos principales, y los ejes tambien se reflejan para conservar el giro y dirigir la yema hacia el centro de la palma; '
-            'las falanges son carcasas rectangulares redondeadas, ligeramente decrecientes y permanecen separadas:\n- '+ '\n- '.join(reports) +'\n\n'
-            'Las falanges, los casquillos y los pasadores permanecen como cuerpos separados. Los topes forman parte de los casquillos y no aumentan el numero de piezas; los conductos de accionamiento se incorporaran despues. '
-            'La mano se organiza bajo 06_MANO_ARTICULABLE en 21 componentes: una palma, un cardan intermedio del pulgar, dieciseis falanges principales y tres falanges del pulgar. '
-            'Los casquillos exteriores y el pasador pertenecen al componente proximal; el casquillo central pertenece al componente distal. '
-            'Se crean 20 juntas revolutas reales sobre los bordes circulares de los pasadores. La palma queda fijada al conjunto y cada falange conserva solo su giro asignado; los limites digitales coinciden con los topes fisicos. '
-            'La pieza distal se registra como primer componente de cada junta para que Fusion mueva el dedo y mantenga inmovil la palma durante la animacion. Quince relaciones de movimiento enlazan cada cadena con cierre progresivo: los dedos principales recorren el lado angular opuesto con magnitudes 60/60/50/40 y el pulgar conserva 30/40/35/20 hacia dentro. El componente superior, el conjunto de mano y la palma quedan fijados durante esta validacion para que ninguna junta secundaria desplace el brazo. '
-            'No se han cambiado lienzos ni componentes anteriores.')
+        return  # El ensayo nunca publica; la vista la crea MODE='ver_pinza'.
     except Exception:
         error=traceback.format_exc()
         if output and output.isValid:

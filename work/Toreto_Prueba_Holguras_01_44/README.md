@@ -8,7 +8,16 @@ Ejecutar solamente desde Fusion en un documento de prueba vacio. El script
 rechaza documentos con cuerpos u ocurrencias y retorna antes de publicar
 un ensamblaje. No guarda documentos de Fusion.
 
-## v8 (26-09-2026) — preparada, SIN ejecutar en Fusion
+## v9 (26-09-2026) — vista de la pinza, SIN ejecutar en Fusion
+
+Excepcion deliberada a "no publica": con `MODE='ver_pinza'` (valor actual)
+el script crea la mano con 20 juntas y los 4 motores como relaciones de
+movimiento, y la deja en la pinza al 75%. Solo en documento vacio; palma sin
+recorte y NO validada. Informe: `vista_pinza_v9.json`. Con
+`MODE='ensayo'` repite el ensayo de la v8 sin crear piezas.
+Simulacion previa: `python simular_publicacion_sin_fusion.py`.
+
+## v8 (26-09-2026) — ejecutada: todo limpio y pinza lograda
 
 La v7 dio: mano abierta limpia, rotacion y flexion del pulgar limpias,
 corazon+anular+menique limpio, y la pinza del boli lograda punta con punta
@@ -65,8 +74,9 @@ de resistencia. Los resultados anteriores de palma no certifican esta version.
 
 `python -m unittest discover -s work/Toreto_Prueba_Holguras_01_44 -p "test_*.py" -v`
 
-Diecinueve pruebas: cinco de parametros (`test_clearance.py`) y catorce del
-reparto de motores y los limites del indice (`test_motor_groups.py`). Una de estas ultimas garantiza
+Veinticinco pruebas: cinco de parametros (`test_clearance.py`) y veinte del
+reparto de motores, los limites del indice y la vista de la pinza
+(`test_motor_groups.py`). Una de estas ultimas garantiza
 que, con todos los motores a la misma fraccion, la postura es identica a la
 del ensayo sincronizado anterior: la v7 no cambia la cinematica. No
 reemplazan los ensayos BRep en Fusion.

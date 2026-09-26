@@ -12,7 +12,9 @@
   lograda*. Guardada en GitHub (commit `4eab5e7`).
 - **No es una mano validada.** Faltan palma, holgura continua, resistencia,
   agarre de objetos, tendones, y comprobar si la pinza toca por la yema.
-- **Lo siguiente que pidió el usuario: ver la pinza en 3D** (sección 5.1).
+- **Pinza vista en 3D (v9, 26 sept noche):** el pulgar toca de punta. El
+  usuario decidió que el índice está bien y que el **pulgar debe apoyar con
+  la cara plana de su última falange** (sección 5.1).
 - La fase 2 (componentes) sigue casi toda abierta: sección 6.
 
 ## 2. Cómo trabajamos — el método que ha funcionado
@@ -100,7 +102,8 @@ Todo en `work/Toreto_Prueba_Holguras_01_44/` (versionada en git):
 - `simular_sin_fusion.py` — el ensayo con un Fusion falso.
 - `RESULTADO_PRUEBA.md` — cronología de todos los ensayos, con rechazos.
 
-**Ejecutar en Fusion:** en un documento **vacío**, Utilidades > Complementos >
+**Ejecutar en Fusion:** en un documento **vacío de diseño híbrido** (uno de
+pieza falla: solo admite un componente), Utilidades > Complementos >
 `Toreto_Prueba_Holguras_01_44` > Ejecutar. Este script está registrado
 apuntando a esa carpeta del repo: los cambios se ven sin copiar nada.
 
@@ -109,19 +112,15 @@ apuntando a esa carpeta del repo: los cambios se ven sin copiar nada.
 
 ## 5. Pendiente de la mano, en orden
 
-1. **Ver la pinza en 3D (lo siguiente).** Hay que publicar la mano en el
-   documento de prueba. Antes, dos correcciones en el código de publicación
-   (el tramo tras el `return` del script principal):
-   - `create_digit_motion_links()` enlaza el cardán (`JUNTA_PULGAR_1`) con la
-     flexión del pulgar. Eso era la mano de un motor. Con cuatro, el cardán
-     va suelto y la flexión tiene como maestra `JUNTA_PULGAR_2`. Si se
-     quiere, enlazar también los dedos 3 y 4 al 2 (un solo motor). El
-     control de "15 relaciones" cambia.
-   - Ese tramo llama a `clearance.repair()`, el recorte de la palma que
-     falló repetidamente en septiembre y no está validado con las medidas
-     actuales. Para visualizar, publicar sin él y marcarlo como no validado.
-   - Mantener: solo documento vacío, nunca el robot original.
-   Objetivo: ver si pulgar e índice se tocan por la yema o por el canto.
+1. **Pulgar con apoyo plano (lo siguiente).** La v9 (`MODE='ver_pinza'`)
+   publicó la mano con los 4 motores y se vio la pinza: el pulgar toca con
+   el extremo curvo de su falange 3. Debe apoyar con la cara plana. Plan
+   propuesto, sin empezar: calcular fuera de Fusion, variando el reparto
+   de flexión del pulgar (hoy 40/35/20) y el giro del cardán, el ángulo
+   entre la cara plana del pulgar y la del índice; llevar al ensayo solo
+   las 2-3 mejores. Pendiente también en el script: forzar el recálculo
+   tras la pose (Fusion guarda los valores pero no mueve las piezas hasta
+   que se acciona una junta a mano). Detalle en `RESULTADO_PRUEBA.md`.
 2. **Prueba de la palma** (`06_PALMA_Y_CONECTOR`, hoy excluida). Primero
    medir, como diagnóstico, cuánto invade cada motor la palma; recortar solo
    después, y con los controles de siempre.

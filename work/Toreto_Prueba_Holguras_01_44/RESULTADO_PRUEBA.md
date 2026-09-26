@@ -1,5 +1,55 @@
 # Prueba en Fusion — 2026-09-24
 
+## v9: vista de la pinza en 3D — 2026-09-26, preparada, SIN ejecutar en Fusion
+
+No es un ensayo: publica la mano de la v8 en el documento vacio para
+mirarla (`MODE='ver_pinza'` en el script; `MODE='ensayo'` repite la v8).
+Pose: muestra 9 de 12 de la pinza de la v8 (75%, hueco 0,28 mm), la ultima
+antes del contacto, para ver si tocan por la yema o por el canto.
+
+- 4 motores en Fusion: 16 relaciones, cada seguidora directa a su maestra
+  (`JUNTA_DEDO_1_1`, `JUNTA_DEDO_2_1`, `JUNTA_PULGAR_2`); cardan suelto.
+- Sin `clearance.repair()`: palma sin recorte y NO validada.
+- `vista_pinza_v9.json`: angulos leidos de vuelta de Fusion y posicion de
+  cada falange frente al calculo del ensayo (`pose_igual_al_ensayo`).
+- Validado fuera de Fusion: 25 pruebas y `simular_publicacion_sin_fusion.py`,
+  que detecta un signo de relacion o de pose mal puesto (comprobado
+  rompiendolos a proposito). No puede comprobar el sentido de giro real de
+  Fusion: si un dedo se dobla hacia atras, lo delatara la comparacion de
+  posiciones del JSON.
+
+**Primera ejecucion (26-09-2026): ERROR** al crear las juntas, con las
+piezas ya importadas: "No se encontro un borde circular alineado en el
+pasador". Causa: `pin_axis_edge()` buscaba siempre un pasador de 4 mm, pero
+`JUNTA_PULGAR_1` y `_2` lo tienen de 2,8 mm (`hinge_dimensions`). Ese
+codigo de publicacion era anterior a la reduccion del pasador del pulgar.
+El simulador tampoco lo vio: creaba todos los pasadores de 4 mm. Corregido
+en ambos: radio por junta en el script; en el simulador, radio real mas
+circulos senuelo, y ahora reproduce el error con el codigo antiguo.
+
+**Segunda ejecucion (26-09-2026), en documento de diseno HIBRIDO: PUBLICADA.**
+101 cuerpos, 21 componentes, 20 juntas, 16 relaciones. `vista_pinza_v9.json`
+dio `pose_igual_al_ensayo: NO`: las juntas guardaron los valores exactos
+(indice 40,5; cardan y flexion del pulgar 30), pero las piezas seguian en la
+postura abierta (comprobado: la hipotesis "nada se movio" encaja a 1,7 mm;
+las de signo invertido fallan por 40-86 mm). Fusion aplico esos valores
+guardados en cuanto el usuario acciono una junta a mano: al script le falta
+forzar el recalculo tras la pose (pendiente, sin validar).
+En la interfaz, "Animar relaciones de union" mueve cada dedo entero: las
+relaciones de los 4 motores funcionan. El indice "atravesando" el pulgar al
+animarlo era la pinza pasada del contacto (el pulgar ya estaba a -30/-30).
+
+**Lo que se ve en la pinza al 75%:** el pulgar toca de PUNTA (extremo curvo
+de su falange 3) contra la cara interior de la ultima falange del indice,
+junto a su ultima articulacion. El usuario: el indice esta bien; el PULGAR
+debe apoyar con la cara plana de su ultima falange, no con la curva (mas
+superficie, el boli no gira). Caras de agarre rugosas. Ver
+`docs/DECISIONES.md`. Cambiar la postura del pulgar exige ensayo nuevo.
+
+Pista previa de los datos de la v8: en la muestra 11 la punta del indice
+entra 868 mm3 en la falange MEDIA del pulgar, no en su punta: el indice
+podria pasar por encima de la punta del pulgar (contacto de canto).
+
 ## v8: RESULTADO en Fusion — 2026-09-26 19:17 — TODO LIMPIO Y PINZA LOGRADA
 
 `prueba_mano_4_motores_v8.json`: estado `todo_limpio_y_pinza_lograda`.
