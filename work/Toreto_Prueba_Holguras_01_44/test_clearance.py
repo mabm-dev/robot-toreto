@@ -9,6 +9,13 @@ import toreto_hand as hand
 
 
 class ClearanceTests(unittest.TestCase):
+    def test_compact_thumb_bearings_have_positive_wall_and_axial_seats(self):
+        for joint in (1,2):
+            radius,total,pin,overhang=hand.hinge_dimensions({'name':f'JUNTA_PULGAR_{joint}'})
+            self.assertGreaterEqual(radius-pin-hand.HINGE_RADIAL_CLEARANCE_MM,1.4)
+            self.assertGreater(total*.5-total*.21-hand.HINGE_AXIAL_GAP_MM,2)
+            self.assertEqual(overhang,.25)
+
     def test_narrow_hinges_fit_spacing_without_moving_joint_centers(self):
         data = json.loads(Path(__file__).with_name('hand_local_sections.json').read_text())
         self.assertLess(hand.MAIN_HINGE_LENGTH_MM + 2*hand.MAIN_PIN_OVERHANG_MM,
@@ -48,7 +55,7 @@ class ClearanceTests(unittest.TestCase):
             self.assertAlmostEqual(tools[0][3], -tools[0][4])
             if label.startswith('08_DEDO_'):
                 self.assertAlmostEqual(tools[0][4], hand.MAIN_HINGE_LENGTH_MM*.21+.35)
-            self.assertGreater(tools[0][5], 6.0)
+            self.assertAlmostEqual(tools[0][5], hand.hinge_dimensions(spec)[0]+.35)
             self.assertLessEqual(len(clearance.chain_for(spec['child'], by_child)), 4)
 
     def test_sampling_bound_scales_with_resolution(self):

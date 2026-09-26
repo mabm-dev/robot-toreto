@@ -22,14 +22,13 @@ def repair(manager, hand, pending, data):
         return max(0, a.volume - candidate.volume)
 
     for index, (body, label, appearance, group) in enumerate(pending):
-        if not label.startswith(('07_DEDO_', '09_PULGAR_FALANGE_')):
+        if not label.startswith(('07_DEDO_', '09_PULGAR_FALANGE_', '09_PULGAR_CARDAN_')):
             continue
         candidate = manager.copy(body)
         for spec in specs:
-            is_thumb = spec['name'].startswith('JUNTA_PULGAR_')
-            total = 20.0 if is_thumb else hand.MAIN_HINGE_LENGTH_MM
+            outer_radius,total,pin_radius,overhang = hand.hinge_dimensions(spec)
             half, central = total / 2, total * .42 / 2
-            radius = (6.2 if is_thumb else 5.8) + hand.HINGE_STOP_RADIUS_MM - hand.HINGE_STOP_RADIAL_OVERLAP_MM + clearance
+            radius = outer_radius + hand.HINGE_STOP_RADIUS_MM - hand.HINGE_STOP_RADIAL_OVERLAP_MM + clearance
             if spec['child'] == group:
                 intervals = [(-half-clearance, -central-gap+clearance),
                              (central+gap-clearance, half+clearance)]
@@ -46,6 +45,14 @@ def repair(manager, hand, pending, data):
                 if not trial.isValid or not trial.isSolid or trial.lumps.count != 1:
                     raise RuntimeError('Alojamiento divide la falange: '+label)
                 candidate = trial
+            if spec['child'] == group:
+                bore=hand._cylinder(manager,spec['center_mm'],spec['axis'],
+                    -half-overhang-clearance,half+overhang+clearance,
+                    pin_radius+clearance,label+'_PASO_PASADOR')
+                trial=manager.copy(candidate)
+                if not manager.booleanOperation(trial,bore,difference) or not trial.isValid or not trial.isSolid or trial.lumps.count!=1:
+                    raise RuntimeError('Paso de pasador invalido: '+label)
+                candidate=trial
         if candidate.volume < body.volume * .65:
             raise RuntimeError('Alojamiento elimina mas del 35%: '+label)
         for sleeve, sleeve_label, _, sleeve_group in pending:
@@ -53,7 +60,7 @@ def repair(manager, hand, pending, data):
                 continue
             before, after = overlap(body, sleeve), overlap(candidate, sleeve)
             if before <= 1e-6 or after < max(.01, before * .1):
-                raise RuntimeError('Apoyo insuficiente: '+label+' / '+sleeve_label)
+                raise RuntimeError('Apoyo insuficiente: {} / {} (antes {:.3f}, despues {:.3f} mm3)'.format(label,sleeve_label,before*1000,after*1000))
             supports.append(dict(phalanx=label, sleeve=sleeve_label,
                                  overlap_mm3=after*1000))
         result[index] = (candidate, label, appearance, group)

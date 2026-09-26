@@ -167,7 +167,7 @@ def sleeve_tools(manager, hand, data, label, spec, padding_mm):
         radius = 5.8
     elif label.startswith('10_PULGAR_'):
         path = data['thumb_path_mm']
-        total, radius = 20.0, 6.2
+        radius,total,_,_=hand.hinge_dimensions(spec)
     else:
         raise ValueError('Casquillo desconocido: ' + label)
     direction = hand._unit(tuple(path[-1][i] - path[0][i] for i in range(3)))

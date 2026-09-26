@@ -224,25 +224,40 @@ def run(context):
         clearance_spec=importlib.util.spec_from_file_location('toreto_clearance',ROOT/'toreto_clearance.py')
         clearance=importlib.util.module_from_spec(clearance_spec)
         clearance_spec.loader.exec_module(clearance)
-        pair_spec=importlib.util.spec_from_file_location('toreto_pair_validation',ROOT/'toreto_pair_validation.py')
-        pair_validation=importlib.util.module_from_spec(pair_spec)
-        pair_spec.loader.exec_module(pair_validation)
+        # v7: mano de 4 motores. Sustituye al cierre sincronizado de toda la
+        # mano (toreto_pair_validation.py, conservado sin cambios).
+        groups_spec=importlib.util.spec_from_file_location('toreto_motor_groups',ROOT/'toreto_motor_groups.py')
+        motor_groups=importlib.util.module_from_spec(groups_spec)
+        groups_spec.loader.exec_module(motor_groups)
+        motor_spec=importlib.util.spec_from_file_location('toreto_motor_validation',ROOT/'toreto_motor_validation.py')
+        motor_validation=importlib.util.module_from_spec(motor_spec)
+        motor_spec.loader.exec_module(motor_validation)
         slots_spec=importlib.util.spec_from_file_location('toreto_finger_slots',ROOT/'toreto_finger_slots.py')
         slots=importlib.util.module_from_spec(slots_spec)
         slots_spec.loader.exec_module(slots)
-        diagnostic_path=ROOT/'prueba_alojamientos_pulgar_v3.json'
+        # v8: el indice con su propio recorrido (90%), ver toreto_hand.py.
+        diagnostic_path=ROOT/'prueba_mano_4_motores_v8.json'
         try:
             hand_bodies, supports = slots.repair(manager,hand,hand_bodies,hand_data)
-            diagnostic = pair_validation.run(manager, hand, clearance, hand_bodies,
-                hand_data, diagnostic_path)
+            diagnostic = motor_validation.run(manager, hand, clearance, motor_groups,
+                hand_bodies, hand_data, diagnostic_path, version='v8')
             diagnostic['finger_supports']=supports
         except Exception as error:
-            diagnostic={'status':'rejected_finger_slots','error':str(error)}
-        diagnostic_path.write_text(json.dumps(diagnostic,indent=2),encoding='utf-8')
-        app.userInterface.messageBox(
-            'Diagnostico temporal, sin crear piezas ni guardar Fusion.\n' +
-            'Estado: ' + diagnostic['status'] + '\n' + diagnostic.get('error', '') +
-            '\nDetalles: prueba_alojamientos_pulgar_v3.json', 'Alojamientos del pulgar v3')
+            diagnostic={'status':'rejected_finger_slots','error':str(error),
+                        'traceback':traceback.format_exc()}
+        diagnostic_path.write_text(json.dumps(diagnostic,indent=2,ensure_ascii=False),encoding='utf-8')
+        lines=['Diagnostico temporal, sin crear piezas ni guardar Fusion.',
+               'Estado global: '+diagnostic['status']]
+        summary=diagnostic.get('summary')
+        if summary:
+            lines.append('Mano abierta: '+summary['mano_abierta'])
+            for name,status in summary['motores_solos'].items():
+                lines.append('  '+name+': '+status)
+            lines.append('Pinza del boli: '+summary['pinza_boli'])
+        if diagnostic.get('error'):
+            lines.append(diagnostic['error'])
+        lines.append('Detalles: prueba_mano_4_motores_v8.json')
+        app.userInterface.messageBox('\n'.join(lines),'Mano de 4 motores v8')
         return  # Diagnostic mode deliberately cannot publish an unvalidated hand.
         hand_bodies,clearance_report=clearance.repair(manager,hand,hand_bodies,hand_data)
         reports.append(clearance_report)
@@ -300,7 +315,7 @@ def run(context):
         component.attributes.add('RobotToreto','referencia','FRONTAL_POSTURA_MAESTRA_LATERAL_SOLO_PROFUNDIDAD')
         component.attributes.add('RobotToreto','filtrado_terminal','RATIO_CAMBIO_LOCAL_MAX_1_5')
         component.attributes.add('RobotToreto','articulacion_dedos','PASADOR_D4_BORE_D4_7_GAP_AXIAL_0_4')
-        component.attributes.add('RobotToreto','topes_dedos','PRINCIPALES_NEG_60_60_50_40_PULGAR_POS_30_40_35_20')
+        component.attributes.add('RobotToreto','topes_dedos','INDICE_NEG_54_54_45_36_RESTO_NEG_60_60_50_40_PULGAR_POS_30_40_35_20')
         app.userInterface.messageBox(
             'Creado 94_BRAZO_HOLGURAS_PRUEBA_01_44.\n\n'
             'Brazo y antebrazo se midieron perpendicularmente a sus propios ejes y se emparejaron por posicion normalizada. '
@@ -320,7 +335,7 @@ def run(context):
             'el lado cubital conserva un arco progresivo de hasta 5 mm para permitir el cierre; '
             'cada uno de los 20 nudillos se divide en dos casquillos exteriores, uno central y un pasador desmontable de 4 mm; '
             'los taladros tienen 4,70 mm, con 0,35 mm de holgura radial y 0,40 mm entre casquillos; '
-            'cada casquillo central incorpora un tope movil y los dos exteriores un tope fijo: los cuatro dedos principales invierten su cierre con limites -60/-60/-50/-40 grados, mientras el pulgar conserva 30/40/35/20 grados y su giro hacia dentro; '
+            'cada casquillo central incorpora un tope movil y los dos exteriores un tope fijo: los cuatro dedos principales invierten su cierre con limites -60/-60/-50/-40 grados (el indice -54/-54/-45/-36), mientras el pulgar conserva 30/40/35/20 grados y su giro hacia dentro; '
             'el pulgar aumenta su seccion y termina en una falange blanca redondeada; anclaje, cardan y falanges se reflejan juntos hacia la cara Y positiva, opuesta al cierre ascendente de los dedos principales, y los ejes tambien se reflejan para conservar el giro y dirigir la yema hacia el centro de la palma; '
             'las falanges son carcasas rectangulares redondeadas, ligeramente decrecientes y permanecen separadas:\n- '+ '\n- '.join(reports) +'\n\n'
             'Las falanges, los casquillos y los pasadores permanecen como cuerpos separados. Los topes forman parte de los casquillos y no aumentan el numero de piezas; los conductos de accionamiento se incorporaran despues. '

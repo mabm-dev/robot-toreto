@@ -30,7 +30,13 @@ con IA integrada — el objetivo final.
 - [ ] Microcontrolador de seguridad (parada de emergencia + control de
       motores) — pasa a ser casi obligatorio al ser extraíble el cerebro
       principal; decidir qué sigue vivo con la bahía vacía
-- [ ] Servos de hombro y codo (los que más carga soportan — definen tamaño de carcasas)
+- [x] Mano — **adaptativa de 4 motores**: índice / corazón+anular+meñique /
+      flexión del pulgar / rotación del pulgar, con tendones y muelles de
+      retorno, motores en el antebrazo (26 sept 2026, ver `DECISIONES.md`)
+- [ ] Los 4 motores concretos de la mano — con su peso se dimensionan
+      hombro y codo
+- [ ] Servos de hombro y codo (los que más carga soportan — definen tamaño de
+      carcasas). Esperaban al peso de la mano: se desbloquean al elegir sus motores
 - [ ] Resto de servos del brazo y la cabeza
 - [ ] Motores + encoders de la base móvil
 - [ ] Batería y arquitectura de alimentación

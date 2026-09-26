@@ -24,5 +24,10 @@ __pycache__/
 *~
 docs/CUADERNO.md
 
-# Artefactos locales de desarrollo y validacion
-work/
+# Artefactos locales de desarrollo y validacion.
+# `work/*` (no `work/`) para poder hacer excepciones: con `work/` git ignora
+# la carpeta entera y ningun `!` puede recuperar nada de dentro.
+work/*
+# Linea de trabajo vigente de la mano (v7/v8, mano de 4 motores): se versiona
+# entera, para que sus archivos nuevos no queden invisibles para git.
+!work/Toreto_Prueba_Holguras_01_44/

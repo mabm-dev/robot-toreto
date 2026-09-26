@@ -1,0 +1,531 @@
+{
+  "version": "v8",
+  "flexion_limits_deg": {
+    "indice": [
+      54.0,
+      54.0,
+      45.0,
+      36.0
+    ],
+    "resto_de_dedos": [
+      60.0,
+      60.0,
+      50.0,
+      40.0
+    ],
+    "pulgar": [
+      30.0,
+      40.0,
+      35.0,
+      20.0
+    ]
+  },
+  "mechanism": "Mano adaptativa de 4 motores: indice / corazon+anular+menique / flexion del pulgar / rotacion del pulgar (cardan)",
+  "status": "todo_limpio_y_pinza_lograda",
+  "intervals": 12,
+  "tolerance_mm3": 0.01,
+  "excluded": "Palma principal (06_PALMA_Y_CONECTOR) y pares del mismo grupo rigido",
+  "limitation": "Posturas discretas. No valida holgura continua, resistencia ni agarre de objetos. No es una mano funcional validada.",
+  "axes_deg": [
+    0.0,
+    76.0
+  ],
+  "open_hand": {
+    "status": "limpio",
+    "pairs": [],
+    "errors": []
+  },
+  "scenarios": {
+    "indice_solo": {
+      "description": "Solo el indice cierra; el resto de la mano quieta y abierta.",
+      "status": "limpio",
+      "moving_bodies": 17,
+      "checked_pairs": 1516,
+      "pairs": [],
+      "errors": []
+    },
+    "resto_solo_senalar": {
+      "description": "Corazon, anular y menique cierran con el indice extendido: es la postura de SENALAR.",
+      "status": "limpio",
+      "moving_bodies": 51,
+      "checked_pairs": 3681,
+      "pairs": [],
+      "errors": []
+    },
+    "pulgar_flexion_solo": {
+      "description": "Solo se flexiona el pulgar, sin girar el cardan.",
+      "status": "limpio",
+      "moving_bodies": 12,
+      "checked_pairs": 1101,
+      "pairs": [],
+      "errors": []
+    },
+    "pulgar_rotacion_solo": {
+      "description": "Solo gira el cardan del pulgar. Comprueba tambien la correccion del taladro: el unico choque con la mano abierta de la v6 estaba aqui.",
+      "status": "limpio",
+      "moving_bodies": 17,
+      "checked_pairs": 1516,
+      "pairs": [],
+      "errors": []
+    },
+    "pinza_boli": {
+      "description": "Pulgar girado enfrente del indice; indice y flexion del pulgar cierran a la vez; corazon, anular y menique extendidos.",
+      "status": "pinza_lograda",
+      "moving_bodies": 34,
+      "checked_pairs": 2743,
+      "pairs": [
+        {
+          "a": "07_DEDO_1_FALANGE_4",
+          "b": "09_PULGAR_FALANGE_2",
+          "group_a": "MANO_01_FALANGE_04",
+          "group_b": "MANO_05_PULGAR_FALANGE_02",
+          "first_sample": 11,
+          "worst_sample": 12,
+          "max_volume_mm3": 868.458,
+          "by_sample": [
+            [
+              11,
+              135.073
+            ],
+            [
+              12,
+              868.458
+            ]
+          ]
+        },
+        {
+          "a": "07_DEDO_1_FALANGE_4",
+          "b": "10_PULGAR_NUDILLO_3_CASQUILLO_CENTRAL",
+          "group_a": "MANO_01_FALANGE_04",
+          "group_b": "MANO_05_PULGAR_FALANGE_02",
+          "first_sample": 12,
+          "worst_sample": 12,
+          "max_volume_mm3": 107.994,
+          "by_sample": [
+            [
+              12,
+              107.994
+            ]
+          ]
+        },
+        {
+          "a": "07_DEDO_1_FALANGE_4",
+          "b": "10_PULGAR_NUDILLO_4_CASQUILLO_CENTRAL",
+          "group_a": "MANO_01_FALANGE_04",
+          "group_b": "MANO_05_PULGAR_FALANGE_03",
+          "first_sample": 11,
+          "worst_sample": 11,
+          "max_volume_mm3": 25.775,
+          "by_sample": [
+            [
+              11,
+              25.775
+            ]
+          ]
+        },
+        {
+          "a": "07_DEDO_1_FALANGE_4",
+          "b": "09_PULGAR_FALANGE_3",
+          "group_a": "MANO_01_FALANGE_04",
+          "group_b": "MANO_05_PULGAR_FALANGE_03",
+          "first_sample": 10,
+          "worst_sample": 10,
+          "max_volume_mm3": 15.168,
+          "by_sample": [
+            [
+              10,
+              15.168
+            ]
+          ]
+        },
+        {
+          "a": "07_DEDO_1_FALANGE_4",
+          "b": "10_PULGAR_NUDILLO_3_CASQUILLO_A",
+          "group_a": "MANO_01_FALANGE_04",
+          "group_b": "MANO_05_PULGAR_FALANGE_01",
+          "first_sample": 12,
+          "worst_sample": 12,
+          "max_volume_mm3": 14.555,
+          "by_sample": [
+            [
+              12,
+              14.555
+            ]
+          ]
+        },
+        {
+          "a": "07_DEDO_1_FALANGE_4",
+          "b": "10_PULGAR_NUDILLO_4_CASQUILLO_A",
+          "group_a": "MANO_01_FALANGE_04",
+          "group_b": "MANO_05_PULGAR_FALANGE_02",
+          "first_sample": 11,
+          "worst_sample": 11,
+          "max_volume_mm3": 4.931,
+          "by_sample": [
+            [
+              11,
+              4.931
+            ]
+          ]
+        },
+        {
+          "a": "08_DEDO_1_NUDILLO_4_CASQUILLO_A",
+          "b": "09_PULGAR_FALANGE_2",
+          "group_a": "MANO_01_FALANGE_03",
+          "group_b": "MANO_05_PULGAR_FALANGE_02",
+          "first_sample": 12,
+          "worst_sample": 12,
+          "max_volume_mm3": 0.532,
+          "by_sample": [
+            [
+              12,
+              0.532
+            ]
+          ]
+        },
+        {
+          "a": "07_DEDO_1_FALANGE_4",
+          "b": "10_PULGAR_NUDILLO_4_CASQUILLO_B",
+          "group_a": "MANO_01_FALANGE_04",
+          "group_b": "MANO_05_PULGAR_FALANGE_02",
+          "first_sample": 11,
+          "worst_sample": 11,
+          "max_volume_mm3": 0.051,
+          "by_sample": [
+            [
+              11,
+              0.051
+            ]
+          ]
+        }
+      ],
+      "errors": [],
+      "tip_gap_mm_by_sample": [
+        [
+          0,
+          77.7
+        ],
+        [
+          1,
+          69.1
+        ],
+        [
+          2,
+          60.07
+        ],
+        [
+          3,
+          50.85
+        ],
+        [
+          4,
+          41.94
+        ],
+        [
+          5,
+          33.58
+        ],
+        [
+          6,
+          24.91
+        ],
+        [
+          7,
+          15.14
+        ],
+        [
+          8,
+          6.47
+        ],
+        [
+          9,
+          0.28
+        ],
+        [
+          10,
+          0.0
+        ],
+        [
+          11,
+          2.4
+        ],
+        [
+          12,
+          7.81
+        ]
+      ],
+      "pinch_contact": {
+        "first_sample": 10,
+        "first_fraction": 0.833,
+        "pair": [
+          "07_DEDO_1_FALANGE_4",
+          "09_PULGAR_FALANGE_3"
+        ]
+      },
+      "other_collisions_before_contact": [],
+      "note": "Tras el primer contacto pulgar-indice la penetracion es un artefacto: la mano real se detiene al tocar."
+    }
+  },
+  "summary": {
+    "mano_abierta": "limpio",
+    "motores_solos": {
+      "indice_solo": "limpio",
+      "resto_solo_senalar": "limpio",
+      "pulgar_flexion_solo": "limpio",
+      "pulgar_rotacion_solo": "limpio"
+    },
+    "pinza_boli": "pinza_lograda"
+  },
+  "finger_supports": [
+    {
+      "phalanx": "07_DEDO_1_FALANGE_1",
+      "sleeve": "08_DEDO_1_NUDILLO_1_CASQUILLO_CENTRAL",
+      "overlap_mm3": 54.22303677692808
+    },
+    {
+      "phalanx": "07_DEDO_1_FALANGE_1",
+      "sleeve": "08_DEDO_1_NUDILLO_2_CASQUILLO_A",
+      "overlap_mm3": 30.933649262355978
+    },
+    {
+      "phalanx": "07_DEDO_1_FALANGE_1",
+      "sleeve": "08_DEDO_1_NUDILLO_2_CASQUILLO_B",
+      "overlap_mm3": 30.93364926235731
+    },
+    {
+      "phalanx": "07_DEDO_1_FALANGE_2",
+      "sleeve": "08_DEDO_1_NUDILLO_2_CASQUILLO_CENTRAL",
+      "overlap_mm3": 54.2230367769283
+    },
+    {
+      "phalanx": "07_DEDO_1_FALANGE_2",
+      "sleeve": "08_DEDO_1_NUDILLO_3_CASQUILLO_A",
+      "overlap_mm3": 31.04308732423977
+    },
+    {
+      "phalanx": "07_DEDO_1_FALANGE_2",
+      "sleeve": "08_DEDO_1_NUDILLO_3_CASQUILLO_B",
+      "overlap_mm3": 30.93364878788263
+    },
+    {
+      "phalanx": "07_DEDO_1_FALANGE_3",
+      "sleeve": "08_DEDO_1_NUDILLO_3_CASQUILLO_CENTRAL",
+      "overlap_mm3": 53.80651810731729
+    },
+    {
+      "phalanx": "07_DEDO_1_FALANGE_3",
+      "sleeve": "08_DEDO_1_NUDILLO_4_CASQUILLO_A",
+      "overlap_mm3": 31.033960664125672
+    },
+    {
+      "phalanx": "07_DEDO_1_FALANGE_3",
+      "sleeve": "08_DEDO_1_NUDILLO_4_CASQUILLO_B",
+      "overlap_mm3": 30.93364995664638
+    },
+    {
+      "phalanx": "07_DEDO_1_FALANGE_4",
+      "sleeve": "08_DEDO_1_NUDILLO_4_CASQUILLO_CENTRAL",
+      "overlap_mm3": 54.22303677692941
+    },
+    {
+      "phalanx": "07_DEDO_2_FALANGE_1",
+      "sleeve": "08_DEDO_2_NUDILLO_1_CASQUILLO_CENTRAL",
+      "overlap_mm3": 54.22303677692719
+    },
+    {
+      "phalanx": "07_DEDO_2_FALANGE_1",
+      "sleeve": "08_DEDO_2_NUDILLO_2_CASQUILLO_A",
+      "overlap_mm3": 30.93364775614038
+    },
+    {
+      "phalanx": "07_DEDO_2_FALANGE_1",
+      "sleeve": "08_DEDO_2_NUDILLO_2_CASQUILLO_B",
+      "overlap_mm3": 30.933647756140825
+    },
+    {
+      "phalanx": "07_DEDO_2_FALANGE_2",
+      "sleeve": "08_DEDO_2_NUDILLO_2_CASQUILLO_CENTRAL",
+      "overlap_mm3": 54.22303677692808
+    },
+    {
+      "phalanx": "07_DEDO_2_FALANGE_2",
+      "sleeve": "08_DEDO_2_NUDILLO_3_CASQUILLO_A",
+      "overlap_mm3": 30.933649776915928
+    },
+    {
+      "phalanx": "07_DEDO_2_FALANGE_2",
+      "sleeve": "08_DEDO_2_NUDILLO_3_CASQUILLO_B",
+      "overlap_mm3": 30.93364977691726
+    },
+    {
+      "phalanx": "07_DEDO_2_FALANGE_3",
+      "sleeve": "08_DEDO_2_NUDILLO_3_CASQUILLO_CENTRAL",
+      "overlap_mm3": 54.223036776928524
+    },
+    {
+      "phalanx": "07_DEDO_2_FALANGE_3",
+      "sleeve": "08_DEDO_2_NUDILLO_4_CASQUILLO_A",
+      "overlap_mm3": 30.93364938130172
+    },
+    {
+      "phalanx": "07_DEDO_2_FALANGE_3",
+      "sleeve": "08_DEDO_2_NUDILLO_4_CASQUILLO_B",
+      "overlap_mm3": 30.933649381303052
+    },
+    {
+      "phalanx": "07_DEDO_2_FALANGE_4",
+      "sleeve": "08_DEDO_2_NUDILLO_4_CASQUILLO_CENTRAL",
+      "overlap_mm3": 54.223036776928524
+    },
+    {
+      "phalanx": "07_DEDO_3_FALANGE_1",
+      "sleeve": "08_DEDO_3_NUDILLO_1_CASQUILLO_CENTRAL",
+      "overlap_mm3": 54.22303677692808
+    },
+    {
+      "phalanx": "07_DEDO_3_FALANGE_1",
+      "sleeve": "08_DEDO_3_NUDILLO_2_CASQUILLO_A",
+      "overlap_mm3": 30.933647716056
+    },
+    {
+      "phalanx": "07_DEDO_3_FALANGE_1",
+      "sleeve": "08_DEDO_3_NUDILLO_2_CASQUILLO_B",
+      "overlap_mm3": 30.93364771605689
+    },
+    {
+      "phalanx": "07_DEDO_3_FALANGE_2",
+      "sleeve": "08_DEDO_3_NUDILLO_2_CASQUILLO_CENTRAL",
+      "overlap_mm3": 54.22303677692586
+    },
+    {
+      "phalanx": "07_DEDO_3_FALANGE_2",
+      "sleeve": "08_DEDO_3_NUDILLO_3_CASQUILLO_A",
+      "overlap_mm3": 30.933647360527505
+    },
+    {
+      "phalanx": "07_DEDO_3_FALANGE_2",
+      "sleeve": "08_DEDO_3_NUDILLO_3_CASQUILLO_B",
+      "overlap_mm3": 30.93364736052928
+    },
+    {
+      "phalanx": "07_DEDO_3_FALANGE_3",
+      "sleeve": "08_DEDO_3_NUDILLO_3_CASQUILLO_CENTRAL",
+      "overlap_mm3": 54.223036776928964
+    },
+    {
+      "phalanx": "07_DEDO_3_FALANGE_3",
+      "sleeve": "08_DEDO_3_NUDILLO_4_CASQUILLO_A",
+      "overlap_mm3": 30.93364858876546
+    },
+    {
+      "phalanx": "07_DEDO_3_FALANGE_3",
+      "sleeve": "08_DEDO_3_NUDILLO_4_CASQUILLO_B",
+      "overlap_mm3": 30.93364858876635
+    },
+    {
+      "phalanx": "07_DEDO_3_FALANGE_4",
+      "sleeve": "08_DEDO_3_NUDILLO_4_CASQUILLO_CENTRAL",
+      "overlap_mm3": 54.2230367769303
+    },
+    {
+      "phalanx": "07_DEDO_4_FALANGE_1",
+      "sleeve": "08_DEDO_4_NUDILLO_1_CASQUILLO_CENTRAL",
+      "overlap_mm3": 54.223036776927636
+    },
+    {
+      "phalanx": "07_DEDO_4_FALANGE_1",
+      "sleeve": "08_DEDO_4_NUDILLO_2_CASQUILLO_A",
+      "overlap_mm3": 30.93364922226982
+    },
+    {
+      "phalanx": "07_DEDO_4_FALANGE_1",
+      "sleeve": "08_DEDO_4_NUDILLO_2_CASQUILLO_B",
+      "overlap_mm3": 30.933649222271598
+    },
+    {
+      "phalanx": "07_DEDO_4_FALANGE_2",
+      "sleeve": "08_DEDO_4_NUDILLO_2_CASQUILLO_CENTRAL",
+      "overlap_mm3": 54.22303677692653
+    },
+    {
+      "phalanx": "07_DEDO_4_FALANGE_2",
+      "sleeve": "08_DEDO_4_NUDILLO_3_CASQUILLO_A",
+      "overlap_mm3": 30.93364918349706
+    },
+    {
+      "phalanx": "07_DEDO_4_FALANGE_2",
+      "sleeve": "08_DEDO_4_NUDILLO_3_CASQUILLO_B",
+      "overlap_mm3": 30.93364918349728
+    },
+    {
+      "phalanx": "07_DEDO_4_FALANGE_3",
+      "sleeve": "08_DEDO_4_NUDILLO_3_CASQUILLO_CENTRAL",
+      "overlap_mm3": 54.223036776927415
+    },
+    {
+      "phalanx": "07_DEDO_4_FALANGE_3",
+      "sleeve": "08_DEDO_4_NUDILLO_4_CASQUILLO_A",
+      "overlap_mm3": 30.93364916410657
+    },
+    {
+      "phalanx": "07_DEDO_4_FALANGE_3",
+      "sleeve": "08_DEDO_4_NUDILLO_4_CASQUILLO_B",
+      "overlap_mm3": 30.933649164108346
+    },
+    {
+      "phalanx": "07_DEDO_4_FALANGE_4",
+      "sleeve": "08_DEDO_4_NUDILLO_4_CASQUILLO_CENTRAL",
+      "overlap_mm3": 54.223036776928964
+    },
+    {
+      "phalanx": "09_PULGAR_CARDAN_INTERMEDIO",
+      "sleeve": "10_PULGAR_NUDILLO_1_CASQUILLO_CENTRAL",
+      "overlap_mm3": 19.873187057140086
+    },
+    {
+      "phalanx": "09_PULGAR_CARDAN_INTERMEDIO",
+      "sleeve": "10_PULGAR_NUDILLO_2_CASQUILLO_A",
+      "overlap_mm3": 14.865066889597045
+    },
+    {
+      "phalanx": "09_PULGAR_CARDAN_INTERMEDIO",
+      "sleeve": "10_PULGAR_NUDILLO_2_CASQUILLO_B",
+      "overlap_mm3": 14.881976139726167
+    },
+    {
+      "phalanx": "09_PULGAR_FALANGE_1",
+      "sleeve": "10_PULGAR_NUDILLO_2_CASQUILLO_CENTRAL",
+      "overlap_mm3": 21.008038399258133
+    },
+    {
+      "phalanx": "09_PULGAR_FALANGE_1",
+      "sleeve": "10_PULGAR_NUDILLO_3_CASQUILLO_A",
+      "overlap_mm3": 79.72386404902699
+    },
+    {
+      "phalanx": "09_PULGAR_FALANGE_1",
+      "sleeve": "10_PULGAR_NUDILLO_3_CASQUILLO_B",
+      "overlap_mm3": 78.80665968170453
+    },
+    {
+      "phalanx": "09_PULGAR_FALANGE_2",
+      "sleeve": "10_PULGAR_NUDILLO_3_CASQUILLO_CENTRAL",
+      "overlap_mm3": 213.75337940116034
+    },
+    {
+      "phalanx": "09_PULGAR_FALANGE_2",
+      "sleeve": "10_PULGAR_NUDILLO_4_CASQUILLO_A",
+      "overlap_mm3": 67.08485096191153
+    },
+    {
+      "phalanx": "09_PULGAR_FALANGE_2",
+      "sleeve": "10_PULGAR_NUDILLO_4_CASQUILLO_B",
+      "overlap_mm3": 66.75127275868631
+    },
+    {
+      "phalanx": "09_PULGAR_FALANGE_3",
+      "sleeve": "10_PULGAR_NUDILLO_4_CASQUILLO_CENTRAL",
+      "overlap_mm3": 213.75449048317518
+    }
+  ]
+}

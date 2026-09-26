@@ -12,6 +12,21 @@ HINGE_STOP_RADIAL_OVERLAP_MM=0.75
 MAIN_HINGE_LENGTH_MM=13.5
 MAIN_PIN_OVERHANG_MM=0.25
 MAIN_FLEXION_LIMITS_DEG=(60.0,60.0,50.0,40.0)
+# v8 (26-09-2026): el indice recorre el 90% de lo que recorren los demas.
+# En la v7 su punta tocaba la falange 1 del pulgar en reposo al cierre total
+# (5,2 mm3, solo en la ultima muestra; limpio hasta el 92%). Reducir las
+# cuatro articulaciones por igual hace que su nuevo recorrido sea exactamente
+# el tramo 0-90% del anterior, ya medido limpio. Se aplica a la cinematica Y a
+# los topes fisicos de las bisagras: lo impide la pieza, no el software.
+INDEX_FINGER=1
+INDEX_TRAVEL_SCALE=0.9
+INDEX_FLEXION_LIMITS_DEG=(54.0,54.0,45.0,36.0)
+
+
+def finger_flexion_limits(finger_index):
+    """Topes de flexion (grados) de un dedo principal, de la base a la punta."""
+    return (INDEX_FLEXION_LIMITS_DEG if finger_index==INDEX_FINGER
+            else MAIN_FLEXION_LIMITS_DEG)
 THUMB_FLEXION_LIMITS_DEG=(30.0,40.0,35.0,20.0)
 # Isolated trial: sampled palm collision reduction, NOT full-hand validation.
 THUMB_AXIS_ANGLES_DEG=(0.0,76.0)
@@ -128,13 +143,13 @@ def _cylinder(manager,center,axis,start_mm,end_mm,radius_mm,label):
     return body
 
 
-def _sleeve(manager,center,axis,start_mm,end_mm,outer_radius_mm,label):
+def _sleeve(manager,center,axis,start_mm,end_mm,outer_radius_mm,label,pin_radius_mm=HINGE_PIN_RADIUS_MM):
     import adsk.fusion
 
     sleeve=_cylinder(manager,center,axis,start_mm,end_mm,outer_radius_mm,label)
     bore=_cylinder(
         manager,center,axis,start_mm-.6,end_mm+.6,
-        HINGE_PIN_RADIUS_MM+HINGE_RADIAL_CLEARANCE_MM,label+'_TALADRO')
+        pin_radius_mm+HINGE_RADIAL_CLEARANCE_MM,label+'_TALADRO')
     if not manager.booleanOperation(
             sleeve,bore,adsk.fusion.BooleanTypes.DifferenceBooleanType):
         raise RuntimeError('No se pudo taladrar '+label)
@@ -161,7 +176,8 @@ def _add_stop_rail(manager,sleeve,center,axis,start_mm,end_mm,
 
 
 def _articulated_hinge(manager,center,axis,digit_direction,outer_radius_mm,
-                       total_length_mm,flexion_limit_deg,label,pin_overhang_mm=1.0):
+                       total_length_mm,flexion_limit_deg,label,pin_overhang_mm=1.0,
+                       pin_radius_mm=HINGE_PIN_RADIUS_MM):
     """Three coaxial sleeves, removable pin and paired mechanical stops."""
     half=total_length_mm*.5
     center_length=total_length_mm*.42
@@ -176,7 +192,7 @@ def _articulated_hinge(manager,center,axis,digit_direction,outer_radius_mm,
     sleeves={}
     for start,end,suffix in intervals:
         sleeve=_sleeve(
-            manager,center,axis,start,end,outer_radius_mm,label+'_'+suffix)
+            manager,center,axis,start,end,outer_radius_mm,label+'_'+suffix,pin_radius_mm)
         sleeves[suffix]=(sleeve,start,end)
         result.append((sleeve,suffix))
     radial_distance=outer_radius_mm-HINGE_STOP_RADIAL_OVERLAP_MM
@@ -197,8 +213,19 @@ def _articulated_hinge(manager,center,axis,digit_direction,outer_radius_mm,
         _add_stop_rail(
             manager,sleeve,center,axis,start,end,outer_radius_mm,
             fixed_direction,label+'_TOPE_FIJO_'+suffix[-1])
+    # Compact bearings: rail fusion can reach inside the previously bored hole.
+    # Ream after union so the pin clearance is retained in the final solid.
+    if radial_distance-HINGE_STOP_RADIUS_MM < pin_radius_mm+HINGE_RADIAL_CLEARANCE_MM:
+        import adsk.fusion
+        for sleeve,start,end in sleeves.values():
+            bore=_cylinder(manager,center,axis,start-.6,end+.6,
+                pin_radius_mm+HINGE_RADIAL_CLEARANCE_MM,label+'_TALADRO_FINAL')
+            if not manager.booleanOperation(sleeve,bore,adsk.fusion.BooleanTypes.DifferenceBooleanType):
+                raise RuntimeError('Fallo de taladro final: '+label)
+            if not sleeve.isValid or not sleeve.isSolid or sleeve.lumps.count!=1:
+                raise RuntimeError('Casquillo dividido tras taladro final: '+label)
     pin=_cylinder(
-        manager,center,axis,-half-pin_overhang_mm,half+pin_overhang_mm,HINGE_PIN_RADIUS_MM,
+        manager,center,axis,-half-pin_overhang_mm,half+pin_overhang_mm,pin_radius_mm,
         label+'_PASADOR')
     result.append((pin,'PASADOR'))
     return result
@@ -298,9 +325,9 @@ def joint_specs(data):
                     finger_index,joint_index),
                 'center_mm':center,
                 'axis':axis,
-                'minimum_deg':-MAIN_FLEXION_LIMITS_DEG[joint_index-1],
+                'minimum_deg':-finger_flexion_limits(finger_index)[joint_index-1],
                 'maximum_deg':0.0,
-                'travel_deg':MAIN_FLEXION_LIMITS_DEG[joint_index-1],
+                'travel_deg':finger_flexion_limits(finger_index)[joint_index-1],
             })
     thumb_path=data['thumb_path_mm']
     gimbal_group='MANO_05_PULGAR_CARDAN'
@@ -325,6 +352,15 @@ def joint_specs(data):
     if len(specs)!=20:
         raise RuntimeError('Numero inesperado de juntas de la mano')
     return specs
+
+
+def hinge_dimensions(spec):
+    """Radius, axial length, pin radius, overhang; isolated trial dimensions."""
+    if spec['name'].startswith('JUNTA_DEDO_'):
+        return 5.8, MAIN_HINGE_LENGTH_MM, HINGE_PIN_RADIUS_MM, MAIN_PIN_OVERHANG_MM
+    if spec['name'] in ('JUNTA_PULGAR_1', 'JUNTA_PULGAR_2'):
+        return 3.2, 10.0, 1.4, .25
+    return 6.2, 20.0, HINGE_PIN_RADIUS_MM, 1.0
 
 
 def build(manager,flat,data):
@@ -382,7 +418,7 @@ def build(manager,flat,data):
             child_group='MANO_0{}_FALANGE_0{}'.format(finger_index,joint_index)
             for part,suffix in _articulated_hinge(
                     manager,center,transverse,digit_direction,5.8,MAIN_HINGE_LENGTH_MM,
-                    -MAIN_FLEXION_LIMITS_DEG[joint_index-1],label,MAIN_PIN_OVERHANG_MM):
+                    -finger_flexion_limits(finger_index)[joint_index-1],label,MAIN_PIN_OVERHANG_MM):
                 group=child_group if suffix=='CASQUILLO_CENTRAL' else parent_group
                 pending.append((part,label+'_'+suffix,'TORETO Negro profundo',group))
 
@@ -392,11 +428,16 @@ def build(manager,flat,data):
                     (thumb_path[2],thumb_path[3]))
     gimbal_direction=_unit(tuple(
         gimbal_end[index]-thumb_path[0][index] for index in range(3)))
-    gimbal_body=_capsule(
-        manager,
-        tuple(thumb_path[0][index]+gimbal_direction[index]*3.0 for index in range(3)),
-        tuple(gimbal_end[index]-gimbal_direction[index]*3.0 for index in range(3)),
-        4.2)
+    def fork_point(along, lateral=0):
+        return tuple(thumb_path[0][i]+gimbal_direction[i]*along+
+                     thumb_axes[1][i]*lateral for i in range(3))
+    gimbal_body=_capsule(manager,fork_point(2.3),fork_point(2.6),1.6)
+    for sign in (-1,1):
+        for start,end in ((fork_point(2.6),fork_point(2.6,sign*3.9)),
+                          (fork_point(2.6,sign*3.9),fork_point(10.2,sign*3.9))):
+            branch=_capsule(manager,start,end,1.3)
+            if not manager.booleanOperation(gimbal_body,branch,adsk.fusion.BooleanTypes.UnionBooleanType):
+                raise RuntimeError('No se pudo unir la horquilla del pulgar')
     pending.append((gimbal_body,'09_PULGAR_CARDAN_INTERMEDIO',
                     'TORETO Negro profundo','MANO_05_PULGAR_CARDAN'))
     for segment_index,(first,second) in enumerate(thumb_segments,1):
@@ -406,7 +447,7 @@ def build(manager,flat,data):
         terminal=(segment_index==3)
         body=_phalanx(
             manager,flat,first,second,width_mm,depth_mm,label,
-            trim_mm=3.0,end_trim_mm=(0.3 if terminal else 3.0),
+            trim_mm=(2.0 if segment_index==1 else 3.0),end_trim_mm=(0.3 if terminal else 3.0),
             rounded_tip=terminal)
         appearance='TORETO Blanco satinado' if terminal else 'TORETO Negro profundo'
         pending.append((body,label,appearance,group))
@@ -419,11 +460,12 @@ def build(manager,flat,data):
                     'MANO_05_PULGAR_FALANGE_02','MANO_05_PULGAR_FALANGE_03')
     for joint_index,center in enumerate(thumb_centers,1):
         label='10_PULGAR_NUDILLO_{}'.format(joint_index)
+        radius,total,pin_radius,overhang=hinge_dimensions({'name':'JUNTA_PULGAR_{}'.format(joint_index)})
         parent_group=thumb_parents[joint_index-1]
         child_group=thumb_children[joint_index-1]
         for part,suffix in _articulated_hinge(
-                manager,center,thumb_axes[joint_index-1],thumb_direction,6.2,20.0,
-                THUMB_FLEXION_LIMITS_DEG[joint_index-1],label):
+                manager,center,thumb_axes[joint_index-1],thumb_direction,radius,total,
+                THUMB_FLEXION_LIMITS_DEG[joint_index-1],label,overhang,pin_radius):
             group=child_group if suffix=='CASQUILLO_CENTRAL' else parent_group
             pending.append((part,label+'_'+suffix,'TORETO Negro profundo',group))
     if any(not body.isSolid or body.lumps.count!=1 for body,_,_,_ in pending):

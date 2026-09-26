@@ -175,6 +175,57 @@ empieza a desbloquear la tabla de cotas Z que sigue congelada.
   la Ace Pro 2 es una cámara de acción sin salida de vídeo en vivo de baja
   latencia. Hace falta comprar una cámara nueva.
 
+## Mano: adaptativa de cuatro motores (26 sept 2026)
+
+La mano tiene que coger como una humana: un boli con **pulgar e índice**, una
+pelota pequeña, un vaso, y en general cualquier objeto dentro de su límite
+de carga (300-500 g).
+
+- **Un motor rígido para toda la mano no sirve**: solo tiene una postura
+  cerrada, válida para un único tamaño de objeto.
+- **Tres motores** (cuatro dedos juntos + flexión y rotación del pulgar)
+  coge vaso y pelota, pero el boli lo tomaría con pulgar, índice y corazón a
+  la vez: es la pinza de *escribir*, no la de *coger* un objeto pequeño.
+- **Cuatro motores**, que es lo elegido:
+
+  | Motor | Mueve |
+  |---|---|
+  | Índice | sus 4 articulaciones |
+  | Corazón + anular + meñique | juntos |
+  | Flexión del pulgar | sus 3 articulaciones de flexión |
+  | Rotación del pulgar | el cardán de la base: lo pone enfrente o al lado del índice |
+
+  El índice independiente permite además **señalar**, que en un robot
+  asistente que conversa con personas es comunicación, no un extra.
+
+**Adaptativa** quiere decir que cada motor tira de tendones que recorren los
+dedos, con muelles de retorno: si un dedo toca el objeto se detiene y los
+demás siguen cerrando hasta tocar también. Así un mismo motor se amolda a un
+vaso o a una pelota sin programar cada agarre. Los motores irían en el
+antebrazo, no en la palma, para que la mano pese poco (es la solución del
+humanoide de código abierto InMoov, impreso en 3D).
+
+**Qué queda sin decidir, a propósito:** los motores concretos (modelo, par,
+peso) son componente de fase 2 y siguen pendientes. Con su peso se podrán
+dimensionar por fin los servos de hombro y codo, que esperaban a saber
+cuánto pesa la mano.
+
+**Consecuencias en el CAD:**
+
+- El modelo ya tenía las 20 articulaciones repartibles en esos cuatro grupos,
+  incluida la rotación del pulgar (el cardán). No hacen falta articulaciones
+  nuevas.
+- Faltan piezas que el diseño no tiene todavía: canales de tendón dentro de
+  las falanges, anclajes y muelles de retorno.
+- **El ensayo de colisiones cambia.** Hasta la v6 se cerraban los cinco dedos
+  a la vez hasta el final, y el análisis mostró que 55 de los 58 choques que
+  quedaban estaban en ese tramo final, el 87% del volumen pulgar contra las
+  puntas de índice y corazón. Ninguna mano con pulgar oponible puede cerrar
+  así sin que el pulgar acabe dentro de los dedos: por eso recortar material
+  no convergía, y cada intento acababa partiendo una pieza. La v7 prueba en su
+  lugar cada motor por separado (criterio: cero choques) y la pinza del boli.
+  Detalle en `work/Toreto_Prueba_Holguras_01_44/`.
+
 ## Identidad visual: CAD 3D interactivo (23 ago 2026)
 
 Estándar de documentación técnica para todo el material visual del proyecto:
