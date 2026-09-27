@@ -1,5 +1,46 @@
 # Prueba en Fusion — 2026-09-24
 
+## v11: RESULTADO en Fusion — 27-09-2026 — brazo colocado como la lámina
+
+`vista_brazo_v11.json`: publicado; 20 juntas y 16 relaciones de la mano
+creadas con los ejes girados. **Eje del hombro y rótula a 0,0 mm de donde
+deben estar, medido dentro de Fusion.** El aviso dio "mano en su sitio: NO"
+(peor falange 2,055 mm), pero era un fallo de la comprobación: giraba el
+centro de la caja alineada con los ejes, y esa caja cambia al girar una pieza
+asimétrica. Lo delata el patrón: depende de la forma (falanges tipo caja
+~0,12 mm, las cuatro puntas idénticas ~0,9 mm, falange 1 del pulgar 2 mm),
+no de la distancia a la muñeca; y los 20 pasadores se encontraron con sus
+ejes girados. Corregido: la pieza calculada se gira y luego se mide su caja.
+Pendiente: comparar el lateral con la lámina a ojo.
+
+## v11: brazo como la lámina, preparada el 27-09-2026
+
+Decisión del usuario: el brazo toma ya las medidas de la lámina (se ajustará
+con los servos) y se construye en su postura, que será el cero de las juntas.
+Medición en `medicion_brazo/MEDICION_BRAZO_LAMINA.md`. `MODE='ver_brazo'`
+publica brazo y mano abierta; los demás modos no cambian.
+
+- `toreto_arm_pose.py` (puro): alarga el antebrazo ×1,365 (del codo al final
+  de la carcasa, 164 mm como la lámina) dejando fijo el extremo del codo y
+  con los MISMOS perfiles estables (sin forzarlo entraba uno más: lo detectó
+  una prueba); lleva el eje del hombro a su pivote (156,6 mm del codo) con un
+  alojamiento del ancho de la carcasa (51,3 mm) y el radio del disco de la
+  lámina (45 mm); y calcula los giros de la postura: hombro +13,6°, codo
+  -44,0°. Frente a la lámina: hombro 0 mm, codo 2,5 mm, final del
+  antebrazo 7,3 mm (sobre todo en X).
+- Todo se construye en el marco plano de siempre y, antes de importar, brazo
+  superior, antebrazo y mano se mueven con giros rígidos. Los ejes de las
+  juntas de la mano se transforman igual. La mano y sus ensayos no cambian.
+- El JSON (`vista_brazo_v11.json`) comprueba en Fusion dónde quedan el eje
+  del hombro y la rótula, y cada falange frente al cálculo.
+- Validación: 45 pruebas; `simular_brazo_sin_fusion.py` con cuerpos falsos
+  que sí se mueven, que detecta (probado rompiéndolo): ejes de la mano sin
+  girar, mano sin colocar, matriz traspuesta, traslación en mm en vez de cm
+  y antebrazo con la matriz del brazo.
+- No comprobado: el loft del antebrazo alargado y el alojamiento del hombro
+  en Fusion, ni si las carcasas de brazo y antebrazo se tocan en el codo con
+  -44° (eso es el siguiente paso: juntas del brazo y ensayo de recorridos).
+
 ## v10b: RESULTADO en Fusion — 27-09-2026 — pinza lateral ACEPTADA
 
 `prueba_mano_4_motores_v10b.json`: estado `contacto_cara_no_deseada_o_indeterminada`

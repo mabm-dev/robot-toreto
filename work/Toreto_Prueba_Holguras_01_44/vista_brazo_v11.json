@@ -1,0 +1,447 @@
+{
+  "version": "v11",
+  "modo": "ver_brazo",
+  "estado": "publicado",
+  "fracciones": {},
+  "aviso": "Solo para mirar. Palma sin recorte y NO validada; sin holgura continua, resistencia ni tendones.",
+  "brazo_lamina": {
+    "giro_hombro_deg": 13.59,
+    "giro_codo_deg": -43.988,
+    "factor_antebrazo": 1.3653,
+    "largos_mm": {
+      "hombro_codo": 156.64,
+      "codo_fin_antebrazo": 164.39,
+      "codo_rotula": 164.39
+    },
+    "residuos_frente_a_lamina_mm": {
+      "hombro": 0.0,
+      "codo": 2.47,
+      "fin_antebrazo": 7.31
+    },
+    "rotula_frente_a_muneca_dibujada_mm": 17.1,
+    "comprobacion_fusion": {
+      "hombro": {
+        "esperado_mm": [
+          196.0,
+          16.0,
+          690.0
+        ],
+        "fusion_mm": [
+          196.0,
+          16.0,
+          690.0
+        ],
+        "distancia_mm": 0.0
+      },
+      "muneca_rotula": {
+        "esperado_mm": [
+          272.084,
+          -27.575,
+          404.31
+        ],
+        "fusion_mm": [
+          272.084,
+          -27.575,
+          404.31
+        ],
+        "distancia_mm": 0.0
+      }
+    }
+  },
+  "cuerpos_mano": 101,
+  "juntas": 20,
+  "relaciones": 16,
+  "signos_eje": {
+    "JUNTA_DEDO_1_1": -1,
+    "JUNTA_DEDO_1_2": -1,
+    "JUNTA_DEDO_1_3": -1,
+    "JUNTA_DEDO_1_4": -1,
+    "JUNTA_DEDO_2_1": -1,
+    "JUNTA_DEDO_2_2": -1,
+    "JUNTA_DEDO_2_3": -1,
+    "JUNTA_DEDO_2_4": -1,
+    "JUNTA_DEDO_3_1": -1,
+    "JUNTA_DEDO_3_2": -1,
+    "JUNTA_DEDO_3_3": -1,
+    "JUNTA_DEDO_3_4": -1,
+    "JUNTA_DEDO_4_1": -1,
+    "JUNTA_DEDO_4_2": -1,
+    "JUNTA_DEDO_4_3": -1,
+    "JUNTA_DEDO_4_4": -1,
+    "JUNTA_PULGAR_1": -1,
+    "JUNTA_PULGAR_2": -1,
+    "JUNTA_PULGAR_3": -1,
+    "JUNTA_PULGAR_4": -1
+  },
+  "juntas_en_pinza": {
+    "JUNTA_DEDO_1_1": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_1_2": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_1_3": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_1_4": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_2_1": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_2_2": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_2_3": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_2_4": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_3_1": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_3_2": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_3_3": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_3_4": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_4_1": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_4_2": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_4_3": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_DEDO_4_4": {
+      "esperado_deg": -0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": 0.0
+    },
+    "JUNTA_PULGAR_1": {
+      "esperado_deg": 0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": -0.0
+    },
+    "JUNTA_PULGAR_2": {
+      "esperado_deg": 0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": -0.0
+    },
+    "JUNTA_PULGAR_3": {
+      "esperado_deg": 0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": -0.0
+    },
+    "JUNTA_PULGAR_4": {
+      "esperado_deg": 0.0,
+      "fusion_deg": -0.0,
+      "diferencia_deg": -0.0
+    }
+  },
+  "falanges_frente_al_ensayo": {
+    "07_DEDO_1_FALANGE_1": {
+      "ensayo_mm": [
+        274.801,
+        -85.008,
+        305.572
+      ],
+      "fusion_mm": [
+        274.774,
+        -84.983,
+        305.683
+      ],
+      "distancia_mm": 0.117
+    },
+    "07_DEDO_1_FALANGE_2": {
+      "ensayo_mm": [
+        279.503,
+        -94.883,
+        289.408
+      ],
+      "fusion_mm": [
+        279.477,
+        -94.931,
+        289.516
+      ],
+      "distancia_mm": 0.121
+    },
+    "07_DEDO_1_FALANGE_3": {
+      "ensayo_mm": [
+        283.924,
+        -104.166,
+        274.214
+      ],
+      "fusion_mm": [
+        283.899,
+        -104.211,
+        274.318
+      ],
+      "distancia_mm": 0.116
+    },
+    "07_DEDO_1_FALANGE_4": {
+      "ensayo_mm": [
+        288.526,
+        -114.625,
+        256.99
+      ],
+      "fusion_mm": [
+        288.598,
+        -114.032,
+        257.647
+      ],
+      "distancia_mm": 0.888
+    },
+    "07_DEDO_2_FALANGE_1": {
+      "ensayo_mm": [
+        290.725,
+        -86.755,
+        309.939
+      ],
+      "fusion_mm": [
+        290.698,
+        -86.73,
+        310.05
+      ],
+      "distancia_mm": 0.117
+    },
+    "07_DEDO_2_FALANGE_2": {
+      "ensayo_mm": [
+        295.936,
+        -97.699,
+        292.025
+      ],
+      "fusion_mm": [
+        295.91,
+        -97.747,
+        292.132
+      ],
+      "distancia_mm": 0.12
+    },
+    "07_DEDO_2_FALANGE_3": {
+      "ensayo_mm": [
+        300.835,
+        -107.987,
+        275.185
+      ],
+      "fusion_mm": [
+        300.81,
+        -108.032,
+        275.289
+      ],
+      "distancia_mm": 0.116
+    },
+    "07_DEDO_2_FALANGE_4": {
+      "ensayo_mm": [
+        305.839,
+        -119.475,
+        256.253
+      ],
+      "fusion_mm": [
+        305.923,
+        -118.86,
+        256.951
+      ],
+      "distancia_mm": 0.934
+    },
+    "07_DEDO_3_FALANGE_1": {
+      "ensayo_mm": [
+        307.028,
+        -84.718,
+        312.901
+      ],
+      "fusion_mm": [
+        307.001,
+        -84.693,
+        313.012
+      ],
+      "distancia_mm": 0.117
+    },
+    "07_DEDO_3_FALANGE_2": {
+      "ensayo_mm": [
+        312.442,
+        -96.089,
+        294.287
+      ],
+      "fusion_mm": [
+        312.416,
+        -96.137,
+        294.394
+      ],
+      "distancia_mm": 0.12
+    },
+    "07_DEDO_3_FALANGE_3": {
+      "ensayo_mm": [
+        317.532,
+        -106.779,
+        276.789
+      ],
+      "fusion_mm": [
+        317.508,
+        -106.825,
+        276.892
+      ],
+      "distancia_mm": 0.115
+    },
+    "07_DEDO_3_FALANGE_4": {
+      "ensayo_mm": [
+        322.7,
+        -118.68,
+        257.172
+      ],
+      "fusion_mm": [
+        322.785,
+        -118.055,
+        257.887
+      ],
+      "distancia_mm": 0.953
+    },
+    "07_DEDO_4_FALANGE_1": {
+      "ensayo_mm": [
+        322.96,
+        -81.902,
+        317.137
+      ],
+      "fusion_mm": [
+        322.933,
+        -81.877,
+        317.247
+      ],
+      "distancia_mm": 0.116
+    },
+    "07_DEDO_4_FALANGE_2": {
+      "ensayo_mm": [
+        327.866,
+        -92.205,
+        300.273
+      ],
+      "fusion_mm": [
+        327.84,
+        -92.253,
+        300.38
+      ],
+      "distancia_mm": 0.12
+    },
+    "07_DEDO_4_FALANGE_3": {
+      "ensayo_mm": [
+        332.478,
+        -101.89,
+        284.42
+      ],
+      "fusion_mm": [
+        332.453,
+        -101.935,
+        284.524
+      ],
+      "distancia_mm": 0.116
+    },
+    "07_DEDO_4_FALANGE_4": {
+      "ensayo_mm": [
+        337.24,
+        -112.76,
+        266.513
+      ],
+      "fusion_mm": [
+        337.318,
+        -112.158,
+        267.186
+      ],
+      "distancia_mm": 0.906
+    },
+    "09_PULGAR_CARDAN_INTERMEDIO": {
+      "ensayo_mm": [
+        259.848,
+        -42.494,
+        345.413
+      ],
+      "fusion_mm": [
+        259.931,
+        -42.494,
+        345.413
+      ],
+      "distancia_mm": 0.083
+    },
+    "09_PULGAR_FALANGE_1": {
+      "ensayo_mm": [
+        254.055,
+        -46.335,
+        335.173
+      ],
+      "fusion_mm": [
+        256.1,
+        -46.137,
+        335.18
+      ],
+      "distancia_mm": 2.055
+    },
+    "09_PULGAR_FALANGE_2": {
+      "ensayo_mm": [
+        248.866,
+        -53.749,
+        316.338
+      ],
+      "fusion_mm": [
+        248.748,
+        -53.581,
+        316.273
+      ],
+      "distancia_mm": 0.215
+    },
+    "09_PULGAR_FALANGE_3": {
+      "ensayo_mm": [
+        242.351,
+        -59.88,
+        299.775
+      ],
+      "fusion_mm": [
+        242.571,
+        -59.381,
+        299.987
+      ],
+      "distancia_mm": 0.585
+    }
+  },
+  "hueco_puntas_mm": null,
+  "resumen": {
+    "peor_diferencia_junta_deg": 0.0,
+    "peor_distancia_falange_mm": 2.055,
+    "pose_igual_al_ensayo": false,
+    "hueco_puntas_en_ensayo_mm": 0.28
+  }
+}

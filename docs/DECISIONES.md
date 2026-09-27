@@ -244,6 +244,20 @@ su punta** (costado/cara interior), y entre ambos queda una V de unos
 rugosas ayudarán a rellenar la V. Apoyo plano contra plano descartado por
 ahora: con los ejes actuales del pulgar siempre queda desalineación.
 
+## Brazo: codo de un solo eje con pieza de enlace (27 sept 2026)
+
+El codo tiene **un único eje de giro**, en el centro de una pieza negra de
+enlace. Esa pieza va fijada a la carcasa del brazo y a la del antebrazo (los
+dos círculos pequeños de la lámina son sus fijaciones, no dos ejes) y las
+separa para que no choquen al doblar. Lo aclaró el usuario sobre el render
+de referencia.
+
+Medición del brazo sobre la lámina frente al brazo de prueba (el de
+`work/Toreto_Prueba_Holguras_01_44/`): el codo coincide (5 mm), pero el
+hombro está 67 mm desplazado y la muñeca 93 mm, porque el generador toma
+longitudes y postura de la vista frontal. Detalle y cotas en
+`work/Toreto_Prueba_Holguras_01_44/medicion_brazo/MEDICION_BRAZO_LAMINA.md`.
+
 ## Identidad visual: CAD 3D interactivo (23 ago 2026)
 
 Estándar de documentación técnica para todo el material visual del proyecto:

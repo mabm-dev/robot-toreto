@@ -35,7 +35,13 @@ def _axis_points(center,axis,length_mm):
     )
 
 
-def parameters(parts,master_y_mm):
+def parameters(parts,master_y_mm,shoulder_center=None,shoulder_size=None):
+    """shoulder_center (mm, marco plano): v11 coloca el eje del hombro en el
+    pivote de la lamina, dentro de la cabeza de la carcasa. Sin el, se usa el
+    perfil superior como antes.
+    shoulder_size=(largo_mm, radio_mm): en el pivote el perfil superior ya no
+    sirve para dimensionar (es la punta, 18 mm de ancho); v11 da el ancho de
+    la carcasa a esa altura y el radio del disco dibujado en la lamina."""
     upper=parts['upper']
     forearm=parts['forearm']
     shoulder_section=upper['sections'][-1]
@@ -47,7 +53,10 @@ def parameters(parts,master_y_mm):
     wrist_section=(
         wrist_terminal[0],wrist_reference[1],wrist_reference[2],
         wrist_terminal[3],wrist_terminal[4],wrist_terminal[5])
-    shoulder_center=_world_center(upper,shoulder_section,master_y_mm)
+    if shoulder_center is None:
+        shoulder_center=_world_center(upper,shoulder_section,master_y_mm)
+    else:
+        shoulder_center=tuple(shoulder_center)
     wrist_center=_world_center(forearm,wrist_section,master_y_mm)
     _,_,upper_normal=_frame(upper)
     _,forearm_direction,_=_frame(forearm)
@@ -55,6 +64,8 @@ def parameters(parts,master_y_mm):
     wrist_axis=(0,1,0)
     shoulder_outer_length=shoulder_section[3]*20
     shoulder_outer_radius=shoulder_section[4]*10
+    if shoulder_size is not None:
+        shoulder_outer_length,shoulder_outer_radius=shoulder_size
     wrist_outer_length=wrist_section[4]*20
     wrist_outer_radius=wrist_section[3]*10
     result={
@@ -143,8 +154,10 @@ def _integrate_closed_wrist(manager,shell,spec,clearance_mm=0.8,margin_mm=4.0):
     return ball,report
 
 
-def build(manager,upper_body,forearm_body,parts,master_y_mm):
-    specs=parameters(parts,master_y_mm)
+def build(manager,upper_body,forearm_body,parts,master_y_mm,shoulder_center=None,
+          shoulder_size=None):
+    specs=parameters(parts,master_y_mm,shoulder_center=shoulder_center,
+                     shoulder_size=shoulder_size)
     shoulder,shoulder_report=_integrate(manager,upper_body,specs['shoulder'],'hombro')
     wrist,wrist_report=_integrate_closed_wrist(manager,forearm_body,specs['wrist'])
     return shoulder,wrist,[shoulder_report,wrist_report]

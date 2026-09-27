@@ -9,11 +9,13 @@ import adsk.fusion
 
 ROOT=Path(__file__).resolve().parent
 NAME='94_BRAZO_HOLGURAS_PRUEBA_01_44'
-SCRIPT_VERSION='v10b'
+SCRIPT_VERSION='v11'
 # 'ensayo'    -> ensayo de colisiones de la v8, sin crear piezas.
 # 'ver_pinza' -> publica la mano (4 motores) en la pinza al 75%, para mirarla.
 # 'ensayo_lateral' -> SOLO pinza lateral (v10b); no publica ni mueve componentes.
-MODE='ensayo_lateral'
+# 'ver_brazo' -> v11: brazo con las medidas y la postura de la lamina y la
+#                mano abierta (toreto_arm_pose.py); publica para mirarlo.
+MODE='ver_brazo'
 
 
 def placement(axis,y_mm):
@@ -171,9 +173,13 @@ def _center_mm(box):
 
 
 def expected_pinch_centers(manager,hand,clearance,groups,motor_validation,
-                           hand_bodies,hand_data,fractions):
+                           hand_bodies,hand_data,fractions,placement=None):
     """Centro de cada falange en la pinza segun el MISMO calculo del ensayo,
-    para comprobar despues que Fusion ha colocado la mano igual."""
+    para comprobar despues que Fusion ha colocado la mano igual.
+    placement (v11): la pieza calculada se mueve a la postura de la lamina
+    ANTES de medir su caja. Girar el centro de la caja no vale: la caja
+    alineada con los ejes de una pieza asimetrica cambia al girarla (la v11
+    en Fusion dio 0,1-2 mm segun la forma de cada falange por eso)."""
     specs={s['child']:s for s in hand.joint_specs(hand_data)}
     centers={}
     for temp,label,_,group in hand_bodies:
@@ -181,6 +187,8 @@ def expected_pinch_centers(manager,hand,clearance,groups,motor_validation,
             continue
         chain=clearance.chain_for(group,specs)
         posed=motor_validation._pose(manager,groups,clearance,temp,chain,fractions)
+        if placement is not None and not manager.transform(posed,_matrix3d(placement)):
+            raise RuntimeError('No se pudo colocar la referencia de '+label)
         centers[label]=_center_mm(posed.boundingBox)
     return centers
 
@@ -227,22 +235,86 @@ def tip_gap_mm(body_records,groups):
         return None
 
 
+# v11: que pieza del brazo acompana a cada tramo al colocarlo como la lamina.
+ARM_GROUPS={'01_BRAZO_LOCAL_SIN_REBAJES':'upper','03_EJE_Y_ENLACE_CODO':'upper',
+            '04_EJE_HOMBRO':'upper','02_ANTEBRAZO_LOCAL_SIN_REBAJES':'forearm',
+            '05_EJE_MUNECA':'forearm'}
+
+
+def _matrix3d(rigid):
+    matrix=adsk.core.Matrix3D.create()
+    if not matrix.setWithArray(rigid.array16_cm()):
+        raise RuntimeError('No se pudo definir la matriz de colocacion')
+    return matrix
+
+
+def place_like_lamina(manager,pending,hand_bodies,arm_pose):
+    """Mueve los cuerpos temporales (aun sin importar) a la postura de la
+    lamina: brazo superior, antebrazo y mano, cada uno con su giro rigido."""
+    if set(label for _,label,_ in pending)!=set(ARM_GROUPS):
+        raise RuntimeError('Piezas del brazo inesperadas: no se coloca')
+    for body,label,_ in pending:
+        if not manager.transform(body,_matrix3d(arm_pose[ARM_GROUPS[label]])):
+            raise RuntimeError('No se pudo colocar '+label)
+    hand_matrix=_matrix3d(arm_pose['hand'])
+    for body,label,_,_ in hand_bodies:
+        if not manager.transform(body,hand_matrix):
+            raise RuntimeError('No se pudo colocar '+label)
+
+
+def placed_specs(specs,rigid):
+    """Juntas de la mano con centros y ejes llevados a la postura de la lamina."""
+    result=[]
+    for spec in specs:
+        moved=dict(spec)
+        moved['center_mm']=list(rigid.point(spec['center_mm']))
+        moved['axis']=list(rigid.vector(spec['axis']))
+        result.append(moved)
+    return result
+
+
+def arm_check(arm_bodies,arm_pose):
+    """Donde quedaron de verdad, en Fusion, el eje del hombro y la rotula de
+    la muneca (piezas simetricas: el centro de su caja es su centro)."""
+    result={}
+    for label,key in (('04_EJE_HOMBRO','hombro'),('05_EJE_MUNECA','muneca_rotula')):
+        got=_center_mm(arm_bodies[label].boundingBox)
+        expected=[round(v,3) for v in arm_pose['placed_mm'][key]]
+        result[key]=dict(esperado_mm=expected,fusion_mm=got,
+                         distancia_mm=round(math.dist(expected,got),3))
+    return result
+
+
 def publish_pinch_view(design,root,pending,hand_bodies,hand,clearance,groups,
-                       motor_validation,hand_data,manager,report_path):
+                       motor_validation,hand_data,manager,report_path,
+                       fractions=None,arm_pose=None,version='v9',mode='ver_pinza'):
     """v9: publica brazo y mano en el documento VACIO y deja la mano en la
     pinza al 75%. Sin clearance.repair(): la palma NO esta recortada ni
-    validada. Devuelve el informe (tambien escrito en report_path)."""
-    fractions=groups.pinch_view_fractions()
+    validada. Devuelve el informe (tambien escrito en report_path).
+    v11: con arm_pose, brazo y mano se colocan en la postura de la lamina
+    antes de importarlos; fractions={} deja la mano abierta."""
+    fractions=groups.pinch_view_fractions() if fractions is None else fractions
     joint_definitions=hand.joint_specs(hand_data)
     plan=groups.motion_link_plan(joint_definitions)
     angles=groups.pose_angles(joint_definitions,fractions,clearance.signed_travel)
     # Antes de importar: los cuerpos temporales siguen intactos.
     expected=expected_pinch_centers(manager,hand,clearance,groups,motor_validation,
-                                    hand_bodies,hand_data,fractions)
-    report=dict(version='v9',modo='ver_pinza',estado='publicando',
+                                    hand_bodies,hand_data,fractions,
+                                    placement=arm_pose['hand'] if arm_pose else None)
+    report=dict(version=version,modo=mode,estado='publicando',
                 fracciones=fractions,
                 aviso=('Solo para mirar. Palma sin recorte y NO validada; sin '
                        'holgura continua, resistencia ni tendones.'))
+    if arm_pose:
+        place_like_lamina(manager,pending,hand_bodies,arm_pose)
+        joint_definitions=placed_specs(joint_definitions,arm_pose['hand'])
+        report['brazo_lamina']=dict(
+            giro_hombro_deg=round(arm_pose['theta_shoulder_deg'],3),
+            giro_codo_deg=round(arm_pose['theta_elbow_deg'],3),
+            factor_antebrazo=round(arm_pose['forearm_factor'],4),
+            largos_mm=arm_pose['lengths_mm'],
+            residuos_frente_a_lamina_mm=arm_pose['residuals_mm'],
+            rotula_frente_a_muneca_dibujada_mm=arm_pose['wrist_vs_lamina_mm'])
 
     def record():
         report_path.write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf-8')
@@ -256,6 +328,9 @@ def publish_pinch_view(design,root,pending,hand_bodies,hand,clearance,groups,
     component.name=NAME
     arm_bodies=import_temp_bodies(
         component,pending,'SECCIONES_LOCALES_POSTURA_FRONTAL',design)
+    if arm_pose:
+        report['brazo_lamina']['comprobacion_fusion']=arm_check(arm_bodies,arm_pose)
+        record()
 
     hand_occurrence=component.occurrences.addNewComponent(adsk.core.Matrix3D.create())
     if not hand_occurrence:
@@ -304,7 +379,7 @@ def publish_pinch_view(design,root,pending,hand_bodies,hand,clearance,groups,
     record()
     report['falanges_frente_al_ensayo']=compare_centers(expected,body_records)
     worst=max(v['distancia_mm'] for v in report['falanges_frente_al_ensayo'].values())
-    worst_joint=max(abs(v['diferencia_deg']) for v in report['juntas_en_pinza'].values())
+    worst_joint=max([abs(v['diferencia_deg']) for v in report['juntas_en_pinza'].values()]+[0.0])
     report['hueco_puntas_mm']=tip_gap_mm(body_records,groups)
     report['resumen']=dict(
         peor_diferencia_junta_deg=worst_joint,
@@ -330,7 +405,7 @@ def run(context):
     try:
         design=adsk.fusion.Design.cast(app.activeProduct)
         if not design: raise RuntimeError('Abre el documento del robot')
-        if MODE not in ('ensayo', 'ver_pinza', 'ensayo_lateral'):
+        if MODE not in ('ensayo', 'ver_pinza', 'ensayo_lateral', 'ver_brazo'):
             raise RuntimeError('Modo de ensayo desconocido: '+MODE)
         root=design.rootComponent
         # Un diseno de PIEZA solo admite un componente; el script crea varios.
@@ -367,9 +442,24 @@ def run(context):
         manager=adsk.fusion.TemporaryBRepManager.get()
         pending=[]
         reports=[]
+        # v11: con 'ver_brazo' el antebrazo se alarga y el hombro va a su
+        # pivote de la lamina; el resto de modos construye el brazo de siempre.
+        arm_pose=None
+        parts=data['parts']
+        if MODE=='ver_brazo':
+            pose_spec=importlib.util.spec_from_file_location('toreto_arm_pose',ROOT/'toreto_arm_pose.py')
+            arm_pose_module=importlib.util.module_from_spec(pose_spec)
+            pose_spec.loader.exec_module(arm_pose_module)
+            arm_pose=arm_pose_module.solve(data['parts'],data['master_plane_y_mm'],
+                                           terminals,outer_joints)
+            parts=arm_pose['parts']
         for key,label in (('upper','01_BRAZO_LOCAL_SIN_REBAJES'),('forearm','02_ANTEBRAZO_LOCAL_SIN_REBAJES')):
-            item=data['parts'][key]
-            selected=local_filter.stable_run(item['sections'])
+            item=parts[key]
+            if arm_pose and key=='forearm':
+                selected=arm_pose_module.stable_like_original(
+                    local_filter,data['parts'][key]['sections'],item['sections'])
+            else:
+                selected=local_filter.stable_run(item['sections'])
             body=flat.loft(manager,selected['sections'],label)
             body,terminal_reports=terminals.extend_to_measured_limits(
                 manager,flat,body,item['sections'],selected,label,
@@ -384,13 +474,15 @@ def run(context):
                 '{}: {} perfiles estables; extremos aplazados {}/{}'.format(
                     label, len(selected['sections']), selected['omitted_before'], selected['omitted_after']))
             reports.extend(terminal_reports)
-        joint,joint_report,joint_spec=terminals.build_elbow(manager,data['parts'],data['master_plane_y_mm'])
+        joint,joint_report,joint_spec=terminals.build_elbow(manager,parts,data['master_plane_y_mm'])
         seat_report=terminals.integrate_elbow(manager,pending[0][0],pending[1][0],joint_spec)
         pending.append((joint,'03_EJE_Y_ENLACE_CODO','TORETO Negro profundo'))
         reports.append(joint_report)
         reports.append(seat_report)
         shoulder,wrist,outer_reports=outer_joints.build(
-            manager,pending[0][0],pending[1][0],data['parts'],data['master_plane_y_mm'])
+            manager,pending[0][0],pending[1][0],parts,data['master_plane_y_mm'],
+            shoulder_center=arm_pose['shoulder_center_flat'] if arm_pose else None,
+            shoulder_size=arm_pose['shoulder_size_mm'] if arm_pose else None)
         pending.append((shoulder,'04_EJE_HOMBRO','TORETO Negro profundo'))
         pending.append((wrist,'05_EJE_MUNECA','TORETO Negro profundo'))
         reports.extend(outer_reports)
@@ -456,6 +548,46 @@ def run(context):
                 lines.append(diagnostic['error'])
             lines.append('Detalles: prueba_mano_4_motores_v10b.json')
             app.userInterface.messageBox('\n'.join(lines),'Toreto v10b - pinza lateral')
+            return
+        if MODE=='ver_brazo':
+            # v11: la misma mano (slots.repair si, clearance.repair NO), abierta.
+            hand_bodies,_=slots.repair(manager,hand,hand_bodies,hand_data)
+            view_path=ROOT/'vista_brazo_v11.json'
+            try:
+                output,view=publish_pinch_view(
+                    design,root,pending,hand_bodies,hand,clearance,motor_groups,
+                    motor_validation,hand_data,manager,view_path,
+                    fractions={},arm_pose=arm_pose,version='v11',mode='ver_brazo')
+            except Exception:
+                try:
+                    partial=json.loads(view_path.read_text(encoding='utf-8'))
+                except Exception:
+                    partial={'version':'v11','modo':'ver_brazo'}
+                partial.update(estado_alcanzado=partial.get('estado'),estado='error',
+                               traceback=traceback.format_exc())
+                view_path.write_text(json.dumps(partial,indent=2,ensure_ascii=False),encoding='utf-8')
+                raise
+            arm=view['brazo_lamina']
+            fusion=arm['comprobacion_fusion']
+            app.userInterface.messageBox(
+                'Brazo con las medidas y la postura de la lamina (v11), mano abierta.\n\n'
+                'Giros de la postura: hombro {} grados, codo {} grados.\n'
+                'Largos: hombro-codo {} mm, codo-final del antebrazo {} mm.\n'
+                'Frente a la lamina: hombro {} mm, codo {} mm, final del antebrazo {} mm.\n\n'
+                'Comprobado en Fusion: eje del hombro a {} mm y rotula a {} mm de donde '
+                'deben estar.\n'
+                'Mano en su sitio respecto al ensayo: {} (peor falange {} mm).\n\n'
+                'El brazo AUN NO tiene juntas: es el siguiente paso.\n'
+                'Detalles: vista_brazo_v11.json'.format(
+                    arm['giro_hombro_deg'],arm['giro_codo_deg'],
+                    arm['largos_mm']['hombro_codo'],arm['largos_mm']['codo_fin_antebrazo'],
+                    arm['residuos_frente_a_lamina_mm']['hombro'],
+                    arm['residuos_frente_a_lamina_mm']['codo'],
+                    arm['residuos_frente_a_lamina_mm']['fin_antebrazo'],
+                    fusion['hombro']['distancia_mm'],fusion['muneca_rotula']['distancia_mm'],
+                    'SI' if view['resumen']['pose_igual_al_ensayo'] else 'NO - revisar',
+                    view['resumen']['peor_distancia_falange_mm']),
+                'Toreto '+SCRIPT_VERSION+' - brazo como la lamina')
             return
         if MODE=='ver_pinza':
             # Misma geometria que midio la v8: slots.repair() si, clearance.repair() NO.
