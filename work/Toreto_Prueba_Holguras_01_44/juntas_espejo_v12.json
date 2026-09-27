@@ -1,0 +1,311 @@
+{
+  "version": "v12",
+  "modo": "juntas_espejo",
+  "estado": "juntas_creadas",
+  "errores": [],
+  "pasadores": {
+    "JUNTA_DEDO_1_1": {
+      "esperado_mm": [
+        272.578,
+        -79.936,
+        -313.928
+      ],
+      "fusion_mm": [
+        272.578,
+        -79.936,
+        -313.928
+      ],
+      "distancia_mm": 0.001
+    },
+    "JUNTA_DEDO_1_2": {
+      "esperado_mm": [
+        277.461,
+        -90.204,
+        -297.12
+      ],
+      "fusion_mm": [
+        277.461,
+        -90.204,
+        -297.12
+      ],
+      "distancia_mm": 0.001
+    },
+    "JUNTA_DEDO_1_3": {
+      "esperado_mm": [
+        281.969,
+        -99.682,
+        -281.604
+      ],
+      "fusion_mm": [
+        281.969,
+        -99.682,
+        -281.604
+      ],
+      "distancia_mm": 0.0
+    },
+    "JUNTA_DEDO_1_4": {
+      "esperado_mm": [
+        286.289,
+        -108.765,
+        -266.735
+      ],
+      "fusion_mm": [
+        286.289,
+        -108.765,
+        -266.735
+      ],
+      "distancia_mm": 0.0
+    },
+    "JUNTA_DEDO_2_1": {
+      "esperado_mm": [
+        288.238,
+        -81.127,
+        -319.205
+      ],
+      "fusion_mm": [
+        288.238,
+        -81.127,
+        -319.205
+      ],
+      "distancia_mm": 0.0
+    },
+    "JUNTA_DEDO_2_2": {
+      "esperado_mm": [
+        293.65,
+        -92.507,
+        -300.576
+      ],
+      "fusion_mm": [
+        293.65,
+        -92.507,
+        -300.576
+      ],
+      "distancia_mm": 0.001
+    },
+    "JUNTA_DEDO_2_3": {
+      "esperado_mm": [
+        298.646,
+        -103.011,
+        -283.381
+      ],
+      "fusion_mm": [
+        298.646,
+        -103.011,
+        -283.381
+      ],
+      "distancia_mm": 0.001
+    },
+    "JUNTA_DEDO_2_4": {
+      "esperado_mm": [
+        303.434,
+        -113.078,
+        -266.901
+      ],
+      "fusion_mm": [
+        303.434,
+        -113.078,
+        -266.901
+      ],
+      "distancia_mm": 0.0
+    },
+    "JUNTA_DEDO_3_1": {
+      "esperado_mm": [
+        304.435,
+        -78.868,
+        -322.531
+      ],
+      "fusion_mm": [
+        304.435,
+        -78.868,
+        -322.531
+      ],
+      "distancia_mm": 0.001
+    },
+    "JUNTA_DEDO_3_2": {
+      "esperado_mm": [
+        310.059,
+        -90.692,
+        -303.174
+      ],
+      "fusion_mm": [
+        310.059,
+        -90.692,
+        -303.174
+      ],
+      "distancia_mm": 0.0
+    },
+    "JUNTA_DEDO_3_3": {
+      "esperado_mm": [
+        315.25,
+        -101.607,
+        -285.306
+      ],
+      "fusion_mm": [
+        315.25,
+        -101.607,
+        -285.306
+      ],
+      "distancia_mm": 0.0
+    },
+    "JUNTA_DEDO_3_4": {
+      "esperado_mm": [
+        320.225,
+        -112.067,
+        -268.182
+      ],
+      "fusion_mm": [
+        320.225,
+        -112.067,
+        -268.182
+      ],
+      "distancia_mm": 0.0
+    },
+    "JUNTA_DEDO_4_1": {
+      "esperado_mm": [
+        320.631,
+        -76.608,
+        -325.856
+      ],
+      "fusion_mm": [
+        320.631,
+        -76.608,
+        -325.856
+      ],
+      "distancia_mm": 0.001
+    },
+    "JUNTA_DEDO_4_2": {
+      "esperado_mm": [
+        325.726,
+        -87.321,
+        -308.32
+      ],
+      "fusion_mm": [
+        325.726,
+        -87.321,
+        -308.32
+      ],
+      "distancia_mm": 0.001
+    },
+    "JUNTA_DEDO_4_3": {
+      "esperado_mm": [
+        330.43,
+        -97.209,
+        -292.132
+      ],
+      "fusion_mm": [
+        330.43,
+        -97.209,
+        -292.132
+      ],
+      "distancia_mm": 0.0
+    },
+    "JUNTA_DEDO_4_4": {
+      "esperado_mm": [
+        334.937,
+        -106.686,
+        -276.619
+      ],
+      "fusion_mm": [
+        334.937,
+        -106.686,
+        -276.619
+      ],
+      "distancia_mm": 0.001
+    },
+    "JUNTA_PULGAR_1": {
+      "esperado_mm": [
+        262.031,
+        -40.37,
+        -351.042
+      ],
+      "fusion_mm": [
+        262.031,
+        -40.37,
+        -351.042
+      ],
+      "distancia_mm": 0.001
+    },
+    "JUNTA_PULGAR_2": {
+      "esperado_mm": [
+        259.302,
+        -43.025,
+        -344.006
+      ],
+      "fusion_mm": [
+        259.302,
+        -43.025,
+        -344.006
+      ],
+      "distancia_mm": 0.0
+    },
+    "JUNTA_PULGAR_3": {
+      "esperado_mm": [
+        251.994,
+        -50.137,
+        -325.166
+      ],
+      "fusion_mm": [
+        251.994,
+        -50.137,
+        -325.166
+      ],
+      "distancia_mm": 0.0
+    },
+    "JUNTA_PULGAR_4": {
+      "esperado_mm": [
+        244.985,
+        -56.959,
+        -307.095
+      ],
+      "fusion_mm": [
+        244.985,
+        -56.959,
+        -307.095
+      ],
+      "distancia_mm": 0.0
+    }
+  },
+  "manos_con_juntas": 1,
+  "manos_sin_juntas": 1,
+  "componente": "06_MANO_ARTICULABLE(Simetría)",
+  "colocaciones_probadas": [
+    {
+      "colocacion": "transform2",
+      "peor_pasador_mm": 0.001
+    },
+    {
+      "colocacion": "cadena_de_padres",
+      "peor_pasador_mm": 0.001
+    },
+    {
+      "colocacion": "identidad",
+      "peor_pasador_mm": 914.301
+    }
+  ],
+  "colocacion": "transform2",
+  "peor_pasador_mm": 0.001,
+  "juntas": 20,
+  "relaciones": 16,
+  "signos_eje": {
+    "JUNTA_DEDO_1_1": -1,
+    "JUNTA_DEDO_1_2": -1,
+    "JUNTA_DEDO_1_3": -1,
+    "JUNTA_DEDO_1_4": -1,
+    "JUNTA_DEDO_2_1": -1,
+    "JUNTA_DEDO_2_2": -1,
+    "JUNTA_DEDO_2_3": -1,
+    "JUNTA_DEDO_2_4": -1,
+    "JUNTA_DEDO_3_1": -1,
+    "JUNTA_DEDO_3_2": -1,
+    "JUNTA_DEDO_3_3": -1,
+    "JUNTA_DEDO_3_4": -1,
+    "JUNTA_DEDO_4_1": -1,
+    "JUNTA_DEDO_4_2": -1,
+    "JUNTA_DEDO_4_3": -1,
+    "JUNTA_DEDO_4_4": -1,
+    "JUNTA_PULGAR_1": -1,
+    "JUNTA_PULGAR_2": -1,
+    "JUNTA_PULGAR_3": -1,
+    "JUNTA_PULGAR_4": -1
+  }
+}

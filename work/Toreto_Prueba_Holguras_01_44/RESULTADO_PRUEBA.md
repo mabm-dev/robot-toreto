@@ -1,5 +1,55 @@
 # Prueba en Fusion — 2026-09-24
 
+## v12: RESULTADO en el montaje — 27-09-2026 — mano izquierda articulada
+
+`juntas_espejo_v12.json`: 20 juntas y 16 relaciones creadas en la mano copiada
+por simetría; los 20 pasadores a 0,001 mm con la colocación `transform2` (la
+cadena de padres dio lo mismo; la identidad, 914 mm). El usuario comprobó
+en Fusion que las relaciones se mueven. El robot tiene ya los dos brazos v11
+con manos de 4 motores articuladas. Pendiente: el encaje del hombro en el
+pecho (16 mm en Y y el taladro menor que el conector de 36,5 mm) y las juntas
+del brazo, en el orden decidido: piezas → dimensiones → límites.
+
+## v12: primera ejecución en el montaje — 27-09-2026 — RECHAZADA SIN CAMBIOS
+
+La protección funcionó: encontró la mano copiada
+(`06_MANO_ARTICULABLE(Simetría)`), sus 21 piezas y el pasador, pero midió
+(272,6; -79,9; -313,9) donde esperaba (-272,6; -79,9; 313,9): el mismo punto
+con X y Z cambiados de signo. Fusion guarda la mano reflejada dentro de su
+componente y coloca el componente girado 180° en Y; el script leía los
+bordes en coordenadas internas y comparaba con las del robot. Corregido: se
+prueban las colocaciones candidatas (`transform2` de la ocurrencia, la cadena
+de padres y la identidad), se pasan centros y ejes a coordenadas internas
+(`to_local_specs`; un eje es pseudovector también aquí) y solo vale la que
+cuadra los 20 pasadores. La medición real es ahora una prueba unitaria. El
+simulador cubre el caso real, el anidado y los dos sentidos del círculo, y
+sigue rechazando la mano girada sin datos de colocación.
+
+## v12: juntas de la mano izquierda, preparada el 27-09-2026
+
+Montaje real: documento `Toreto_hombro_encajado_sin_articulaciones`. El
+usuario borró el brazo antiguo, insertó el v11 guardado como
+`Toreto_Brazo_Mano_v11` y creó el izquierdo con Crear > Simetría (plano YZ).
+La copia no tiene juntas ni relaciones. `MODE='juntas_espejo'` se las añade.
+
+**Excepción autorizada por el usuario** a "solo documento vacío": este modo
+trabaja en el montaje, pero NO crea ni mueve geometría; solo añade 20 juntas
+y 16 relaciones a la única `06_MANO_ARTICULABLE` sin juntas. Antes de crear
+nada comprueba que haya exactamente una, sus 21 piezas por nombre (admite el
+sufijo "(Simetría)"), los 20 pasadores en su pieza, cada uno a menos de
+1,5 mm de su posición reflejada y con su borde circular alineado. Si algo
+falla, no cambia nada. Se pidió guardar una versión del montaje antes.
+
+Al reflejar, el eje de giro no va a M·a sino a -M·a (pseudovector): con M·a
+los dedos izquierdos se doblarían hacia fuera. Probado en
+`test_mirror_joints.py` (y una prueba impide "simplificarlo").
+`simular_espejo_sin_fusion.py`: 20 juntas y 16 relaciones con los dos
+sentidos posibles del círculo reflejado, pinza reflejada dentro de límites,
+y rechazo sin cambios con mano desplazada, dos manos libres o un pasador
+ausente; detecta el eje reflejado como punto. No comprobado: cómo nombra y
+coloca Fusion las copias por simetría (si difiere, el script se negará y lo
+dirá en `juntas_espejo_v12.json`).
+
 ## v11: RESULTADO en Fusion — 27-09-2026 — brazo colocado como la lámina
 
 `vista_brazo_v11.json`: publicado; 20 juntas y 16 relaciones de la mano

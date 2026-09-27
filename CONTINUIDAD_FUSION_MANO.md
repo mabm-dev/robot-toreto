@@ -19,9 +19,15 @@
   (v10/v10b) y vista en 3D: cara plana del pulgar contra la esquina
   redondeada de la punta del índice, V de 20-30°, sin choques antes del
   contacto. El usuario la aceptó (`docs/DECISIONES.md`).
-- **Siguiente, propuesto y sin empezar:** probar el giro del brazo (codo y
-  muñeca) con el mismo método. Ojo: el brazo del documento de prueba es la
-  reconstrucción del script, no el del montaje `00_Toreto_Ensamblaje_95cm`.
+- **Brazo v11** (`fccfe50`): medidas y postura de la lámina, verificado en
+  Fusion. **Orden decidido por el usuario:** montar el robot entero →
+  qué piezas lleva → dimensiones reales → y solo entonces límites.
+- **El montaje de trabajo es el documento de Fusion
+  `Toreto_hombro_encajado_sin_articulaciones`** (no `00_Toreto_Ensamblaje_95cm`):
+  todos los módulos más UN brazo, el de prueba antiguo (`94_BRAZO_MARCOS_LOCALES…`).
+  El conector de hombro del pecho (`07_CONECTOR_HOMBRO_DER`, complemento
+  Pecho_Hombros 2.5.0) queda en X 166-196,5, Y 0, Z 690,8, radio 36,5 mm:
+  a la altura del pivote del v11 (Z 690), con 16 mm de diferencia en Y.
 - La fase 2 (componentes) sigue casi toda abierta: sección 6.
 
 ## 2. Cómo trabajamos — el método que ha funcionado

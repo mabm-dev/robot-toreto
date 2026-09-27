@@ -88,7 +88,7 @@ def main():
     script_spec.loader.exec_module(script)
     # El modo activo puede ser otro (v11: 'ver_brazo'); el ensayo lateral no
     # cambia y se simula igual.
-    assert script.SCRIPT_VERSION in ('v10b', 'v11'), script.SCRIPT_VERSION
+    assert script.SCRIPT_VERSION in ('v10b', 'v11', 'v12'), script.SCRIPT_VERSION
     import adsk.fusion
     adsk.fusion.BooleanTypes.IntersectionBooleanType = 2
     import toreto_hand as hand

@@ -9,13 +9,15 @@ import adsk.fusion
 
 ROOT=Path(__file__).resolve().parent
 NAME='94_BRAZO_HOLGURAS_PRUEBA_01_44'
-SCRIPT_VERSION='v11'
+SCRIPT_VERSION='v12'
 # 'ensayo'    -> ensayo de colisiones de la v8, sin crear piezas.
 # 'ver_pinza' -> publica la mano (4 motores) en la pinza al 75%, para mirarla.
 # 'ensayo_lateral' -> SOLO pinza lateral (v10b); no publica ni mueve componentes.
 # 'ver_brazo' -> v11: brazo con las medidas y la postura de la lamina y la
 #                mano abierta (toreto_arm_pose.py); publica para mirarlo.
-MODE='ver_brazo'
+# 'juntas_espejo' -> v12: en el MONTAJE, anade juntas y relaciones a la mano
+#                izquierda copiada por simetria. No crea ni mueve geometria.
+MODE='juntas_espejo'
 
 
 def placement(axis,y_mm):
@@ -399,14 +401,173 @@ def publish_pinch_view(design,root,pending,hand_bodies,hand,clearance,groups,
     return output,report
 
 
+def _load(name,filename):
+    spec=importlib.util.spec_from_file_location(name,ROOT/filename)
+    module=importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _placement_candidates(occurrence,mirror):
+    """Colocaciones posibles de la mano copiada respecto al robot, (nombre,
+    (L, t_mm)). No esta claro si transform2 de una ocurrencia anidada es
+    respecto al robot o a su padre: se ofrecen ambas y la identidad."""
+    identity=(((1.0,0.0,0.0),(0.0,1.0,0.0),(0.0,0.0,1.0)),(0.0,0.0,0.0))
+    result=[]
+    try:
+        result.append(('transform2',mirror.matrix_from_array16_cm(
+            list(occurrence.transform2.asArray()))))
+    except Exception:
+        pass
+    try:
+        chain=identity
+        current=occurrence
+        while current is not None:
+            native=getattr(current,'nativeObject',None) or current
+            relative=mirror.matrix_from_array16_cm(list(native.transform2.asArray()))
+            chain=mirror.compose(relative,chain)
+            current=getattr(current,'assemblyContext',None)
+        result.append(('cadena_de_padres',chain))
+    except Exception:
+        pass
+    result.append(('identidad',identity))
+    return result
+
+
+def add_mirror_joints(design,report_path):
+    """v12: juntas y relaciones de la mano IZQUIERDA, creada por el usuario con
+    Crear > Simetria (plano YZ) en el montaje. Excepcion autorizada por el
+    usuario (27-09-2026) a 'solo documento vacio': NO crea ni mueve geometria;
+    solo anade juntas a esa mano, y solo si TODAS las comprobaciones pasan."""
+    hand=_load('toreto_hand','toreto_hand.py')
+    groups=_load('toreto_motor_groups','toreto_motor_groups.py')
+    terminals=_load('toreto_local_terminals','toreto_local_terminals.py')
+    outer=_load('toreto_outer_joints','toreto_outer_joints.py')
+    arm_pose_module=_load('toreto_arm_pose','toreto_arm_pose.py')
+    mirror=_load('toreto_mirror_joints','toreto_mirror_joints.py')
+    data=json.loads((ROOT/'link_local_sections.json').read_text(encoding='utf-8'))
+    hand_data=json.loads((ROOT/'hand_local_sections.json').read_text(encoding='utf-8'))
+    arm_pose=arm_pose_module.solve(data['parts'],data['master_plane_y_mm'],terminals,outer)
+    specs=mirror.mirrored_specs(hand.joint_specs(hand_data),arm_pose['hand'])
+    report=dict(version='v12',modo='juntas_espejo',estado='comprobando',
+                errores=[],pasadores={})
+
+    def record():
+        report_path.write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf-8')
+
+    def refuse(message):
+        report['errores'].append(message)
+        report['estado']='rechazado_sin_cambios'
+        record()
+        return report
+
+    # 1. La mano copiada: el unico 06_MANO_ARTICULABLE sin juntas ni relaciones.
+    candidates={}
+    with_joints=0
+    for occurrence in design.rootComponent.allOccurrences:
+        component=occurrence.component
+        if mirror.base_name(component.name)!='06_MANO_ARTICULABLE':
+            continue
+        key=getattr(component,'entityToken',None) or component.name
+        if component.asBuiltJoints.count or component.joints.count or component.motionLinks.count:
+            with_joints+=1
+            continue
+        candidates[key]=(component,occurrence)
+    report.update(manos_con_juntas=with_joints,manos_sin_juntas=len(candidates))
+    if len(candidates)!=1:
+        return refuse('Se esperaba exactamente UNA mano sin juntas; hay {}'.format(len(candidates)))
+    hand_component,hand_occurrence=next(iter(candidates.values()))
+    report['componente']=hand_component.name
+    placements=_placement_candidates(hand_occurrence,mirror)
+
+    # 2. Sus 21 piezas y sus 20 pasadores, por nombre.
+    occurrences={}
+    for occurrence in hand_component.occurrences:
+        occurrences[mirror.base_name(occurrence.component.name)]=occurrence
+    expected_groups={s['child'] for s in specs}|{s['parent'] for s in specs}
+    if set(occurrences)!=expected_groups:
+        return refuse('Piezas de la mano distintas de las 21 esperadas: sobran {} faltan {}'.format(
+            sorted(set(occurrences)-expected_groups),sorted(expected_groups-set(occurrences))))
+    body_records={}
+    for occurrence in occurrences.values():
+        for body in occurrence.component.bRepBodies:
+            body_records[mirror.base_name(body.name)]=(body,occurrence)
+
+    # 3. Cada pasador donde debe estar y con su borde circular alineado.
+    # Los bordes se leen en coordenadas internas de la mano copiada; Fusion
+    # coloca las copias por simetria giradas (v12 real: 180 grados en Y). Se
+    # prueba cada colocacion candidata y solo vale la que cuadra los 20.
+    measured={}
+    for spec in specs:
+        record_=body_records.get(spec['pin_label'])
+        if not record_ or record_[1] is not occurrences[spec['parent']]:
+            return refuse('Falta el pasador '+spec['pin_label']+' en '+spec['parent'])
+        body,occurrence=record_
+        proxy=body.createForAssemblyContext(occurrence)
+        measured[spec['name']]=(proxy,_center_mm(proxy.boundingBox))
+    tried=[]
+    chosen=None
+    for name,placement in placements:
+        local=mirror.to_local_specs(specs,placement)
+        worst=max(math.dist(measured[s['name']][1],s['center_mm']) for s in local)
+        tried.append(dict(colocacion=name,peor_pasador_mm=round(worst,3)))
+        if worst<=1.5 and chosen is None:
+            chosen=(name,local,worst)
+    report['colocaciones_probadas']=tried
+    if chosen is None:
+        spec=specs[0]
+        report['pasadores'][spec['name']]=dict(
+            esperado_robot_mm=[round(v,3) for v in spec['center_mm']],
+            fusion_interno_mm=measured[spec['name']][1])
+        return refuse('Ninguna colocacion hace coincidir los 20 pasadores: '+', '.join(
+            '{} {:.1f} mm'.format(t['colocacion'],t['peor_pasador_mm']) for t in tried))
+    placement_name,specs,worst=chosen
+    for spec in specs:
+        proxy,got=measured[spec['name']]
+        report['pasadores'][spec['name']]=dict(
+            esperado_mm=[round(v,3) for v in spec['center_mm']],fusion_mm=got,
+            distancia_mm=round(math.dist(got,spec['center_mm']),3))
+        try:
+            pin_axis_edge(proxy,spec['axis'],hand.hinge_dimensions(spec)[2]*.1)
+        except RuntimeError as error:
+            return refuse(spec['name']+': '+str(error))
+    report.update(estado='comprobado',colocacion=placement_name,peor_pasador_mm=round(worst,3))
+    record()
+
+    # 4. Solo ahora se crea algo: 20 juntas y las 16 relaciones de 4 motores.
+    joints,flexion_signs=create_revolute_joints(
+        hand_component,occurrences,body_records,specs,
+        lambda spec:hand.hinge_dimensions(spec)[2])
+    plan=groups.motion_link_plan(specs)
+    travel_degrees={s['name']:s['travel_deg'] for s in specs}
+    links=create_digit_motion_links(hand_component,joints,flexion_signs,travel_degrees,plan)
+    report.update(estado='juntas_creadas',juntas=len(joints),relaciones=len(links),
+                  signos_eje={k:v for k,v in flexion_signs.items() if v<0})
+    record()
+    return report
+
+
 def run(context):
     app=adsk.core.Application.get()
     output=None
     try:
         design=adsk.fusion.Design.cast(app.activeProduct)
         if not design: raise RuntimeError('Abre el documento del robot')
-        if MODE not in ('ensayo', 'ver_pinza', 'ensayo_lateral', 'ver_brazo'):
+        if MODE not in ('ensayo', 'ver_pinza', 'ensayo_lateral', 'ver_brazo', 'juntas_espejo'):
             raise RuntimeError('Modo de ensayo desconocido: '+MODE)
+        if MODE=='juntas_espejo':
+            result=add_mirror_joints(design,ROOT/'juntas_espejo_v12.json')
+            if result['estado']=='juntas_creadas':
+                message=('Mano izquierda: {} juntas y {} relaciones creadas.\n'
+                         'Pasadores comprobados antes de crear nada: el peor a {} mm.\n\n'
+                         'Prueba: clic derecho en JUNTA_DEDO_1_1 de la mano izquierda > '
+                         'Animar relaciones de union. El indice debe cerrar hacia su palma.').format(
+                             result['juntas'],result['relaciones'],result['peor_pasador_mm'])
+            else:
+                message='NO se ha cambiado nada en el montaje.\n\n'+'\n'.join(result['errores'])
+            app.userInterface.messageBox(message+'\n\nDetalles: juntas_espejo_v12.json',
+                                         'Toreto '+SCRIPT_VERSION+' - juntas de la mano izquierda')
+            return
         root=design.rootComponent
         # Un diseno de PIEZA solo admite un componente; el script crea varios.
         intent=getattr(design,'designIntent',None)
