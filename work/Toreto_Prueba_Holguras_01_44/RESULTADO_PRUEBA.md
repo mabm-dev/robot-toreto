@@ -1,6 +1,83 @@
 # Prueba en Fusion — 2026-09-24
 
-## v9: vista de la pinza en 3D — 2026-09-26, preparada, SIN ejecutar en Fusion
+## v10b: RESULTADO en Fusion — 27-09-2026 — pinza lateral ACEPTADA
+
+`prueba_mano_4_motores_v10b.json`: estado `contacto_cara_no_deseada_o_indeterminada`
+porque el ensayo esperaba el costado PLANO del índice. Datos: primer contacto
+entre 77,9% y 78,1% del índice (pulgar 20,3%), sin choques antes; pulgar
+**palmar** (37-63% de la falange, alineación 0,97); índice en la **punta**
+(69-89% de su falange, zona redondeada, cerca de la esquina costado/palmar);
+intersección 0,163 mm3 frente a 2,955 mm3 de penetración por diferencia
+(confirmada la hipótesis: la diferencia es ruido en contactos rozantes; a
+83% coinciden, 89,9 mm3). La "estabilidad NO" no es informativa: las otras
+posturas comprobadas tenían 40 y 550 veces más solape (fallo de diseño del
+chequeo: debían ser posturas pegadas al contacto).
+
+Vista en Fusion (modo `ver_pinza` + juntas a mano: cardán -30, pulgar -8,125,
+índice 42,188): la cara plana del pulgar toca la esquina redondeada de la
+punta del índice y se abre una V de unos 20-30°. **El usuario la acepta tal
+cual** (`docs/DECISIONES.md`); yemas blandas y rugosas previstas.
+
+## v10b: cara del contacto, preparada el 27-09-2026
+
+**Resultado de la v10 en Fusion (27-09-2026): `cara_no_resuelta`**, con lo
+demás bien: 0 choques en las muestras 0-9 (2.743 pares, 34 cuerpos móviles)
+ni en el afinado; primer contacto SOLO entre `09_PULGAR_FALANGE_3` y
+`07_DEDO_1_FALANGE_4`, acotado entre el 77,9% y el 78,1% del índice
+(flexión del pulgar 20,3%, cardán 100%). Toques con contacto: 78,1%, 79,2%
+y 83,3%, coherentes. Falló la comprobación "volumen de intersección no
+coincide con la penetración", y el error no guardó los volúmenes. Hipótesis
+(sin confirmar): en un contacto rozante, la penetración por diferencia resta
+dos volúmenes de miles de mm3 y la imprecisión del cálculo de volumen la
+desbarata; la intersección directa es la fiable. Informe conservado:
+`prueba_mano_4_motores_v10.json`.
+
+Cambios de la v10b (misma geometría, mismo escenario, mismo afinado):
+- Manda la intersección directa; los dos volúmenes se guardan siempre y la
+  diferencia pasa a aviso (`warnings`). Intersección <= 0,01 mm3: contacto
+  no confirmado, nunca apoyo.
+- La cara se clasifica en hasta 3 posturas con contacto (la más temprana
+  decide; las otras dan `stability.consistent`). Apoyo palmar-lateral sin
+  estabilidad confirmada: `apoyo_palmar_lateral_sin_confirmar_estabilidad`.
+- Informe: `prueba_mano_4_motores_v10b.json`.
+- Simulador: 8 casos, incluidos volumen discrepante (lo de la v10) e
+  intersección vacía; con la comprobación estricta de la v10 falla.
+
+## v10: pinza lateral, preparada el 27-09-2026 — SIN ejecutar en Fusion
+
+`MODE='ensayo_lateral'`: cardán al 100% desde la muestra inicial; índice a
+`t` y flexión del pulgar a `0,26*t`, en 12 divisiones. Se conservan las
+relaciones, topes y geometría de la v8/v9. Solo se ejecuta este escenario;
+la mano abierta y los motores solos de la v8 no se repiten ni se atribuyen a
+la v10. Criterio: ningún choque ajeno antes del primer contacto de falanges
+pulgar-índice.
+
+En ese primer contacto muestreado, el ensayo intersecta los **sólidos
+temporales reales** y registra volumen y caja de la intersección; la sitúa en
+el marco de la falange final del pulgar y del índice. Distingue palmar,
+dorsal, lateral, punta y transiciones/esquinas indeterminadas. Si contacta
+otra falange o falla el booleano, no concede apoyo palmar. La caja localiza
+la zona, pero no mide área de apoyo ni sustituye la inspección visual.
+
+**Afinado del contacto (añadido el 27-09-2026, antes de ejecutar).** Con 12
+divisiones el índice avanza 8 puntos por muestra; en la v8 eso llevó de 15 a
+868 mm3 entre dos muestras, y un solape así invade esquinas y deja la cara
+indeterminada. Al aparecer el primer contacto, el ensayo biseca 5 veces entre
+la última muestra limpia y esa (paso final ~0,26% del índice) y clasifica la
+cara en la postura más temprana con choque. Si en ese tramo aparece antes un
+choque ajeno a la pinza, lo informa como previo. Las 13 muestras no cambian.
+JSON: `refinement`, `refined_bracket` y `first_contact.fraction` (afinada;
+`coarse_fraction` es la de la muestra).
+
+Validación previa: 33 pruebas unitarias; simulador sin Fusion con contacto
+palmar, contacto dorsal, choque previo, ausencia de contacto, error de
+intersección y choque entre muestras (solo visible con el afinado; el
+simulador falla si se desactiva), todos con informe JSON legible. Esos contactos son inventados;
+**no hay resultado geométrico de la v10 todavía**. Informe esperado al
+ejecutarla: `prueba_mano_4_motores_v10.json`. Si sale bien, la vista 3D con
+recálculo de pose queda para otra ejecución, no esta.
+
+## v9: vista de la pinza en 3D — 2026-09-26, ejecutada en Fusion
 
 No es un ensayo: publica la mano de la v8 en el documento vacio para
 mirarla (`MODE='ver_pinza'` en el script; `MODE='ensayo'` repite la v8).

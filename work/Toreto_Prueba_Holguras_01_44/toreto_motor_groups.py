@@ -62,6 +62,26 @@ def _pinch(t):
     return {'pulgar_rotacion': 1.0, 'indice': t, 'pulgar_flexion': t}
 
 
+# v10: ensayo independiente. Se conserva SCENARIOS intacto para que la v8
+# siga siendo reproducible; la flexion del pulgar usa sus relaciones actuales.
+LATERAL_FLEXION_RATIO = 0.26
+
+
+def lateral_pinch(t):
+    if not 0.0 <= t <= 1.0:
+        raise ValueError('La fraccion de pinza lateral debe estar entre 0 y 1')
+    return {'pulgar_rotacion': 1.0, 'indice': t,
+            'pulgar_flexion': LATERAL_FLEXION_RATIO * t}
+
+
+LATERAL_PINCH_SCENARIO = (
+    'pinza_lateral',
+    'Cardan completo; indice y flexion del pulgar cierran 1:0,26 con las '
+    'relaciones y topes existentes.',
+    lateral_pinch,
+)
+
+
 # (nombre, descripción, fracción de cada motor en función de t = 0..1).
 # Un motor ausente del diccionario está a 0: mano abierta en esa parte.
 SCENARIOS = (

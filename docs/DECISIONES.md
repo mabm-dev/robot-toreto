@@ -234,6 +234,16 @@ punta curva: la curva deja poca superficie y el boli gira o resbala. Hoy
 agarre serán **rugosas o con textura** para mejorar la sujeción. Cambiar la
 postura del pulgar exige un ensayo nuevo; no se ha tocado todavía.
 
+**Pinza del boli aceptada (27 sept 2026): pinza lateral.** Ensayo v10b con
+sólidos: cardán girado del todo, índice y flexión del pulgar cerrando 1:0,26,
+sin tocar geometría ni relaciones. Primer contacto con el índice al 78% y el
+pulgar al 20%, sin ningún choque antes. El pulgar apoya con su **cara plana
+palmar** (centro de la falange); el índice pone la **esquina redondeada de
+su punta** (costado/cara interior), y entre ambos queda una V de unos
+20-30°. Vista en 3D y aceptada por el usuario tal cual. Las yemas blandas y
+rugosas ayudarán a rellenar la V. Apoyo plano contra plano descartado por
+ahora: con los ejes actuales del pulgar siempre queda desalineación.
+
 ## Identidad visual: CAD 3D interactivo (23 ago 2026)
 
 Estándar de documentación técnica para todo el material visual del proyecto:

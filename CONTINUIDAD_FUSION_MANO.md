@@ -1,4 +1,4 @@
-# Continuidad del proyecto Toreto — 26 de septiembre de 2026
+# Continuidad del proyecto Toreto — 27 de septiembre de 2026
 
 > **Documento de relevo. Leerlo entero antes de tocar nada.**
 > Sustituye a la versión del 13 de septiembre, que mandaba trabajar sobre el
@@ -15,6 +15,13 @@
 - **Pinza vista en 3D (v9, 26 sept noche):** el pulgar toca de punta. El
   usuario decidió que el índice está bien y que el **pulgar debe apoyar con
   la cara plana de su última falange** (sección 5.1).
+- **Pinza del boli CERRADA (27 sept):** pinza lateral, ensayada con sólidos
+  (v10/v10b) y vista en 3D: cara plana del pulgar contra la esquina
+  redondeada de la punta del índice, V de 20-30°, sin choques antes del
+  contacto. El usuario la aceptó (`docs/DECISIONES.md`).
+- **Siguiente, propuesto y sin empezar:** probar el giro del brazo (codo y
+  muñeca) con el mismo método. Ojo: el brazo del documento de prueba es la
+  reconstrucción del script, no el del montaje `00_Toreto_Ensamblaje_95cm`.
 - La fase 2 (componentes) sigue casi toda abierta: sección 6.
 
 ## 2. Cómo trabajamos — el método que ha funcionado
@@ -95,11 +102,15 @@ Todo en `work/Toreto_Prueba_Holguras_01_44/` (versionada en git):
 - `toreto_hand.py` — generador de la mano. Límites: `MAIN_FLEXION_LIMITS_DEG`,
   `INDEX_FLEXION_LIMITS_DEG`, `THUMB_FLEXION_LIMITS_DEG`, `finger_flexion_limits()`.
 - `toreto_motor_groups.py` — reparto de motores y escenarios. Sin Fusion.
-- `toreto_motor_validation.py` — el ensayo.
-- `Toreto_Prueba_Holguras_01_44.py` — script de Fusion. Hoy escribe
-  `prueba_mano_4_motores_v8.json`: **cambiar a v9 en la próxima ejecución**.
-- `test_clearance.py`, `test_motor_groups.py` — 19 pruebas.
-- `simular_sin_fusion.py` — el ensayo con un Fusion falso.
+- `toreto_motor_validation.py` — ensayo histórico de la v8.
+- `toreto_lateral_validation.py`, `toreto_contact_faces.py` — ensayo aislado
+  y clasificación del primer contacto de la v10.
+- `Toreto_Prueba_Holguras_01_44.py` — script de Fusion. Modo activo:
+  `ensayo_lateral`; si se ejecuta escribe `prueba_mano_4_motores_v10.json`.
+- `test_clearance.py`, `test_motor_groups.py`, `test_lateral_pinch.py` —
+  33 pruebas.
+- `simular_lateral_sin_fusion.py` — v10 con Fusion falso; el simulador
+  inventa choques, no valida la geometría.
 - `RESULTADO_PRUEBA.md` — cronología de todos los ensayos, con rechazos.
 
 **Ejecutar en Fusion:** en un documento **vacío de diseño híbrido** (uno de
@@ -108,19 +119,16 @@ pieza falla: solo admite un componente), Utilidades > Complementos >
 apuntando a esa carpeta del repo: los cambios se ven sin copiar nada.
 
 **Pruebas:** desde esa carpeta, `python -m unittest discover -s . -p "test_*.py" -v`
-**Simulación:** `python simular_sin_fusion.py`
+**Simulación v10:** `python simular_lateral_sin_fusion.py`
 
 ## 5. Pendiente de la mano, en orden
 
-1. **Pulgar con apoyo plano (lo siguiente).** La v9 (`MODE='ver_pinza'`)
-   publicó la mano con los 4 motores y se vio la pinza: el pulgar toca con
-   el extremo curvo de su falange 3. Debe apoyar con la cara plana. Plan
-   propuesto, sin empezar: calcular fuera de Fusion, variando el reparto
-   de flexión del pulgar (hoy 40/35/20) y el giro del cardán, el ángulo
-   entre la cara plana del pulgar y la del índice; llevar al ensayo solo
-   las 2-3 mejores. Pendiente también en el script: forzar el recálculo
-   tras la pose (Fusion guarda los valores pero no mueve las piezas hasta
-   que se acciona una junta a mano). Detalle en `RESULTADO_PRUEBA.md`.
+1. **Pinza del boli: hecha y aceptada** (v10b; ver `RESULTADO_PRUEBA.md` y
+   `ESTUDIO_APOYO_PLANO.md`). Queda pendiente en el script forzar el
+   recálculo tras la pose: Fusion guarda los valores de las juntas pero no
+   mueve las piezas hasta que se acciona una junta a mano.
+   **Agarre de vaso** (propuesto, sin empezar): cilindro simulado de 60-80
+   mm, cada falange se detiene al tocarlo.
 2. **Prueba de la palma** (`06_PALMA_Y_CONECTOR`, hoy excluida). Primero
    medir, como diagnóstico, cuánto invade cada motor la palma; recortar solo
    después, y con los controles de siempre.

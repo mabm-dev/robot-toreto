@@ -1,0 +1,234 @@
+{
+  "version": "v10",
+  "status": "cara_no_resuelta",
+  "scenario": "pinza_lateral",
+  "description": "Cardan completo; indice y flexion del pulgar cierran 1:0,26 con las relaciones y topes existentes.",
+  "intervals": 12,
+  "tolerance_mm3": 0.01,
+  "flexion_ratio": 0.26,
+  "moving_bodies": 34,
+  "checked_pairs": 2743,
+  "reused_evidence": "Mano abierta y motores solos: v8, sin repetir.",
+  "excluded": "Palma principal y pares del mismo grupo rigido.",
+  "limitation": "Muestras discretas, palma excluida. La caja de la interseccion localiza el contacto pero no mide area de apoyo ni certifica holgura continua o resistencia.",
+  "samples": [
+    {
+      "sample": 0,
+      "fraction": 0.0,
+      "motors": {
+        "pulgar_rotacion": 1.0,
+        "indice": 0.0,
+        "pulgar_flexion": 0.0
+      },
+      "contact_pairs": 0,
+      "unintended_pairs": 0,
+      "errors": 0
+    },
+    {
+      "sample": 1,
+      "fraction": 0.0833,
+      "motors": {
+        "pulgar_rotacion": 1.0,
+        "indice": 0.08333333333333333,
+        "pulgar_flexion": 0.021666666666666667
+      },
+      "contact_pairs": 0,
+      "unintended_pairs": 0,
+      "errors": 0
+    },
+    {
+      "sample": 2,
+      "fraction": 0.1667,
+      "motors": {
+        "pulgar_rotacion": 1.0,
+        "indice": 0.16666666666666666,
+        "pulgar_flexion": 0.043333333333333335
+      },
+      "contact_pairs": 0,
+      "unintended_pairs": 0,
+      "errors": 0
+    },
+    {
+      "sample": 3,
+      "fraction": 0.25,
+      "motors": {
+        "pulgar_rotacion": 1.0,
+        "indice": 0.25,
+        "pulgar_flexion": 0.065
+      },
+      "contact_pairs": 0,
+      "unintended_pairs": 0,
+      "errors": 0
+    },
+    {
+      "sample": 4,
+      "fraction": 0.3333,
+      "motors": {
+        "pulgar_rotacion": 1.0,
+        "indice": 0.3333333333333333,
+        "pulgar_flexion": 0.08666666666666667
+      },
+      "contact_pairs": 0,
+      "unintended_pairs": 0,
+      "errors": 0
+    },
+    {
+      "sample": 5,
+      "fraction": 0.4167,
+      "motors": {
+        "pulgar_rotacion": 1.0,
+        "indice": 0.4166666666666667,
+        "pulgar_flexion": 0.10833333333333334
+      },
+      "contact_pairs": 0,
+      "unintended_pairs": 0,
+      "errors": 0
+    },
+    {
+      "sample": 6,
+      "fraction": 0.5,
+      "motors": {
+        "pulgar_rotacion": 1.0,
+        "indice": 0.5,
+        "pulgar_flexion": 0.13
+      },
+      "contact_pairs": 0,
+      "unintended_pairs": 0,
+      "errors": 0
+    },
+    {
+      "sample": 7,
+      "fraction": 0.5833,
+      "motors": {
+        "pulgar_rotacion": 1.0,
+        "indice": 0.5833333333333334,
+        "pulgar_flexion": 0.15166666666666667
+      },
+      "contact_pairs": 0,
+      "unintended_pairs": 0,
+      "errors": 0
+    },
+    {
+      "sample": 8,
+      "fraction": 0.6667,
+      "motors": {
+        "pulgar_rotacion": 1.0,
+        "indice": 0.6666666666666666,
+        "pulgar_flexion": 0.17333333333333334
+      },
+      "contact_pairs": 0,
+      "unintended_pairs": 0,
+      "errors": 0
+    },
+    {
+      "sample": 9,
+      "fraction": 0.75,
+      "motors": {
+        "pulgar_rotacion": 1.0,
+        "indice": 0.75,
+        "pulgar_flexion": 0.195
+      },
+      "contact_pairs": 0,
+      "unintended_pairs": 0,
+      "errors": 0
+    },
+    {
+      "sample": 10,
+      "fraction": 0.8333,
+      "motors": {
+        "pulgar_rotacion": 1.0,
+        "indice": 0.8333333333333334,
+        "pulgar_flexion": 0.21666666666666667
+      },
+      "contact_pairs": 1,
+      "unintended_pairs": 0,
+      "errors": 0
+    }
+  ],
+  "refinement": [
+    {
+      "step": 1,
+      "fraction": 0.79167,
+      "motors": {
+        "pulgar_rotacion": 1.0,
+        "indice": 0.7916666666666667,
+        "pulgar_flexion": 0.20583333333333337
+      },
+      "contact_pairs": 1,
+      "unintended_pairs": 0,
+      "errors": 0
+    },
+    {
+      "step": 2,
+      "fraction": 0.77083,
+      "motors": {
+        "pulgar_rotacion": 1.0,
+        "indice": 0.7708333333333334,
+        "pulgar_flexion": 0.2004166666666667
+      },
+      "contact_pairs": 0,
+      "unintended_pairs": 0,
+      "errors": 0
+    },
+    {
+      "step": 3,
+      "fraction": 0.78125,
+      "motors": {
+        "pulgar_rotacion": 1.0,
+        "indice": 0.78125,
+        "pulgar_flexion": 0.203125
+      },
+      "contact_pairs": 1,
+      "unintended_pairs": 0,
+      "errors": 0
+    },
+    {
+      "step": 4,
+      "fraction": 0.77604,
+      "motors": {
+        "pulgar_rotacion": 1.0,
+        "indice": 0.7760416666666667,
+        "pulgar_flexion": 0.20177083333333337
+      },
+      "contact_pairs": 0,
+      "unintended_pairs": 0,
+      "errors": 0
+    },
+    {
+      "step": 5,
+      "fraction": 0.77865,
+      "motors": {
+        "pulgar_rotacion": 1.0,
+        "indice": 0.7786458333333334,
+        "pulgar_flexion": 0.20244791666666667
+      },
+      "contact_pairs": 0,
+      "unintended_pairs": 0,
+      "errors": 0
+    }
+  ],
+  "first_contact": {
+    "sample": 10,
+    "fraction": 0.78125,
+    "coarse_fraction": 0.8333,
+    "motors": {
+      "pulgar_rotacion": 1.0,
+      "indice": 0.78125,
+      "pulgar_flexion": 0.203125
+    },
+    "pairs": []
+  },
+  "prior_collisions": [],
+  "errors": [
+    {
+      "sample": 10,
+      "a": "09_PULGAR_FALANGE_3",
+      "b": "07_DEDO_1_FALANGE_4",
+      "error": "Volumen de interseccion no coincide con la penetracion"
+    }
+  ],
+  "refined_bracket": {
+    "last_clean_fraction": 0.77865,
+    "first_collision_fraction": 0.78125
+  }
+}

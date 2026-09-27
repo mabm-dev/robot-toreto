@@ -5,17 +5,49 @@ Estado: **trabajo en curso, no funcional ni listo para fabricar**.
 Esta carpeta contiene el generador aislado y los diagnosticos reproducibles.
 No sustituye al generador principal ni modifica el robot original.
 Ejecutar solamente desde Fusion en un documento de prueba vacio. El script
-rechaza documentos con cuerpos u ocurrencias y retorna antes de publicar
-un ensamblaje. No guarda documentos de Fusion.
+rechaza documentos con cuerpos u ocurrencias. El modo activo v10 retorna
+sin publicar un ensamblaje ni guardar documentos de Fusion.
 
-## v9 (26-09-2026) — vista de la pinza, SIN ejecutar en Fusion
+## v10b (27-09-2026) — ejecutada: pinza lateral aceptada
 
-Excepcion deliberada a "no publica": con `MODE='ver_pinza'` (valor actual)
+La v10 abortó al clasificar la cara (volúmenes de penetración e intersección
+distintos en un contacto rozante). La v10b añade el afinado del contacto,
+manda la intersección directa y guarda ambos volúmenes. Resultado: sin
+choques antes del contacto; cara plana del pulgar contra la esquina de la
+punta del índice. Aceptada por el usuario. Informes:
+`prueba_mano_4_motores_v10.json` y `..._v10b.json`. Simulador:
+`python simular_lateral_sin_fusion.py` (8 casos).
+
+## v10 (27-09-2026) — descripción original del ensayo
+
+`MODE='ensayo_lateral'` (valor actual). Un único escenario nuevo: cardán al
+100% desde el principio; índice a `t` y flexión del pulgar a `0,26*t`, con
+12 divisiones. No altera `toreto_hand.py`, topes, relaciones de movimiento ni
+los cinco escenarios de la v8. Ensaya todos los pares móviles salvo la palma
+principal y se detiene al primer contacto pulgar-índice o al primer choque
+ajeno. En el primer contacto medido toma la intersección BRep real y sitúa su
+caja respecto a la última falange del pulgar y del índice; clasifica palmar,
+dorsal, lateral, punta o ambiguo. Si toca otra falange, lo informa; un fallo
+del núcleo no cuenta como ausencia de choque. Informe previsto:
+`prueba_mano_4_motores_v10.json`. Aún no existe resultado de Fusion.
+
+Antes de pedir esa ejecución: 33 pruebas unitarias y
+`simular_lateral_sin_fusion.py` pasan. El simulador inventa contactos y
+choques para recorrer las ramas; **no valida geometría**. La v10 tampoco
+demostrará holgura continua, palma, área de contacto, resistencia ni agarre
+de objetos. No publica una vista 3D: eso sería otra ejecución, solo si el
+ensayo sale bien.
+
+## v9 (26-09-2026) — vista de la pinza, ejecutada en Fusion
+
+Excepcion deliberada a "no publica": con `MODE='ver_pinza'` (modo histórico)
 el script crea la mano con 20 juntas y los 4 motores como relaciones de
 movimiento, y la deja en la pinza al 75%. Solo en documento vacio; palma sin
 recorte y NO validada. Informe: `vista_pinza_v9.json`. Con
 `MODE='ensayo'` repite el ensayo de la v8 sin crear piezas.
-Simulacion previa: `python simular_publicacion_sin_fusion.py`.
+Simulacion previa: `python simular_publicacion_sin_fusion.py`. Fusion guardó
+los ángulos pero no propagó los cuerpos hasta que el usuario accionó una
+junta; la pose visual se comprobó a mano. Véase `RESULTADO_PRUEBA.md`.
 
 ## v8 (26-09-2026) — ejecutada: todo limpio y pinza lograda
 
@@ -74,9 +106,9 @@ de resistencia. Los resultados anteriores de palma no certifican esta version.
 
 `python -m unittest discover -s work/Toreto_Prueba_Holguras_01_44 -p "test_*.py" -v`
 
-Veinticinco pruebas: cinco de parametros (`test_clearance.py`) y veinte del
-reparto de motores, los limites del indice y la vista de la pinza
-(`test_motor_groups.py`). Una de estas ultimas garantiza
+Treinta y tres pruebas: las veinticinco previas más ocho del escenario y de
+la clasificación de caras de la v10 (`test_lateral_pinch.py`). Una de las
+pruebas anteriores garantiza
 que, con todos los motores a la misma fraccion, la postura es identica a la
 del ensayo sincronizado anterior: la v7 no cambia la cinematica. No
 reemplazan los ensayos BRep en Fusion.

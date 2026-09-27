@@ -9,10 +9,11 @@ import adsk.fusion
 
 ROOT=Path(__file__).resolve().parent
 NAME='94_BRAZO_HOLGURAS_PRUEBA_01_44'
-SCRIPT_VERSION='v9'
+SCRIPT_VERSION='v10b'
 # 'ensayo'    -> ensayo de colisiones de la v8, sin crear piezas.
 # 'ver_pinza' -> publica la mano (4 motores) en la pinza al 75%, para mirarla.
-MODE='ver_pinza'
+# 'ensayo_lateral' -> SOLO pinza lateral (v10b); no publica ni mueve componentes.
+MODE='ensayo_lateral'
 
 
 def placement(axis,y_mm):
@@ -329,6 +330,8 @@ def run(context):
     try:
         design=adsk.fusion.Design.cast(app.activeProduct)
         if not design: raise RuntimeError('Abre el documento del robot')
+        if MODE not in ('ensayo', 'ver_pinza', 'ensayo_lateral'):
+            raise RuntimeError('Modo de ensayo desconocido: '+MODE)
         root=design.rootComponent
         # Un diseno de PIEZA solo admite un componente; el script crea varios.
         intent=getattr(design,'designIntent',None)
@@ -406,6 +409,54 @@ def run(context):
         slots_spec=importlib.util.spec_from_file_location('toreto_finger_slots',ROOT/'toreto_finger_slots.py')
         slots=importlib.util.module_from_spec(slots_spec)
         slots_spec.loader.exec_module(slots)
+        if MODE=='ensayo_lateral':
+            face_spec=importlib.util.spec_from_file_location(
+                'toreto_contact_faces_v10',ROOT/'toreto_contact_faces.py')
+            faces=importlib.util.module_from_spec(face_spec)
+            face_spec.loader.exec_module(faces)
+            lateral_spec=importlib.util.spec_from_file_location(
+                'toreto_lateral_validation',ROOT/'toreto_lateral_validation.py')
+            lateral=importlib.util.module_from_spec(lateral_spec)
+            lateral_spec.loader.exec_module(lateral)
+            diagnostic_path=ROOT/'prueba_mano_4_motores_v10b.json'
+            try:
+                hand_bodies,_=slots.repair(manager,hand,hand_bodies,hand_data)
+                diagnostic=lateral.run(manager,hand,clearance,motor_groups,
+                    motor_validation,faces,hand_bodies,hand_data,diagnostic_path,
+                    intervals=12)
+            except Exception as error:
+                try:
+                    diagnostic=json.loads(diagnostic_path.read_text(encoding='utf-8'))
+                except Exception:
+                    diagnostic={'version':'v10b','scenario':'pinza_lateral'}
+                diagnostic.update(status='error_no_resuelto',error=str(error),
+                                  traceback=traceback.format_exc())
+                diagnostic_path.write_text(json.dumps(
+                    diagnostic,indent=2,ensure_ascii=False),encoding='utf-8')
+            contact=diagnostic.get('first_contact')
+            lines=['v10b: solo pinza lateral, sin publicar ni guardar Fusion.',
+                   'Estado: '+diagnostic['status'],
+                   'Primer contacto: muestra {} (afinado: indice al {:.1f}%)'.format(
+                       contact['sample'],contact['fraction']*100)
+                   if contact else 'Primer contacto: ninguno']
+            if contact:
+                for pair in contact.get('pairs',[]):
+                    lines.append('Cara del pulgar: {}; cara del indice: {} ({} mm3)'.format(
+                        pair['pulgar']['region'],pair['indice']['region'],
+                        pair['intersection_mm3']))
+                stability=contact.get('stability')
+                if stability:
+                    lines.append('Misma cara en {} posturas con contacto: {}'.format(
+                        len(stability['postures']),
+                        'SI' if stability['consistent'] else 'NO'))
+            if diagnostic.get('warnings'):
+                lines.append('Avisos de volumen: {} (ver JSON)'.format(
+                    len(diagnostic['warnings'])))
+            if diagnostic.get('error'):
+                lines.append(diagnostic['error'])
+            lines.append('Detalles: prueba_mano_4_motores_v10b.json')
+            app.userInterface.messageBox('\n'.join(lines),'Toreto v10b - pinza lateral')
+            return
         if MODE=='ver_pinza':
             # Misma geometria que midio la v8: slots.repair() si, clearance.repair() NO.
             hand_bodies,_=slots.repair(manager,hand,hand_bodies,hand_data)

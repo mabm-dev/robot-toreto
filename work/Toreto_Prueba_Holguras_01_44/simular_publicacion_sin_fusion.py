@@ -1,4 +1,4 @@
-"""Recorre SIN Fusion el tramo de publicación de la v9 (`MODE='ver_pinza'`).
+"""Recorre SIN Fusion la publicación histórica de la v9, aunque v10 sea el modo activo.
 
 Complementa a `simular_sin_fusion.py`, que recorre el ensayo. Este recorre
 `publish_pinch_view()`: componentes, 20 juntas, 16 relaciones de los 4
@@ -221,7 +221,7 @@ def main():
     import toreto_motor_groups as groups
     import toreto_motor_validation as validation
     script = _load_script()
-    assert script.MODE == 'ver_pinza', 'El script no esta en modo ver_pinza'
+    assert callable(script.publish_pinch_view)
 
     data = json.loads((SRC / 'hand_local_sections.json').read_text())
     specs = hand.joint_specs(data)
