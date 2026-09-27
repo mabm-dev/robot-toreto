@@ -23,30 +23,33 @@ HERE = Path(__file__).parent
 ARM = json.loads((HERE / 'link_local_sections.json').read_text(encoding='utf-8'))
 HAND = json.loads((HERE / 'hand_local_sections.json').read_text(encoding='utf-8'))
 RESULT = pose.solve(ARM['parts'], ARM['master_plane_y_mm'], terminals, outer_joints)
+# v11: la misma postura sin encajar en el pecho (hombro en el punto de la lámina).
+V11 = pose.solve(ARM['parts'], ARM['master_plane_y_mm'], terminals, outer_joints, chest=None)
 
 
 class LaminaFitTests(unittest.TestCase):
     def test_joints_land_on_the_lamina(self):
-        residuals = RESULT['residuals_mm']
+        residuals = V11['residuals_mm']
         self.assertLess(residuals['hombro'], 1.0)
         self.assertLess(residuals['codo'], 5.0)
         self.assertLess(residuals['fin_antebrazo'], pose.TOLERANCE_MM)
 
     def test_segment_lengths_are_the_lamina_ones(self):
         lamina = pose.LAMINA_MM
-        self.assertAlmostEqual(RESULT['lengths_mm']['hombro_codo'],
+        self.assertAlmostEqual(V11['lengths_mm']['hombro_codo'],
                                math.dist(lamina['hombro'], lamina['codo']), places=1)
-        self.assertAlmostEqual(RESULT['lengths_mm']['codo_rotula'],
+        self.assertAlmostEqual(V11['lengths_mm']['codo_rotula'],
                                math.dist(lamina['codo'], lamina['fin_antebrazo']), places=1)
 
     def test_pose_angles_are_the_drawn_ones(self):
         # Brazo superior algo hacia atrás y codo doblado hacia delante; los
         # signos dependen del sentido de los ejes, las magnitudes no.
-        self.assertTrue(8 <= abs(RESULT['theta_shoulder_deg']) <= 20, RESULT['theta_shoulder_deg'])
-        self.assertTrue(35 <= abs(RESULT['theta_elbow_deg']) <= 60, RESULT['theta_elbow_deg'])
+        for result in (V11, RESULT):
+            self.assertTrue(8 <= abs(result['theta_shoulder_deg']) <= 25, result['theta_shoulder_deg'])
+            self.assertTrue(35 <= abs(result['theta_elbow_deg']) <= 60, result['theta_elbow_deg'])
 
     def test_shoulder_and_elbow_axes_are_side_to_side(self):
-        for axis in (RESULT['shoulder_axis'], RESULT['elbow_axis']):
+        for axis in (V11['shoulder_axis'], RESULT['shoulder_axis'], RESULT['elbow_axis']):
             self.assertGreater(abs(axis[0]), .9)
             self.assertEqual(axis[1], 0.0)
 
@@ -84,14 +87,17 @@ class GeometryTests(unittest.TestCase):
         # taladro no saldría por los costados y el disco sobresaldría.
         width, depth = RESULT['shoulder_section_mm']
         length, radius = RESULT['shoulder_size_mm']
-        self.assertAlmostEqual(length, width)
+        # v13: el eje va en X y cruza la carcasa en diagonal: algo más largo.
+        self.assertGreaterEqual(length, width)
+        self.assertAlmostEqual(V11['shoulder_size_mm'][0], V11['shoulder_section_mm'][0])
         self.assertLessEqual(radius, depth / 2 - pose.SHOULDER_WALL_MM)
         self.assertEqual(radius, pose.SHOULDER_DISC_RADIUS_MM)
         spec = outer_joints.parameters(
             RESULT['parts'], ARM['master_plane_y_mm'],
             shoulder_center=RESULT['shoulder_center_flat'],
-            shoulder_size=RESULT['shoulder_size_mm'])['shoulder']
-        self.assertGreater(spec['axle_length'], width)   # el eje atraviesa la carcasa
+            shoulder_size=RESULT['shoulder_size_mm'],
+            **RESULT['shoulder_overrides'])['shoulder']
+        self.assertGreater(spec['outer_length'] + 4, width)   # el taladro sale por los dos lados
 
     def test_default_shoulder_is_unchanged(self):
         default = outer_joints.parameters(ARM['parts'], ARM['master_plane_y_mm'])
@@ -102,6 +108,49 @@ class GeometryTests(unittest.TestCase):
         # su muñeca coincide con la rótula del antebrazo colocado.
         wrist = RESULT['hand'].point(HAND['wrist_center_mm'])
         self.assertLess(math.dist(wrist, RESULT['placed_mm']['muneca_rotula']), 1e-6)
+
+
+class ChestFitTests(unittest.TestCase):
+    """v13: el hombro encaja en el conector del pecho."""
+
+    def setUp(self):
+        self.fit = RESULT['chest_fit']
+        self.chest = pose.CHEST_CONNECTOR
+
+    def test_connector_matches_the_chest_generator(self):
+        # Toreto_Pecho_Hombros_95cm 2.5.0 con sus parámetros por defecto.
+        self.assertAlmostEqual(self.chest['x_inner'], 166.0)
+        self.assertAlmostEqual(self.chest['x_outer'], 196.5)
+        self.assertAlmostEqual(self.chest['z'], 690.833, places=2)
+        self.assertAlmostEqual(self.chest['radius'], 36.5)
+
+    def test_shoulder_pivot_and_axis_are_the_connector_ones(self):
+        self.assertLess(self.fit['pivote_a_eje_conector_mm'], 1e-6)
+        self.assertEqual(self.fit['eje_hombro'], [1.0, 0.0, 0.0])
+        shoulder = RESULT['placed_mm']['hombro']
+        self.assertAlmostEqual(shoulder[1], self.chest['y'], places=6)
+        self.assertAlmostEqual(shoulder[2], self.chest['z'], places=6)
+
+    def test_bore_receives_the_connector_with_a_wall(self):
+        self.assertGreaterEqual(self.fit['taladro_radio_mm'], self.chest['radius'] + .5)
+        self.assertGreaterEqual(self.fit['pared_alojamiento_mm'], 5.0)
+        low, high = self.fit['alojamiento_x_mm']
+        self.assertLess(low, self.chest['x_outer'])     # el conector entra en el brazo
+        self.assertGreater(high, self.chest['x_outer'])
+
+    def test_cap_starts_after_the_connector_end(self):
+        spec = outer_joints.parameters(
+            RESULT['parts'], ARM['master_plane_y_mm'],
+            shoulder_center=RESULT['shoulder_center_flat'],
+            shoulder_size=RESULT['shoulder_size_mm'],
+            **RESULT['shoulder_overrides'])['shoulder']
+        cap_x = sorted(RESULT['upper'].point(p)[0] for p in (spec['axle_p1'], spec['axle_p2']))
+        self.assertGreater(cap_x[0], self.chest['x_outer'])
+        self.assertAlmostEqual(cap_x[0], self.chest['x_outer'] + pose.CAP_GAP_MM, places=6)
+
+    def test_elbow_and_forearm_stay_close_to_the_lamina(self):
+        self.assertLess(RESULT['residuals_mm']['codo'], 10.0)
+        self.assertLess(RESULT['residuals_mm']['fin_antebrazo'], pose.TOLERANCE_MM)
 
 
 class RigidTests(unittest.TestCase):

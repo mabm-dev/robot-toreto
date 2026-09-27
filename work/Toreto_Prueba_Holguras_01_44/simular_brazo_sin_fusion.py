@@ -141,7 +141,7 @@ def run(script=None, pose_hook=None):
     sp.RADII_CM.update({s['pin_label']: hand.hinge_dimensions(s)[2] * .1 for s in specs})
 
     # Piezas del brazo: el eje del hombro y la rótula en sus centros reales.
-    centers = {'04_EJE_HOMBRO': pose['shoulder_center_flat'],
+    centers = {'04_EJE_HOMBRO': pose['shoulder_cap_center_flat'],
                '05_EJE_MUNECA': pose['wrist_center_flat'],
                '03_EJE_Y_ENLACE_CODO': pose['elbow_center_flat'],
                '01_BRAZO_LOCAL_SIN_REBAJES': pose['elbow_center_flat'],
@@ -172,16 +172,16 @@ def main():
     check = arm['comprobacion_fusion']
     assert report['estado'] == 'publicado', report['estado']
     assert report['juntas'] == 20 and report['relaciones'] == 16, report
-    assert check['hombro']['distancia_mm'] < .01, check
+    assert check['tapa_hombro']['distancia_mm'] < .01, check
     assert check['muneca_rotula']['distancia_mm'] < .01, check
-    assert math.dist(check['hombro']['fusion_mm'], pose['placed_mm']['hombro']) < 1e-3
+    assert math.dist(check['tapa_hombro']['fusion_mm'], pose['placed_mm']['tapa_hombro']) < 1e-3
     assert report['resumen']['pose_igual_al_ensayo'], report['resumen']
     assert report['resumen']['peor_distancia_falange_mm'] < .01, report['resumen']
     print('Brazo simulado: OK')
     print('  giros hombro/codo:', arm['giro_hombro_deg'], arm['giro_codo_deg'],
           '| factor antebrazo', arm['factor_antebrazo'])
     print('  frente a la lamina (mm):', arm['residuos_frente_a_lamina_mm'])
-    print('  en el Fusion falso: hombro', check['hombro']['fusion_mm'],
+    print('  en el Fusion falso: tapa del hombro', check['tapa_hombro']['fusion_mm'],
           ' rotula', check['muneca_rotula']['fusion_mm'])
     print('  juntas de la mano con ejes girados:', report['juntas'],
           '| relaciones', report['relaciones'])

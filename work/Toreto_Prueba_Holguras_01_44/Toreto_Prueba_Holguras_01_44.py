@@ -9,12 +9,13 @@ import adsk.fusion
 
 ROOT=Path(__file__).resolve().parent
 NAME='94_BRAZO_HOLGURAS_PRUEBA_01_44'
-SCRIPT_VERSION='v12'
+SCRIPT_VERSION='v13'
 # 'ensayo'    -> ensayo de colisiones de la v8, sin crear piezas.
 # 'ver_pinza' -> publica la mano (4 motores) en la pinza al 75%, para mirarla.
 # 'ensayo_lateral' -> SOLO pinza lateral (v10b); no publica ni mueve componentes.
 # 'ver_brazo' -> v11: brazo con las medidas y la postura de la lamina y la
 #                mano abierta (toreto_arm_pose.py); publica para mirarlo.
+#                v13: con el hombro encajado en el conector del pecho.
 # 'juntas_espejo' -> v12: en el MONTAJE, anade juntas y relaciones a la mano
 #                izquierda copiada por simetria. No crea ni mueve geometria.
 MODE='juntas_espejo'
@@ -279,7 +280,7 @@ def arm_check(arm_bodies,arm_pose):
     """Donde quedaron de verdad, en Fusion, el eje del hombro y la rotula de
     la muneca (piezas simetricas: el centro de su caja es su centro)."""
     result={}
-    for label,key in (('04_EJE_HOMBRO','hombro'),('05_EJE_MUNECA','muneca_rotula')):
+    for label,key in (('04_EJE_HOMBRO','tapa_hombro'),('05_EJE_MUNECA','muneca_rotula')):
         got=_center_mm(arm_bodies[label].boundingBox)
         expected=[round(v,3) for v in arm_pose['placed_mm'][key]]
         result[key]=dict(esperado_mm=expected,fusion_mm=got,
@@ -316,7 +317,8 @@ def publish_pinch_view(design,root,pending,hand_bodies,hand,clearance,groups,
             factor_antebrazo=round(arm_pose['forearm_factor'],4),
             largos_mm=arm_pose['lengths_mm'],
             residuos_frente_a_lamina_mm=arm_pose['residuals_mm'],
-            rotula_frente_a_muneca_dibujada_mm=arm_pose['wrist_vs_lamina_mm'])
+            rotula_frente_a_muneca_dibujada_mm=arm_pose['wrist_vs_lamina_mm'],
+            encaje_pecho=arm_pose['chest_fit'])
 
     def record():
         report_path.write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf-8')
@@ -643,7 +645,8 @@ def run(context):
         shoulder,wrist,outer_reports=outer_joints.build(
             manager,pending[0][0],pending[1][0],parts,data['master_plane_y_mm'],
             shoulder_center=arm_pose['shoulder_center_flat'] if arm_pose else None,
-            shoulder_size=arm_pose['shoulder_size_mm'] if arm_pose else None)
+            shoulder_size=arm_pose['shoulder_size_mm'] if arm_pose else None,
+            **(arm_pose['shoulder_overrides'] if arm_pose else {}))
         pending.append((shoulder,'04_EJE_HOMBRO','TORETO Negro profundo'))
         pending.append((wrist,'05_EJE_MUNECA','TORETO Negro profundo'))
         reports.extend(outer_reports)
@@ -730,22 +733,28 @@ def run(context):
                 raise
             arm=view['brazo_lamina']
             fusion=arm['comprobacion_fusion']
+            fit=arm_pose['chest_fit'] or {}
             app.userInterface.messageBox(
-                'Brazo con las medidas y la postura de la lamina (v11), mano abierta.\n\n'
+                'Brazo con las medidas de la lamina ENCAJADO en el conector del pecho '
+                '(v13), mano abierta.\n\n'
+                'Hombro: eje en X sobre el eje del conector ({} mm); taladro R{} mm para '
+                'el conector R36,5; pared {} mm. Queda {} mm del punto de la lamina.\n'
                 'Giros de la postura: hombro {} grados, codo {} grados.\n'
                 'Largos: hombro-codo {} mm, codo-final del antebrazo {} mm.\n'
-                'Frente a la lamina: hombro {} mm, codo {} mm, final del antebrazo {} mm.\n\n'
-                'Comprobado en Fusion: eje del hombro a {} mm y rotula a {} mm de donde '
+                'Frente a la lamina: codo {} mm, final del antebrazo {} mm.\n\n'
+                'Comprobado en Fusion: tapa del hombro a {} mm y rotula a {} mm de donde '
                 'deben estar.\n'
                 'Mano en su sitio respecto al ensayo: {} (peor falange {} mm).\n\n'
-                'El brazo AUN NO tiene juntas: es el siguiente paso.\n'
+                'Guardalo como Toreto_Brazo_Mano_v13 y en el montaje usa Reemplazar componente.\n'
                 'Detalles: vista_brazo_v11.json'.format(
+                    fit.get('pivote_a_eje_conector_mm'),fit.get('taladro_radio_mm'),
+                    fit.get('pared_alojamiento_mm'),
+                    fit.get('desplazamiento_hombro_frente_a_lamina_mm'),
                     arm['giro_hombro_deg'],arm['giro_codo_deg'],
                     arm['largos_mm']['hombro_codo'],arm['largos_mm']['codo_fin_antebrazo'],
-                    arm['residuos_frente_a_lamina_mm']['hombro'],
                     arm['residuos_frente_a_lamina_mm']['codo'],
                     arm['residuos_frente_a_lamina_mm']['fin_antebrazo'],
-                    fusion['hombro']['distancia_mm'],fusion['muneca_rotula']['distancia_mm'],
+                    fusion['tapa_hombro']['distancia_mm'],fusion['muneca_rotula']['distancia_mm'],
                     'SI' if view['resumen']['pose_igual_al_ensayo'] else 'NO - revisar',
                     view['resumen']['peor_distancia_falange_mm']),
                 'Toreto '+SCRIPT_VERSION+' - brazo como la lamina')

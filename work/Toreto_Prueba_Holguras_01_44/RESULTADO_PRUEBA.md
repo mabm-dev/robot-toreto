@@ -1,5 +1,41 @@
 # Prueba en Fusion — 2026-09-24
 
+## v13: RESULTADO en Fusion — 27-09-2026 — hombro encajado, dos brazos articulados
+
+`vista_brazo_v11.json` (modo ver_brazo, v13): pivote del hombro en el eje del
+conector (0,0 mm), tapa del hombro y rótula a 0,0 mm dentro de Fusion, mano
+en su sitio (0,0 mm, con la comprobación corregida). El usuario lo guardó
+como `Toreto_Brazo_Mano_v13` y lo reemplazó en el montaje; la simetría del
+brazo izquierdo se recalculó sola y sus juntas antiguas quedaron con errores
+de referencia (geometría en caché). Se borraron y `juntas_espejo` las creó de
+nuevo: 20 juntas y 16 relaciones, pasadores a 0,001 mm (`juntas_espejo_v12.json`).
+Lección: al cambiar el brazo derecho, borrar las juntas de la mano izquierda
+y volver a ejecutar `juntas_espejo`. Pendiente: Inspeccionar > Interferencia
+entre brazo y pecho.
+
+## v13: hombro encajado en el pecho, preparada el 27-09-2026 — SIN ejecutar
+
+Pedido por el usuario tras confirmar que la mano izquierda cierra hacia su
+palma. Conector del hombro derecho del pecho (`Toreto_Pecho_Hombros_95cm`
+2.5.0 con parámetros por defecto: ancho 340, alto 190, base+tronco+cintura
+540 mm): cilindro en X de 166 a 196,5 mm, Y 0, Z 690,83, radio 36,5 mm.
+
+- El eje del hombro del brazo pasa a ser **coaxial con el conector**: X
+  exacta (antes inclinado 15° con la carcasa) y pivote en Y 0, Z 690,83
+  (16 mm del punto de la lámina: manda el pecho).
+- Taladro del alojamiento R37,3 (conector + 0,8 mm), pared 7,7 mm; el
+  alojamiento va de X 169,4 a 222,6, así que el conector entra en el brazo,
+  como dibuja la lámina. El eje negro propio del brazo queda como tapa
+  exterior desde X 197,3 (0,8 mm tras el extremo del conector).
+- Postura reajustada alrededor del conector: hombro +19,6°, codo -48,0°;
+  codo a 7,3 mm y final del antebrazo a 3,6 mm de la lámina.
+- `chest=None` reproduce la v11 exacta (probado). 57 pruebas; simuladores OK.
+- Sin comprobar: que los parámetros del pecho del montaje sean los de por
+  defecto, y si la carcasa del brazo toca el pecho (Inspeccionar >
+  Interferencia en el montaje).
+- La v12 (juntas de la mano izquierda) calcula con esta postura: al cambiar
+  el brazo derecho hay que rehacer la simetría y volver a ejecutarla.
+
 ## v12: RESULTADO en el montaje — 27-09-2026 — mano izquierda articulada
 
 `juntas_espejo_v12.json`: 20 juntas y 16 relaciones creadas en la mano copiada

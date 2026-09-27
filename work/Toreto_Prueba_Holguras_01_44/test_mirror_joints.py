@@ -22,6 +22,9 @@ HERE = Path(__file__).parent
 ARM = json.loads((HERE / 'link_local_sections.json').read_text(encoding='utf-8'))
 HAND = json.loads((HERE / 'hand_local_sections.json').read_text(encoding='utf-8'))
 POSE = pose.solve(ARM['parts'], ARM['master_plane_y_mm'], terminals, outer_joints)
+# La v12 se midió en Fusion con el brazo v11 montado (sin encaje en el pecho).
+POSE_V11 = pose.solve(ARM['parts'], ARM['master_plane_y_mm'], terminals, outer_joints,
+                      chest=None)
 SPECS = hand.joint_specs(HAND)
 
 
@@ -70,7 +73,7 @@ class MirrorTests(unittest.TestCase):
         # v12 en Fusion (27-09-2026): esperado en coordenadas del robot
         # (-272.578, -79.936, 313.928), medido dentro del componente
         # (272.578, -79.936, -313.928): el componente está girado 180° en Y.
-        left = mirror.mirrored_specs(SPECS, POSE['hand'])
+        left = mirror.mirrored_specs(SPECS, POSE_V11['hand'])
         turn_y = ((-1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, -1.0))
         local = mirror.to_local_specs(left, (turn_y, (0.0, 0.0, 0.0)))
         for got, expected in zip(local[0]['center_mm'], (272.578, -79.936, -313.928)):

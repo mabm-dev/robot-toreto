@@ -35,13 +35,19 @@ def _axis_points(center,axis,length_mm):
     )
 
 
-def parameters(parts,master_y_mm,shoulder_center=None,shoulder_size=None):
+def parameters(parts,master_y_mm,shoulder_center=None,shoulder_size=None,
+               shoulder_axis=None,shoulder_axle_radius=None,shoulder_axle_span=None):
     """shoulder_center (mm, marco plano): v11 coloca el eje del hombro en el
     pivote de la lamina, dentro de la cabeza de la carcasa. Sin el, se usa el
     perfil superior como antes.
     shoulder_size=(largo_mm, radio_mm): en el pivote el perfil superior ya no
     sirve para dimensionar (es la punta, 18 mm de ancho); v11 da el ancho de
-    la carcasa a esa altura y el radio del disco dibujado en la lamina."""
+    la carcasa a esa altura y el radio del disco dibujado en la lamina.
+    v13, encaje en el pecho: shoulder_axis (X exacta, coaxial con el conector
+    del pecho), shoulder_axle_radius (radio del conector: el taladro queda a su
+    medida mas la holgura) y shoulder_axle_span=(desde_mm, hasta_mm) a lo largo
+    del eje desde el centro: el eje propio del brazo se reduce a una tapa en la
+    cara exterior, porque el conector del pecho ocupa el resto."""
     upper=parts['upper']
     forearm=parts['forearm']
     shoulder_section=upper['sections'][-1]
@@ -60,7 +66,7 @@ def parameters(parts,master_y_mm,shoulder_center=None,shoulder_size=None):
     wrist_center=_world_center(forearm,wrist_section,master_y_mm)
     _,_,upper_normal=_frame(upper)
     _,forearm_direction,_=_frame(forearm)
-    shoulder_axis=(upper_normal[0],0,upper_normal[1])
+    default_shoulder_axis=(upper_normal[0],0,upper_normal[1])
     wrist_axis=(0,1,0)
     shoulder_outer_length=shoulder_section[3]*20
     shoulder_outer_radius=shoulder_section[4]*10
@@ -70,7 +76,8 @@ def parameters(parts,master_y_mm,shoulder_center=None,shoulder_size=None):
     wrist_outer_radius=wrist_section[3]*10
     result={
         'shoulder':{
-            'center':shoulder_center,'axis':shoulder_axis,
+            'center':shoulder_center,
+            'axis':default_shoulder_axis if shoulder_axis is None else tuple(shoulder_axis),
             'outer_length':shoulder_outer_length,'outer_radius':shoulder_outer_radius,
             'axle_radius':shoulder_outer_radius*.56,
         },
@@ -83,10 +90,18 @@ def parameters(parts,master_y_mm,shoulder_center=None,shoulder_size=None):
             'center_reference':'primer perfil estable del nucleo del antebrazo',
         },
     }
+    if shoulder_axle_radius is not None:
+        result['shoulder']['axle_radius']=shoulder_axle_radius
     for item in result.values():
         item['outer_p1'],item['outer_p2']=_axis_points(item['center'],item['axis'],item['outer_length'])
         item['axle_length']=item['outer_length']+4.0
         item['axle_p1'],item['axle_p2']=_axis_points(item['center'],item['axis'],item['axle_length'])
+    if shoulder_axle_span is not None:
+        item=result['shoulder']
+        start,end=shoulder_axle_span
+        item['axle_p1']=tuple(item['center'][i]+item['axis'][i]*start for i in range(3))
+        item['axle_p2']=tuple(item['center'][i]+item['axis'][i]*end for i in range(3))
+        item['axle_length']=end-start
     return result
 
 
@@ -155,9 +170,9 @@ def _integrate_closed_wrist(manager,shell,spec,clearance_mm=0.8,margin_mm=4.0):
 
 
 def build(manager,upper_body,forearm_body,parts,master_y_mm,shoulder_center=None,
-          shoulder_size=None):
+          shoulder_size=None,**shoulder_overrides):
     specs=parameters(parts,master_y_mm,shoulder_center=shoulder_center,
-                     shoulder_size=shoulder_size)
+                     shoulder_size=shoulder_size,**shoulder_overrides)
     shoulder,shoulder_report=_integrate(manager,upper_body,specs['shoulder'],'hombro')
     wrist,wrist_report=_integrate_closed_wrist(manager,forearm_body,specs['wrist'])
     return shoulder,wrist,[shoulder_report,wrist_report]

@@ -42,6 +42,26 @@ SHOULDER_DISC_RADIUS_MM = 45.0
 # Margen mínimo entre el disco y la cara delantera/trasera de la carcasa.
 SHOULDER_WALL_MM = 3.0
 
+# v13: conector negro del hombro DERECHO del pecho, tal como lo genera
+# `Toreto_Pecho_Hombros_95cm` 2.5.0 con sus parámetros por defecto (ancho_pecho
+# 340, alto_pecho 190 y base+tronco+cintura = 540 mm): cilindro en el eje X de
+# cx - r(0,55) a cx + r(2,5), cx = r(17,15), a Y = 0 y Z = 540 + z(18,1),
+# radio r(3,65); r = 340/34 mm, z = 190/22,8 mm. El brazo se encaja en él: su
+# eje de hombro es coaxial con el conector (dirección X, por Y 0 y Z 690,8).
+_R = 340.0 / 34.0
+_Z = 190.0 / 22.8
+CHEST_CONNECTOR = {
+    'x_inner': _R * 17.15 - _R * .55,        # 166,0
+    'x_outer': _R * 17.15 + _R * 2.5,        # 196,5
+    'y': 0.0,
+    'z': 540.0 + _Z * 18.1,                  # 690,83
+    'radius': _R * 3.65,                     # 36,5
+}
+# Holgura radial entre el conector y el taladro del hombro del brazo, y hueco
+# entre el extremo del conector y la tapa del eje en la cara exterior.
+SHOULDER_CLEARANCE_MM = 0.8
+CAP_GAP_MM = 0.8
+
 # Tolerancia con la que se comparan las articulaciones con la lámina: la
 # lectura es de ±3 mm y los dos laterales discrepan entre sí (38° / 46°).
 TOLERANCE_MM = 8.0
@@ -188,14 +208,23 @@ def _best_angle(error_fn):
     return best
 
 
-def solve(parts, master_y_mm, terminals, outer_joints, lamina=LAMINA_MM):
+def solve(parts, master_y_mm, terminals, outer_joints, lamina=LAMINA_MM,
+          chest=CHEST_CONNECTOR):
     """Longitud del antebrazo, pivote del hombro y giros de la postura.
 
     `terminals` y `outer_joints` son los módulos del generador (sus funciones
     de parámetros son puras). Devuelve un dict con todo lo necesario para
     construir y colocar el brazo, y los residuos frente a la lámina.
+
+    chest (v13, por defecto): el hombro se encaja en el conector del pecho:
+    pivote en su eje, eje de giro en X, taladro a su medida y el eje propio
+    del brazo reducido a una tapa exterior. chest=None reproduce la v11.
     """
     elbow_l, forearm_end_l, shoulder_l = lamina['codo'], lamina['fin_antebrazo'], lamina['hombro']
+    upper_length = math.dist(elbow_l, shoulder_l)
+    if chest is not None:
+        # Mismo X que la lámina (el pivote es un punto del eje X del conector).
+        shoulder_l = (shoulder_l[0], chest['y'], chest['z'])
 
     def flat_points(factor):
         # Final del antebrazo = centro de la rótula: está en el eje del núcleo
@@ -217,7 +246,6 @@ def solve(parts, master_y_mm, terminals, outer_joints, lamina=LAMINA_MM):
     # la distancia codo-hombro de la lámina.
     lower, upper = scaled['upper']['front_axis'][1], scaled['upper']['front_axis'][0]
     up = _unit((upper[0] - lower[0], 0.0, upper[2] - lower[2]))
-    upper_length = math.dist(elbow_l, shoulder_l)
     shoulder_f = _add(elbow_f, _scale(up, upper_length))
 
     # Alojamiento del eje del hombro en el pivote: tan largo como ancha es la
@@ -226,11 +254,26 @@ def solve(parts, master_y_mm, terminals, outer_joints, lamina=LAMINA_MM):
     # ni por detrás.
     along_cm = _dot(_sub(shoulder_f, lower), up) * .1
     width_mm, depth_mm = section_at(scaled['upper']['sections'], along_cm)
-    shoulder_size = (width_mm,
-                     min(SHOULDER_DISC_RADIUS_MM, depth_mm / 2 - SHOULDER_WALL_MM))
+    outer_radius = min(SHOULDER_DISC_RADIUS_MM, depth_mm / 2 - SHOULDER_WALL_MM)
+    shoulder_overrides = {}
+    if chest is None:
+        shoulder_size = (width_mm, outer_radius)
+    else:
+        # Eje en X exacta: atraviesa la carcasa en diagonal (la carcasa baja
+        # inclinada ~15° en la vista frontal), así que el alojamiento es algo
+        # más largo que el ancho del perfil.
+        shoulder_size = (width_mm / abs(up[2]), outer_radius)
+        # Taladro = conector + holgura (lo hace outer_joints con axle+0,8);
+        # el eje propio del brazo queda como tapa, desde justo después del
+        # extremo del conector hasta la cara exterior.
+        cap_start = chest['x_outer'] + CAP_GAP_MM - shoulder_l[0]
+        cap_end = (shoulder_size[0] + 4.0) / 2
+        shoulder_overrides = dict(shoulder_axis=(1.0, 0.0, 0.0),
+                                  shoulder_axle_radius=chest['radius'],
+                                  shoulder_axle_span=(cap_start, cap_end))
 
     joints = outer_joints.parameters(scaled, master_y_mm, shoulder_center=shoulder_f,
-                                     shoulder_size=shoulder_size)
+                                     shoulder_size=shoulder_size, **shoulder_overrides)
     shoulder_axis = joints['shoulder']['axis']
     elbow_axis = (elbow['normal'][0], 0.0, elbow['normal'][1])
     wrist_f = joints['wrist']['center']
@@ -261,12 +304,30 @@ def solve(parts, master_y_mm, terminals, outer_joints, lamina=LAMINA_MM):
         'fin_antebrazo': forearm_t.point(forearm_end_f),
     }
     placed['muneca_rotula'] = placed['fin_antebrazo']
+    # La pieza negra del hombro: el eje entero (v11) o la tapa exterior (v13).
+    cap_center_f = tuple((a + b) / 2 for a, b in zip(joints['shoulder']['axle_p1'],
+                                                     joints['shoulder']['axle_p2']))
+    placed['tapa_hombro'] = upper_t.point(cap_center_f)
     residuals = {name: round(math.dist(placed[name], lamina[key]), 2)
                  for name, key in (('hombro', 'hombro'), ('codo', 'codo'),
                                    ('fin_antebrazo', 'fin_antebrazo'))}
+    fit = None
+    if chest is not None:
+        s = placed['hombro']
+        fit = dict(
+            pivote_a_eje_conector_mm=round(math.hypot(s[1] - chest['y'], s[2] - chest['z']), 3),
+            eje_hombro=[round(v, 6) for v in upper_t.vector(shoulder_axis)],
+            taladro_radio_mm=round(chest['radius'] + SHOULDER_CLEARANCE_MM, 2),
+            pared_alojamiento_mm=round(outer_radius - chest['radius'] - SHOULDER_CLEARANCE_MM, 2),
+            alojamiento_x_mm=[round(s[0] - shoulder_size[0] / 2, 1),
+                              round(s[0] + shoulder_size[0] / 2, 1)],
+            conector_x_mm=[round(chest['x_inner'], 1), round(chest['x_outer'], 1)],
+            desplazamiento_hombro_frente_a_lamina_mm=residuals['hombro'])
     return dict(
         parts=scaled, forearm_factor=factor, shoulder_center_flat=shoulder_f,
         shoulder_size_mm=shoulder_size, shoulder_section_mm=(width_mm, depth_mm),
+        shoulder_overrides=shoulder_overrides, chest_fit=fit,
+        shoulder_cap_center_flat=cap_center_f,
         elbow_center_flat=elbow_f, wrist_center_flat=wrist_f,
         shoulder_axis=shoulder_axis, elbow_axis=elbow_axis,
         theta_shoulder_deg=theta_shoulder, theta_elbow_deg=theta_elbow,

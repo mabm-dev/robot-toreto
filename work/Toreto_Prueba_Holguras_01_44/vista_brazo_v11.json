@@ -5,8 +5,8 @@
   "fracciones": {},
   "aviso": "Solo para mirar. Palma sin recorte y NO validada; sin holgura continua, resistencia ni tendones.",
   "brazo_lamina": {
-    "giro_hombro_deg": 13.59,
-    "giro_codo_deg": -43.988,
+    "giro_hombro_deg": 19.593,
+    "giro_codo_deg": -48.035,
     "factor_antebrazo": 1.3653,
     "largos_mm": {
       "hombro_codo": 156.64,
@@ -14,35 +14,54 @@
       "codo_rotula": 164.39
     },
     "residuos_frente_a_lamina_mm": {
-      "hombro": 0.0,
-      "codo": 2.47,
-      "fin_antebrazo": 7.31
+      "hombro": 16.02,
+      "codo": 7.28,
+      "fin_antebrazo": 3.56
     },
-    "rotula_frente_a_muneca_dibujada_mm": 17.1,
+    "rotula_frente_a_muneca_dibujada_mm": 18.78,
+    "encaje_pecho": {
+      "pivote_a_eje_conector_mm": 0.0,
+      "eje_hombro": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "taladro_radio_mm": 37.3,
+      "pared_alojamiento_mm": 7.7,
+      "alojamiento_x_mm": [
+        169.4,
+        222.6
+      ],
+      "conector_x_mm": [
+        166.0,
+        196.5
+      ],
+      "desplazamiento_hombro_frente_a_lamina_mm": 16.02
+    },
     "comprobacion_fusion": {
-      "hombro": {
+      "tapa_hombro": {
         "esperado_mm": [
-          196.0,
-          16.0,
-          690.0
+          210.953,
+          0.0,
+          690.833
         ],
         "fusion_mm": [
-          196.0,
-          16.0,
-          690.0
+          210.953,
+          0.0,
+          690.833
         ],
         "distancia_mm": 0.0
       },
       "muneca_rotula": {
         "esperado_mm": [
-          272.084,
-          -27.575,
-          404.31
+          265.033,
+          -25.928,
+          405.699
         ],
         "fusion_mm": [
-          272.084,
-          -27.575,
-          404.31
+          265.033,
+          -25.928,
+          405.699
         ],
         "distancia_mm": 0.0
       }
@@ -178,270 +197,270 @@
   "falanges_frente_al_ensayo": {
     "07_DEDO_1_FALANGE_1": {
       "ensayo_mm": [
-        274.801,
-        -85.008,
-        305.572
+        261.922,
+        -79.448,
+        304.579
       ],
       "fusion_mm": [
-        274.774,
-        -84.983,
-        305.683
+        261.922,
+        -79.448,
+        304.579
       ],
-      "distancia_mm": 0.117
+      "distancia_mm": 0.0
     },
     "07_DEDO_1_FALANGE_2": {
       "ensayo_mm": [
-        279.503,
-        -94.883,
-        289.408
+        265.628,
+        -88.901,
+        287.919
       ],
       "fusion_mm": [
-        279.477,
-        -94.931,
-        289.516
+        265.628,
+        -88.901,
+        287.919
       ],
-      "distancia_mm": 0.121
+      "distancia_mm": 0.0
     },
     "07_DEDO_1_FALANGE_3": {
       "ensayo_mm": [
-        283.924,
-        -104.166,
-        274.214
+        269.112,
+        -97.752,
+        272.259
       ],
       "fusion_mm": [
-        283.899,
-        -104.211,
-        274.318
+        269.112,
+        -97.752,
+        272.259
       ],
-      "distancia_mm": 0.116
+      "distancia_mm": 0.0
     },
     "07_DEDO_1_FALANGE_4": {
       "ensayo_mm": [
-        288.526,
-        -114.625,
-        256.99
+        272.874,
+        -106.646,
+        255.019
       ],
       "fusion_mm": [
-        288.598,
-        -114.032,
-        257.647
+        272.874,
+        -106.646,
+        255.019
       ],
-      "distancia_mm": 0.888
+      "distancia_mm": 0.0
     },
     "07_DEDO_2_FALANGE_1": {
       "ensayo_mm": [
-        290.725,
-        -86.755,
-        309.939
+        277.707,
+        -82.649,
+        308.616
       ],
       "fusion_mm": [
-        290.698,
-        -86.73,
-        310.05
+        277.707,
+        -82.649,
+        308.616
       ],
-      "distancia_mm": 0.117
+      "distancia_mm": 0.0
     },
     "07_DEDO_2_FALANGE_2": {
       "ensayo_mm": [
-        295.936,
-        -97.699,
-        292.025
+        281.814,
+        -93.128,
+        290.153
       ],
       "fusion_mm": [
-        295.91,
-        -97.747,
-        292.132
+        281.814,
+        -93.128,
+        290.153
       ],
-      "distancia_mm": 0.12
+      "distancia_mm": 0.0
     },
     "07_DEDO_2_FALANGE_3": {
       "ensayo_mm": [
-        300.835,
-        -107.987,
-        275.185
+        285.674,
+        -102.942,
+        272.798
       ],
       "fusion_mm": [
-        300.81,
-        -108.032,
-        275.289
+        285.674,
+        -102.942,
+        272.798
       ],
-      "distancia_mm": 0.116
+      "distancia_mm": 0.0
     },
     "07_DEDO_2_FALANGE_4": {
       "ensayo_mm": [
-        305.839,
-        -119.475,
-        256.253
+        289.76,
+        -112.799,
+        253.835
       ],
       "fusion_mm": [
-        305.923,
-        -118.86,
-        256.951
+        289.76,
+        -112.799,
+        253.835
       ],
-      "distancia_mm": 0.934
+      "distancia_mm": 0.0
     },
     "07_DEDO_3_FALANGE_1": {
       "ensayo_mm": [
-        307.028,
-        -84.718,
-        312.901
+        294.155,
+        -82.048,
+        311.411
       ],
       "fusion_mm": [
-        307.001,
-        -84.693,
-        313.012
+        294.155,
+        -82.048,
+        311.411
       ],
-      "distancia_mm": 0.117
+      "distancia_mm": 0.0
     },
     "07_DEDO_3_FALANGE_2": {
       "ensayo_mm": [
-        312.442,
-        -96.089,
-        294.287
+        298.421,
+        -92.937,
+        292.226
       ],
       "fusion_mm": [
-        312.416,
-        -96.137,
-        294.394
+        298.421,
+        -92.937,
+        292.226
       ],
-      "distancia_mm": 0.12
+      "distancia_mm": 0.0
     },
     "07_DEDO_3_FALANGE_3": {
       "ensayo_mm": [
-        317.532,
-        -106.779,
-        276.789
+        302.432,
+        -103.137,
+        274.193
       ],
       "fusion_mm": [
-        317.508,
-        -106.825,
-        276.892
+        302.432,
+        -103.137,
+        274.193
       ],
-      "distancia_mm": 0.115
+      "distancia_mm": 0.0
     },
     "07_DEDO_3_FALANGE_4": {
       "ensayo_mm": [
-        322.7,
-        -118.68,
-        257.172
+        306.648,
+        -113.38,
+        254.541
       ],
       "fusion_mm": [
-        322.785,
-        -118.055,
-        257.887
+        306.648,
+        -113.38,
+        254.541
       ],
-      "distancia_mm": 0.953
+      "distancia_mm": 0.0
     },
     "07_DEDO_4_FALANGE_1": {
       "ensayo_mm": [
-        322.96,
-        -81.902,
-        317.137
+        310.311,
+        -80.7,
+        315.519
       ],
       "fusion_mm": [
-        322.933,
-        -81.877,
-        317.247
+        310.311,
+        -80.7,
+        315.519
       ],
-      "distancia_mm": 0.116
+      "distancia_mm": 0.0
     },
     "07_DEDO_4_FALANGE_2": {
       "ensayo_mm": [
-        327.866,
-        -92.205,
-        300.273
+        314.177,
+        -90.564,
+        298.138
       ],
       "fusion_mm": [
-        327.84,
-        -92.253,
-        300.38
+        314.177,
+        -90.564,
+        298.138
       ],
-      "distancia_mm": 0.12
+      "distancia_mm": 0.0
     },
     "07_DEDO_4_FALANGE_3": {
       "ensayo_mm": [
-        332.478,
-        -101.89,
-        284.42
+        317.811,
+        -99.8,
+        281.8
       ],
       "fusion_mm": [
-        332.453,
-        -101.935,
-        284.524
+        317.811,
+        -99.8,
+        281.8
       ],
-      "distancia_mm": 0.116
+      "distancia_mm": 0.0
     },
     "07_DEDO_4_FALANGE_4": {
       "ensayo_mm": [
-        337.24,
-        -112.76,
-        266.513
+        321.703,
+        -109.079,
+        263.87
       ],
       "fusion_mm": [
-        337.318,
-        -112.158,
-        267.186
+        321.703,
+        -109.079,
+        263.87
       ],
-      "distancia_mm": 0.906
+      "distancia_mm": 0.0
     },
     "09_PULGAR_CARDAN_INTERMEDIO": {
       "ensayo_mm": [
-        259.848,
-        -42.494,
-        345.413
+        251.124,
+        -37.142,
+        346.396
       ],
       "fusion_mm": [
-        259.931,
-        -42.494,
-        345.413
+        251.124,
+        -37.142,
+        346.396
       ],
-      "distancia_mm": 0.083
+      "distancia_mm": 0.0
     },
     "09_PULGAR_FALANGE_1": {
       "ensayo_mm": [
-        254.055,
-        -46.335,
-        335.173
+        246.771,
+        -39.964,
+        336.061
       ],
       "fusion_mm": [
-        256.1,
-        -46.137,
-        335.18
+        246.771,
+        -39.964,
+        336.061
       ],
-      "distancia_mm": 2.055
+      "distancia_mm": 0.0
     },
     "09_PULGAR_FALANGE_2": {
       "ensayo_mm": [
-        248.866,
-        -53.749,
-        316.338
+        238.647,
+        -45.885,
+        316.974
       ],
       "fusion_mm": [
-        248.748,
-        -53.581,
-        316.273
+        238.647,
+        -45.885,
+        316.974
       ],
-      "distancia_mm": 0.215
+      "distancia_mm": 0.0
     },
     "09_PULGAR_FALANGE_3": {
       "ensayo_mm": [
-        242.351,
-        -59.88,
-        299.775
+        231.849,
+        -50.524,
+        300.523
       ],
       "fusion_mm": [
-        242.571,
-        -59.381,
-        299.987
+        231.849,
+        -50.524,
+        300.523
       ],
-      "distancia_mm": 0.585
+      "distancia_mm": 0.0
     }
   },
   "hueco_puntas_mm": null,
   "resumen": {
     "peor_diferencia_junta_deg": 0.0,
-    "peor_distancia_falange_mm": 2.055,
-    "pose_igual_al_ensayo": false,
+    "peor_distancia_falange_mm": 0.0,
+    "pose_igual_al_ensayo": true,
     "hueco_puntas_en_ensayo_mm": 0.28
   }
 }
