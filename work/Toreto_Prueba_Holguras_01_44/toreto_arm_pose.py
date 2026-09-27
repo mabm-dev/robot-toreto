@@ -61,6 +61,9 @@ CHEST_CONNECTOR = {
 # entre el extremo del conector y la tapa del eje en la cara exterior.
 SHOULDER_CLEARANCE_MM = 0.8
 CAP_GAP_MM = 0.8
+# Margen del taladro más allá de cada extremo (conector por dentro, alojamiento
+# por fuera).
+BORE_MARGIN_MM = 2.0
 
 # Tolerancia con la que se comparan las articulaciones con la lámina: la
 # lectura es de ±3 mm y los dos laterales discrepan entre sí (38° / 46°).
@@ -268,9 +271,15 @@ def solve(parts, master_y_mm, terminals, outer_joints, lamina=LAMINA_MM,
         # extremo del conector hasta la cara exterior.
         cap_start = chest['x_outer'] + CAP_GAP_MM - shoulder_l[0]
         cap_end = (shoulder_size[0] + 4.0) / 2
+        # v13b: el taladro empieza BORE_MARGIN_MM antes del extremo interior
+        # del conector. La carcasa baja inclinada ~15° y, con el taladro solo
+        # del largo del alojamiento, rozaba el conector (1807 mm3 en el montaje).
+        bore_start = chest['x_inner'] - BORE_MARGIN_MM - shoulder_l[0]
+        bore_end = shoulder_size[0] / 2 + BORE_MARGIN_MM
         shoulder_overrides = dict(shoulder_axis=(1.0, 0.0, 0.0),
                                   shoulder_axle_radius=chest['radius'],
-                                  shoulder_axle_span=(cap_start, cap_end))
+                                  shoulder_axle_span=(cap_start, cap_end),
+                                  shoulder_bore_span=(bore_start, bore_end))
 
     joints = outer_joints.parameters(scaled, master_y_mm, shoulder_center=shoulder_f,
                                      shoulder_size=shoulder_size, **shoulder_overrides)
@@ -322,6 +331,8 @@ def solve(parts, master_y_mm, terminals, outer_joints, lamina=LAMINA_MM,
             alojamiento_x_mm=[round(s[0] - shoulder_size[0] / 2, 1),
                               round(s[0] + shoulder_size[0] / 2, 1)],
             conector_x_mm=[round(chest['x_inner'], 1), round(chest['x_outer'], 1)],
+            taladro_x_mm=[round(s[0] + shoulder_overrides['shoulder_bore_span'][0], 1),
+                          round(s[0] + shoulder_overrides['shoulder_bore_span'][1], 1)],
             desplazamiento_hombro_frente_a_lamina_mm=residuals['hombro'])
     return dict(
         parts=scaled, forearm_factor=factor, shoulder_center_flat=shoulder_f,

@@ -138,6 +138,25 @@ class ChestFitTests(unittest.TestCase):
         self.assertLess(low, self.chest['x_outer'])     # el conector entra en el brazo
         self.assertGreater(high, self.chest['x_outer'])
 
+    def test_connector_lies_entirely_inside_the_bore(self):
+        # v13b: si el conector está dentro del cilindro que se le quita a la
+        # carcasa, la carcasa no puede tocarlo, tenga la forma que tenga.
+        # (v13 dejaba 1,4 mm fuera y la carcasa inclinada lo rozaba: 1807 mm3.)
+        spec = outer_joints.parameters(
+            RESULT['parts'], ARM['master_plane_y_mm'],
+            shoulder_center=RESULT['shoulder_center_flat'],
+            shoulder_size=RESULT['shoulder_size_mm'],
+            **RESULT['shoulder_overrides'])['shoulder']
+        p1, p2 = (RESULT['upper'].point(p) for p in (spec['bore_p1'], spec['bore_p2']))
+        for p in (p1, p2):                                   # coaxial con el conector
+            self.assertAlmostEqual(p[1], self.chest['y'], places=6)
+            self.assertAlmostEqual(p[2], self.chest['z'], places=6)
+        low, high = sorted((p1[0], p2[0]))
+        self.assertLess(low, self.chest['x_inner'])
+        self.assertGreater(high, self.chest['x_outer'])
+        bore_radius = spec['axle_radius'] + pose.SHOULDER_CLEARANCE_MM
+        self.assertGreater(bore_radius, self.chest['radius'])
+
     def test_cap_starts_after_the_connector_end(self):
         spec = outer_joints.parameters(
             RESULT['parts'], ARM['master_plane_y_mm'],

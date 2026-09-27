@@ -36,7 +36,8 @@ def _axis_points(center,axis,length_mm):
 
 
 def parameters(parts,master_y_mm,shoulder_center=None,shoulder_size=None,
-               shoulder_axis=None,shoulder_axle_radius=None,shoulder_axle_span=None):
+               shoulder_axis=None,shoulder_axle_radius=None,shoulder_axle_span=None,
+               shoulder_bore_span=None):
     """shoulder_center (mm, marco plano): v11 coloca el eje del hombro en el
     pivote de la lamina, dentro de la cabeza de la carcasa. Sin el, se usa el
     perfil superior como antes.
@@ -47,7 +48,10 @@ def parameters(parts,master_y_mm,shoulder_center=None,shoulder_size=None,
     del pecho), shoulder_axle_radius (radio del conector: el taladro queda a su
     medida mas la holgura) y shoulder_axle_span=(desde_mm, hasta_mm) a lo largo
     del eje desde el centro: el eje propio del brazo se reduce a una tapa en la
-    cara exterior, porque el conector del pecho ocupa el resto."""
+    cara exterior, porque el conector del pecho ocupa el resto.
+    shoulder_bore_span=(desde_mm, hasta_mm) (v13b): el taladro se prolonga
+    hacia el pecho hasta pasar el extremo del conector; si no, la carcasa
+    inclinada lo rozaba (1807 mm3 en la interferencia del montaje)."""
     upper=parts['upper']
     forearm=parts['forearm']
     shoulder_section=upper['sections'][-1]
@@ -102,6 +106,11 @@ def parameters(parts,master_y_mm,shoulder_center=None,shoulder_size=None,
         item['axle_p1']=tuple(item['center'][i]+item['axis'][i]*start for i in range(3))
         item['axle_p2']=tuple(item['center'][i]+item['axis'][i]*end for i in range(3))
         item['axle_length']=end-start
+    if shoulder_bore_span is not None:
+        item=result['shoulder']
+        start,end=shoulder_bore_span
+        item['bore_p1']=tuple(item['center'][i]+item['axis'][i]*start for i in range(3))
+        item['bore_p2']=tuple(item['center'][i]+item['axis'][i]*end for i in range(3))
     return result
 
 
@@ -113,8 +122,11 @@ def _integrate(manager,shell,spec,label,clearance_mm=0.8,margin_mm=2.0):
         _point(spec['outer_p2']),spec['outer_radius']*.1)
     if not outer or not manager.booleanOperation(shell,outer,adsk.fusion.BooleanTypes.UnionBooleanType):
         raise RuntimeError('No se pudo integrar el alojamiento de '+label)
-    cutter_p1,cutter_p2=_axis_points(
-        spec['center'],spec['axis'],spec['outer_length']+margin_mm*2)
+    if 'bore_p1' in spec:
+        cutter_p1,cutter_p2=spec['bore_p1'],spec['bore_p2']
+    else:
+        cutter_p1,cutter_p2=_axis_points(
+            spec['center'],spec['axis'],spec['outer_length']+margin_mm*2)
     bore_radius=spec['axle_radius']+clearance_mm
     cutter=manager.createCylinderOrCone(
         _point(cutter_p1),bore_radius*.1,_point(cutter_p2),bore_radius*.1)

@@ -1,5 +1,35 @@
 # Prueba en Fusion — 2026-09-24
 
+## v13b: RESULTADO en el montaje — 28-09-2026 — hombro sin tocar el pecho
+
+Generado (todo a 0,0 mm), guardado como `Toreto_Brazo_Mano_v13b` y reemplazado
+en el montaje `…_backup`; juntas de la mano izquierda rehechas (20 juntas, 16
+relaciones, pasadores a 0,001 mm; Fusion añadió ' (2)' a nombres de cuerpos
+de la copia y `base_name` lo absorbió). **Interferencia pecho-brazo: la fila
+del conector contra la carcasa ha desaparecido en los dos brazos.** Quedan
+solo las ajenas al encaje (pecho consigo mismo, rótula-conector de palma,
+mano sin recortar).
+
+## v13b: taladro del hombro prolongado, preparada el 28-09-2026
+
+Interferencia en el montaje (los dos brazos, simétricos): la única pieza del
+brazo que toca el pecho es su carcasa `01_BRAZO_LOCAL_SIN_REBAJES` contra
+`PECHO95_07_CONECTOR_HOMBRO_DER/IZQ`, 1806,8 mm3. El taladro de la v13 empezaba
+en X 167,4 y el conector en 166; además la carcasa baja inclinada ~15° y, por
+encima y por debajo del taladro, su cara interior llega más cerca del pecho.
+Arreglo: el taladro va de X 164,0 a 224,6 (2 mm más allá de cada extremo),
+coaxial y con R37,3 > R36,5: el conector queda entero dentro del cilindro que
+se quita a la carcasa, así que no puede tocarla (prueba
+`test_connector_lies_entirely_inside_the_bore`, que falla con el taladro de la v13).
+
+El resto de la tabla es ajeno al encaje: piezas del pecho solapadas entre sí
+(vienen de su generador), casquillos y pasadores sobre su propia falange
+(bloque rígido), la palma sin recortar contra las primeras falanges (prueba
+de la palma pendiente) y la rótula de la muñeca contra el conector de la palma
+(9531 mm3; son una sola pieza en una muñeca de rótula: el script puso la
+rótula en el antebrazo y el conector en la mano; corregir al hacer las juntas
+del brazo).
+
 ## v13: RESULTADO en Fusion — 27-09-2026 — hombro encajado, dos brazos articulados
 
 `vista_brazo_v11.json` (modo ver_brazo, v13): pivote del hombro en el eje del

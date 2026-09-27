@@ -22,8 +22,11 @@
 - **Brazo v11** (`fccfe50`): medidas y postura de la lámina, verificado en
   Fusion. **Orden decidido por el usuario:** montar el robot entero →
   qué piezas lleva → dimensiones reales → y solo entonces límites.
-- **El montaje de trabajo es el documento de Fusion
-  `Toreto_hombro_encajado_sin_articulaciones`** (no `00_Toreto_Ensamblaje_95cm`):
+- **El montaje BUENO es el documento de Fusion
+  `Toreto_hombro_encajado_sin_articulaciones_backup`** (confirmado por el usuario
+  el 27 sept; no `00_Toreto_Ensamblaje_95cm` ni el que no lleva `_backup`).
+  Estado al 27 sept: dos brazos v13 con el hombro encajado y las dos manos
+  articuladas (commit `5c7654d`). Antes, en el documento sin `_backup`:
   todos los módulos más UN brazo, el de prueba antiguo (`94_BRAZO_MARCOS_LOCALES…`).
   El conector de hombro del pecho (`07_CONECTOR_HOMBRO_DER`, complemento
   Pecho_Hombros 2.5.0) queda en X 166-196,5, Y 0, Z 690,8, radio 36,5 mm:
