@@ -10,7 +10,7 @@ COMPONENT_NAME = "04_PECHO_HOMBROS"
 FEATURE_NAME = "PECHO_HOMBROS_EXTERIOR_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "PECHO95_"
-VERSION = "2.5.0"
+VERSION = "2.6.0"
 
 _GEOMETRY_Z = 0.0
 
@@ -423,14 +423,34 @@ def _build(
         _append(specs, bar, f"06_ONDA_CIAN_{index + 1:02d}", CYAN)
 
     # Sólo el conector negro pertenece al pecho; la carcasa blanca es del brazo.
+    # 2.6.0: pieza de hombro como en la lámina frontal, del costado del pecho
+    # al interior del brazo (antes empezaba en X 166 y dejaba un hueco de
+    # 40 mm entre pecho y brazo): disco R47, disco R39, cuello R29, disco R39
+    # y el eje R36,5 que entra en el brazo. Coaxial con el eje del hombro
+    # (en la lámina se dibuja inclinado con el brazo). El brazo no baja de
+    # X ~159: los discos acaban en 157 y solo el eje entra en él.
+    shoulder_parts = (
+        (12.4, 13.0, 4.7),   # disco junto al pecho (entra 2 mm en la carcasa)
+        (13.0, 13.8, 3.9),   # segundo disco
+        (13.8, 14.6, 2.9),   # cuello
+        (14.6, 15.7, 3.9),   # disco junto al brazo
+        (15.7, 19.65, 3.65), # eje dentro del brazo (hasta cx + r(2.5))
+    )
     for side, label in ((-1.0, "IZQ"), (1.0, "DER")):
-        cx = side * r(17.15)
-        socket = _cylinder(
-            manager,
-            _point(cx - side * r(.55), 0, z(18.1)),
-            _point(cx + side * r(2.5), 0, z(18.1)),
-            r(3.65),
-        )
+        socket = None
+        for start, end, radius in shoulder_parts:
+            part = _cylinder(
+                manager,
+                _point(side * r(start), 0, z(18.1)),
+                _point(side * r(end), 0, z(18.1)),
+                r(radius),
+            )
+            if socket is None:
+                socket = part
+            elif not manager.booleanOperation(
+                socket, part, adsk.fusion.BooleanTypes.UnionBooleanType
+            ):
+                raise RuntimeError("No se pudo unir la pieza de hombro " + label)
         _append(specs, socket, f"07_CONECTOR_HOMBRO_{label}", BLACK)
 
     back_y = depth / 2 + d(.08)

@@ -50,8 +50,17 @@ SHOULDER_WALL_MM = 3.0
 # eje de hombro es coaxial con el conector (dirección X, por Y 0 y Z 690,8).
 _R = 340.0 / 34.0
 _Z = 190.0 / 22.8
+# Pecho 2.6.0: la pieza de hombro va del costado del pecho al brazo, como en
+# la lámina frontal (antes el conector empezaba en X 166 y dejaba un hueco de
+# 40 mm entre pecho y brazo). Discos coaxiales (desde_x, hasta_x, radio), mm:
+CHEST_SHOULDER_DISCS = (
+    (_R * 12.4, _R * 13.0, _R * 4.7),   # disco junto al pecho
+    (_R * 13.0, _R * 13.8, _R * 3.9),   # segundo disco
+    (_R * 13.8, _R * 14.6, _R * 2.9),   # cuello
+    (_R * 14.6, _R * 15.7, _R * 3.9),   # disco junto al brazo (acaba en 157)
+)
 CHEST_CONNECTOR = {
-    'x_inner': _R * 17.15 - _R * .55,        # 166,0
+    'x_inner': _R * 15.7,                    # 157,0: empieza el eje que entra en el brazo
     'x_outer': _R * 17.15 + _R * 2.5,        # 196,5
     'y': 0.0,
     'z': 540.0 + _Z * 18.1,                  # 690,83

@@ -1,5 +1,33 @@
 # Prueba en Fusion — 2026-09-24
 
+## v13c + pecho 2.6.0: RESULTADO en el montaje — 28-09-2026 — hombro unido al pecho
+
+Pecho 2.6.0 ejecutado en el montaje (24 cuerpos, Z 540-737,8), brazo v13c
+generado (todo a 0,0 mm) y reemplazado, mano izquierda rearticulada (20 juntas,
+16 relaciones, 0,001 mm). Vista frontal: la pieza negra de hombro une pecho y
+brazo en los dos lados, como en la lámina. Interferencia: ninguna entre brazo
+y pecho. Nuevas filas carcasa del pecho - `07_CONECTOR_HOMBRO_IZQ/DER`
+(11021,5 mm3 cada una): el disco junto al pecho entra 2 mm en la carcasa a
+propósito (fijación), del mismo tipo que las demás piezas del pecho embutidas.
+
+## v13c + pecho 2.6.0: pieza de hombro como la lámina — 28-09-2026
+
+El usuario vio en el montaje un hueco de ~40 mm entre pecho y brazo: el
+conector del pecho 2.5.0 solo existía DENTRO del brazo (X 166-196,5). La
+interferencia salió limpia justo porque no se tocaban. En la lámina frontal
+hay una pieza negra de hombro entre ambos (medida a mano sobre rejilla,
+`medicion_brazo/hombro_frontal.jpg`). Pecho 2.6.0: disco R47 (X 124-130,
+entra 2 mm en el pecho), disco R39 (130-138), cuello R29 (138-146), disco R39
+(146-157) y el eje R36,5 (157-196,5), coaxiales con el eje del hombro (en la
+lámina se dibujan inclinados con el brazo). La carcasa del brazo no baja de
+X 159,3 (esquinas de sus perfiles ya colocados): los discos acaban en 157 y
+solo el eje entra; el taladro del brazo (v13c) empieza en 155. Pruebas: los
+discos a >= 2 mm de la carcasa, la pieza continua, el eje dentro del taladro
+y los mismos números en el complemento del pecho y aquí (se lee su código).
+Complemento del pecho copiado a `%APPDATA%` (respaldo de la 2.5.0 en el
+scratchpad de la sesión). Al ejecutarlo en el montaje restablece los
+parámetros del pecho a los de por defecto (340/190/220).
+
 ## v13b: RESULTADO en el montaje — 28-09-2026 — hombro sin tocar el pecho
 
 Generado (todo a 0,0 mm), guardado como `Toreto_Brazo_Mano_v13b` y reemplazado

@@ -9,7 +9,7 @@ import adsk.fusion
 
 ROOT=Path(__file__).resolve().parent
 NAME='94_BRAZO_HOLGURAS_PRUEBA_01_44'
-SCRIPT_VERSION='v13b'
+SCRIPT_VERSION='v13c'
 # 'ensayo'    -> ensayo de colisiones de la v8, sin crear piezas.
 # 'ver_pinza' -> publica la mano (4 motores) en la pinza al 75%, para mirarla.
 # 'ensayo_lateral' -> SOLO pinza lateral (v10b); no publica ni mueve componentes.
@@ -736,7 +736,7 @@ def run(context):
             fit=arm_pose['chest_fit'] or {}
             app.userInterface.messageBox(
                 'Brazo con las medidas de la lamina ENCAJADO en el conector del pecho '
-                '(v13b: taladro del hombro prolongado), mano abierta.\n\n'
+                '(v13c: para el pecho 2.6.0), mano abierta.\n\n'
                 'Hombro: eje en X sobre el eje del conector ({} mm); taladro R{} mm para '
                 'el conector R36,5; pared {} mm. Queda {} mm del punto de la lamina.\n'
                 'Giros de la postura: hombro {} grados, codo {} grados.\n'
@@ -745,7 +745,7 @@ def run(context):
                 'Comprobado en Fusion: tapa del hombro a {} mm y rotula a {} mm de donde '
                 'deben estar.\n'
                 'Mano en su sitio respecto al ensayo: {} (peor falange {} mm).\n\n'
-                'Guardalo como Toreto_Brazo_Mano_v13b y en el montaje usa Reemplazar componente.\n'
+                'Guardalo como Toreto_Brazo_Mano_v13c y en el montaje usa Reemplazar componente.\n'
                 'Detalles: vista_brazo_v11.json'.format(
                     fit.get('pivote_a_eje_conector_mm'),fit.get('taladro_radio_mm'),
                     fit.get('pared_alojamiento_mm'),

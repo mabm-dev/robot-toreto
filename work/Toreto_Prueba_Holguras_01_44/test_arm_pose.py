@@ -118,8 +118,8 @@ class ChestFitTests(unittest.TestCase):
         self.chest = pose.CHEST_CONNECTOR
 
     def test_connector_matches_the_chest_generator(self):
-        # Toreto_Pecho_Hombros_95cm 2.5.0 con sus parámetros por defecto.
-        self.assertAlmostEqual(self.chest['x_inner'], 166.0)
+        # Toreto_Pecho_Hombros_95cm 2.6.0 con sus parámetros por defecto.
+        self.assertAlmostEqual(self.chest['x_inner'], 157.0)
         self.assertAlmostEqual(self.chest['x_outer'], 196.5)
         self.assertAlmostEqual(self.chest['z'], 690.833, places=2)
         self.assertAlmostEqual(self.chest['radius'], 36.5)
@@ -156,6 +156,47 @@ class ChestFitTests(unittest.TestCase):
         self.assertGreater(high, self.chest['x_outer'])
         bore_radius = spec['axle_radius'] + pose.SHOULDER_CLEARANCE_MM
         self.assertGreater(bore_radius, self.chest['radius'])
+
+    def test_same_numbers_as_the_chest_generator_source(self):
+        # Los discos y el eje se definen en el complemento del pecho y aquí:
+        # se lee su código para que no puedan divergir.
+        import ast
+        source = (HERE.parents[1] / 'cad-toreto' / 'toreto_fusion_95cm' / 'fusion_scripts'
+                  / 'Toreto_Pecho_Hombros_95cm' / 'Toreto_Pecho_Hombros_95cm.py')
+        tree = ast.parse(source.read_text(encoding='utf-8'))
+        parts = next(ast.literal_eval(node.value) for node in ast.walk(tree)
+                     if isinstance(node, ast.Assign)
+                     and getattr(node.targets[0], 'id', None) == 'shoulder_parts')
+        mm = [tuple(v * 10 for v in part) for part in parts]      # r() = 10 mm
+        for got, expected in zip(mm[:-1], pose.CHEST_SHOULDER_DISCS):
+            for a, b in zip(got, expected):
+                self.assertAlmostEqual(a, b)
+        shaft = mm[-1]
+        self.assertAlmostEqual(shaft[0], self.chest['x_inner'])
+        self.assertAlmostEqual(shaft[1], self.chest['x_outer'])
+        self.assertAlmostEqual(shaft[2], self.chest['radius'])
+
+    def test_shoulder_discs_do_not_reach_the_arm_shell(self):
+        # Los discos de la pieza de hombro (pecho 2.6.0) quedan fuera del
+        # brazo: su X máxima, con margen, por debajo de la carcasa del brazo
+        # (esquinas de sus perfiles, ya colocadas en la postura).
+        up = RESULT['parts']['upper']
+        corners = []
+        for section in up['sections']:
+            c, n, rx, ry = terminals._world_frame(up, section, ARM['master_plane_y_mm'])
+            for sx in (-1, 1):
+                for sy in (-1, 1):
+                    corners.append(RESULT['upper'].point(
+                        (c[0] + n[0] * rx * sx, c[1] + ry * sy, c[2] + n[1] * rx * sx)))
+        shell_min_x = min(p[0] for p in corners)
+        discs_max_x = max(end for _, end, _ in pose.CHEST_SHOULDER_DISCS)
+        self.assertGreaterEqual(shell_min_x - discs_max_x, 2.0)
+        # Y la pieza es continua: cada tramo empieza donde acaba el anterior,
+        # y el eje sigue al último disco.
+        edges = [(a, b) for a, b, _ in pose.CHEST_SHOULDER_DISCS]
+        for (_, end), (start, _) in zip(edges, edges[1:]):
+            self.assertAlmostEqual(end, start)
+        self.assertAlmostEqual(edges[-1][1], self.chest['x_inner'])
 
     def test_cap_starts_after_the_connector_end(self):
         spec = outer_joints.parameters(
