@@ -1,14 +1,20 @@
 """Crea la carcasa exterior de la cabeza Robot Toreto 95 cm."""
 
 import traceback
+import importlib.util
+from pathlib import Path
 import adsk.core
 import adsk.fusion
+
+_profile_spec = importlib.util.spec_from_file_location("toreto_head_profiles", Path(__file__).with_name("toreto_profile_geometry.py"))
+_profiles = importlib.util.module_from_spec(_profile_spec)
+_profile_spec.loader.exec_module(_profiles)
 
 COMPONENT_NAME = "06_CABEZA"
 FEATURE_NAME = "CABEZA_EXTERIOR_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "CABEZA95_"
-VERSION = "3.2.0"
+VERSION = "4.0.0"
 _GEOMETRY_Z = 0.0
 WHITE = (238, 239, 237)
 BLACK = (18, 21, 24)
@@ -97,6 +103,15 @@ def _rounded_side(m, x, y, z, width_y, height, depth_x, radius):
                 "esquina lateral",
             )
     return body
+
+
+def _bowed_face(m, y, z, width, height, depth, label):
+    """Bowed top/bottom rather than a straight-sided rounded rectangle."""
+    sections = []
+    for fraction, width_factor in ((0, .30), (.035, .68), (.10, .89), (.25, .98), (.5, 1.0), (.75, .98), (.90, .89), (.965, .68), (1, .30)):
+        center = _p(0, y, z + (fraction - .5) * height)
+        sections.append((center.z, center.x, center.y, width * width_factor / 2, depth / 2, 4.0))
+    return _profiles.loft(m, sections, label)
 
 
 def _ellipse_side(m, x, y, z, depth_x, radius_z, radius_y):
@@ -207,7 +222,6 @@ def run(context):
         component = occurrence.component
         if _version(component) == VERSION and _has(component):
             ui.messageBox("La cabeza exterior ya existe; no se duplicó."); return
-        replaced = _replace(component)
         # Medidas del contorno calibrado: X=-132..+132 mm y
         # Y=-124..+89 mm. Se fijan aqui para no heredar el antiguo ancho de
         # 285 mm que aun puede existir como parametro en documentos previos.
@@ -237,14 +251,21 @@ def run(context):
         # En Fusion el frontal real del ensamblaje es +Y. La referencia
         # lateral tiene el dorso curvo en -Y y el plano de pantalla casi
         # vertical en +Y. Las versiones anteriores los intercambiaron.
-        shell = _rounded(
-            m, 0, -1.75, z(8.0), width, height, depth, z(2.55)
-        )
         back_y = -12.4
         front_y = 8.9
-        side_envelope = _d_side_envelope(m, width + r(.6), height, back_y, front_y)
-        if not m.booleanOperation(shell, side_envelope, adsk.fusion.BooleanTypes.IntersectionBooleanType):
-            raise RuntimeError("No se pudo cruzar la silueta frontal y lateral de la cabeza.")
+        # Horizontal contour sections: bowed frontal crown and asymmetric
+        # lateral rear. No rectangle/ellipse intersection seam on the crown.
+        sections = []
+        for zz, half_width, rear, front in (
+            (0.0, 4.0, -2.0, 6.5), (.45, 9.4, -5.5, 8.3),
+            (1.5, 11.9, -9.2, 8.9), (3.5, 12.95, -11.5, 8.9),
+            (7.7, 13.2, -12.4, 8.9), (12.1, 12.95, -11.5, 8.9),
+            (14.5, 11.7, -8.8, 8.8), (15.55, 8.8, -5.3, 8.1),
+            (16.0, 3.5, -2.0, 6.0),
+        ):
+            center = _p(0, (rear + front) / 2, z(zz))
+            sections.append((center.z, center.x, center.y, r(half_width), (front - rear) / 2, 3.6))
+        shell = _profiles.loft(m, sections, "CABEZA_CUATRO_VISTAS")
         cavity_w = screen_width + 2 * clearance; cavity_h = screen_height + 2 * clearance
         cutter = _rounded(
             m, 0, front_y - d(.55), z(8.15), cavity_w, cavity_h, d(2.7), min(cavity_w, cavity_h) * .10
@@ -256,9 +277,11 @@ def run(context):
             raise RuntimeError("No se pudo abrir el paso inferior del cuello.")
         _append(specs, shell, "01_CARCASA_BLANCA_REDONDEADA", WHITE)
         bezel_y = front_y + d(.08)
-        bezel = _rounded(m, 0, bezel_y, z(8.15), cavity_w + r(1.0), cavity_h + z(1.0), d(.52), min(cavity_w, cavity_h) * .12)
+        # Mascara exterior visual: no confundir su silueta con la medida
+        # del modulo LCD interno. El lienzo tiene un marco mucho mas curvo.
+        bezel = _bowed_face(m, bezel_y, z(8.0), r(23.60), z(14.0), d(.52), "BISEL_CURVO")
         _append(specs, bezel, "02_MARCO_FRONTAL_NEGRO", BLACK)
-        screen = _rounded(m, 0, bezel_y + d(.30), z(8.15), screen_width, screen_height, d(.34), min(screen_width, screen_height) * .08)
+        screen = _bowed_face(m, bezel_y + d(.30), z(8.0), r(21.60), z(12.20), d(.34), "CARA_CURVA")
         _append(specs, screen, "03_PANTALLA_GRAFITO", DARK)
 
         # Los ojos son apliques exteriores ciegos. Hacen que la pieza de
@@ -271,16 +294,16 @@ def run(context):
                 side * eye_x,
                 face_y,
                 face_y + d(.12),
-                z(8.3),
-                z(1.30),
-                z(.82),
+                z(7.40),
+                z(2.05),
+                z(1.80),
             )
             _append(specs, ring, f"03_OJO_CIAN_{label}", CYAN)
             pupil = _cylinder(
                 m,
-                _p(side * eye_x, face_y + d(.02), z(8.3)),
-                _p(side * eye_x, face_y + d(.15), z(8.3)),
-                z(.23),
+                _p(side * eye_x, face_y + d(.02), z(7.40)),
+                _p(side * eye_x, face_y + d(.15), z(7.40)),
+                z(.40),
             )
             _append(specs, pupil, f"03_PUPILA_CIAN_{label}", CYAN)
 
@@ -294,7 +317,12 @@ def run(context):
 
         # Tapa posterior blanca; el propio borde de Fusion marca una junta
         # fina, sin el marco negro grueso de la versión anterior.
-        back_panel = _rounded(m, 0, back_y - d(.18), z(8.2), r(22.1), z(11.1), d(.24), z(1.5))
+        # Recortar contra la envolvente curva evita la placa plana flotando
+        # por detras del casco que sobresalia en las vistas laterales.
+        back_panel = _rounded(m, 0, back_y + d(1.90), z(8.2), r(22.1), z(11.1), d(4.0), z(2.8))
+        back_envelope = _d_side_envelope(m, width, height, back_y, front_y)
+        if not m.booleanOperation(back_panel, back_envelope, adsk.fusion.BooleanTypes.IntersectionBooleanType):
+            raise RuntimeError("No se pudo adaptar la tapa posterior al casco.")
         _append(specs, back_panel, "04_TAPA_POSTERIOR_BLANCA", WHITE)
         for side, label in ((-1.0, "IZQ"), (1.0, "DER")):
             cx = side * (width / 2 + r(.12))
@@ -305,6 +333,9 @@ def run(context):
         bottom = _ring(m, z(0), z(1.4), (r(7.2), d(5.1)), (r(5.8), d(3.9)))
         _append(specs, bottom, "08_ANILLO_INFERIOR_CUELLO", BLACK)
         appearances = {WHITE: _appearance(app, design, "TORETO Blanco satinado", WHITE), BLACK: _appearance(app, design, "TORETO Negro profundo", BLACK), DARK: _appearance(app, design, "TORETO Grafito", DARK), CYAN: _appearance(app, design, "TORETO Cian", CYAN)}
+        # Construir todas las formas temporales antes de retirar la revision
+        # anterior: un fallo de una interseccion conserva la cabeza existente.
+        replaced = _replace(component)
         feature = component.features.baseFeatures.add()
         if not feature: raise RuntimeError("Fusion no pudo crear la función de cabeza.")
         feature.name = FEATURE_NAME; persisted = []; feature.startEdit()

@@ -1,5 +1,17 @@
 # Prueba en Fusion — 2026-09-24
 
+## v14: alturas del montaje (solo lectura) — 29-09-2026
+
+El usuario vio huecos entre cintura y tronco y entre cuello y cabeza (Medir:
+5,00 mm cada uno). `MODE='alturas'` (no cambia nada) dio en el montaje:
+tronco 200-385 (hecho con alto_tronco 185; el zócalo mide exactamente esa
+escala) y cuello 730-785 (hecho con alto_cuello 55); base, cintura (390-540),
+pecho (540-730) y cabeza (790-950) correctos. Solapes a propósito: torreta del
+LIDAR sobre la base (204-229) y discos del hombro/inserto del cuello sobre el
+pecho. Arreglo preparado: Tronco 1.3.1 y Cuello 1.2.1 (misma geometría, solo
+versión, para que se regeneren con los parámetros actuales), copiados a
+%APPDATA%. SIN ejecutar todavía. Informe: `alturas_montaje_v14.json`.
+
 ## v13c + pecho 2.6.0: RESULTADO en el montaje — 28-09-2026 — hombro unido al pecho
 
 Pecho 2.6.0 ejecutado en el montaje (24 cuerpos, Z 540-737,8), brazo v13c

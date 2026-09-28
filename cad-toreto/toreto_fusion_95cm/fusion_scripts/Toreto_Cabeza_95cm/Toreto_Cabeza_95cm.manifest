@@ -3,7 +3,7 @@
   "type": "script",
   "author": "Robot Toreto / OpenAI Codex",
   "description": "Cabeza reconstruida con casco visual frontal/lateral de los lienzos calibrados.",
-  "version": "3.2.0",
+  "version": "4.0.0",
   "runOnStartup": false,
   "supportedOS": "windows"
 }

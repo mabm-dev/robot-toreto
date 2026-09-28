@@ -1,4 +1,50 @@
-# Continuidad del proyecto Toreto — 27 de septiembre de 2026
+# Continuidad del proyecto Toreto — 29 de septiembre de 2026
+
+## 0. AL RETOMAR (29 sept): lo primero
+
+**Pendiente de ejecutar en Fusion, ya preparado** (en el montaje bueno
+`Toreto_hombro_encajado_sin_articulaciones_backup`; guardar versión antes):
+
+1. Complemento **`Toreto_Tronco_95cm`** (1.3.1) → regenera el tronco con
+   `alto_tronco` = 190. Hoy acaba en Z 385 (se hizo con 185) y deja 5 mm de
+   hueco bajo la cintura.
+2. Complemento **`Toreto_Cuello_95cm`** (1.2.1) → regenera el cuello con
+   `alto_cuello` = 60. Hoy acaba en Z 785 (se hizo con 55) y deja 5 mm bajo
+   la cabeza.
+3. Comprobar con `Toreto_Prueba_Holguras_01_44` en **modo `alturas`** (v14,
+   SOLO LECTURA; es el modo activo): tronco→cintura y cuello→cabeza deben dar
+   0. Los solapes base→tronco (torreta del LIDAR) y pecho→cuello (discos del
+   hombro e inserto del cuello) son a propósito.
+
+Ambos complementos ya están copiados a `%APPDATA%\Autodesk\Autodesk Fusion
+360\API\Scripts`. Causa de fondo: los generadores solo se regeneran si cambia
+su VERSION; al cambiar parámetros de altura nadie los regeneró. Sigue siendo
+un defecto: cualquier cambio de parámetros exige subir la versión.
+
+**Base 1.10.0 y Cabeza 4.0.0 estaban solo en `%APPDATA%`** (cambiadas el 5
+sept, probablemente por Codex, sin subir). Copiadas al repo el 29 sept.
+
+**Estado del montaje (29 sept):** pecho 2.6.0 con la pieza de hombro de la
+lámina; dos brazos v13c (`Toreto_Brazo_Mano_v13c`, el izquierdo por Crear >
+Simetría) con el hombro coaxial con el conector del pecho; las dos manos de
+4 motores articuladas (la izquierda con `MODE='juntas_espejo'`). Interferencia
+brazo-pecho limpia y sin huecos en el hombro.
+
+**Siguiente, por orden del usuario:** montar entero (casi hecho: faltan los
+pasos 1-3) → **qué piezas lleva y dónde** (fase 2: sección 6) → dimensiones
+reales → límites de articulaciones. Propuesta pendiente de decidir: brazo con
+hombro 2 + codo 1 + muñeca 2 movimientos, y los 4 motores de la mano.
+
+**Pendientes conocidos del montaje:** rótula de la muñeca asignada al
+antebrazo (debería ir con la mano); palma sin recortar contra las primeras
+falanges; piezas del pecho embutidas entre sí (algunas a propósito).
+
+**Lecciones de estos días:** una interferencia limpia no prueba que las
+piezas estén unidas (mirar huecos); al cambiar el brazo derecho la simetría
+se recalcula sola y hay que borrar las juntas de la mano izquierda y volver
+a ejecutar `juntas_espejo`; medir alturas con el modo `alturas` en vez de a
+mano; y antes de fiarse de un complemento, comparar la copia de `%APPDATA%`
+con la del repo.
 
 > **Documento de relevo. Leerlo entero antes de tocar nada.**
 > Sustituye a la versión del 13 de septiembre, que mandaba trabajar sobre el

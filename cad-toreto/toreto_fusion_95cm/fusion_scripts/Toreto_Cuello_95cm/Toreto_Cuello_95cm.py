@@ -7,7 +7,11 @@ import adsk.fusion
 COMPONENT_NAME = "05_CUELLO"
 FEATURE_NAME = "CUELLO_EXTERIOR_TORETO_95CM"
 BODY_PREFIX = "CUELLO95_"
-VERSION = "1.2.0"
+# 1.2.1 (29-09-2026): misma geometria. Solo cambia la version para que el
+# complemento se regenere: el montaje tenia el cuello hecho con alto_cuello =
+# 55 mm (acababa en Z 785 y dejaba 5 mm de hueco bajo la cabeza) y la
+# comprobacion de version impedia rehacerlo con el valor actual (60).
+VERSION = "1.2.1"
 _GEOMETRY_Z = 0.0
 BLACK = (18, 21, 24)
 DARK = (43, 48, 53)

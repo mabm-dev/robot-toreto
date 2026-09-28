@@ -9,16 +9,18 @@ import adsk.fusion
 
 ROOT=Path(__file__).resolve().parent
 NAME='94_BRAZO_HOLGURAS_PRUEBA_01_44'
-SCRIPT_VERSION='v13c'
+SCRIPT_VERSION='v14'
 # 'ensayo'    -> ensayo de colisiones de la v8, sin crear piezas.
 # 'ver_pinza' -> publica la mano (4 motores) en la pinza al 75%, para mirarla.
 # 'ensayo_lateral' -> SOLO pinza lateral (v10b); no publica ni mueve componentes.
 # 'ver_brazo' -> v11: brazo con las medidas y la postura de la lamina y la
 #                mano abierta (toreto_arm_pose.py); publica para mirarlo.
 #                v13: con el hombro encajado en el conector del pecho.
+# 'alturas'      -> v14: en el MONTAJE, SOLO LECTURA: alturas de cada modulo y
+#                cuerpo y huecos entre modulos (alturas_montaje_v14.json).
 # 'juntas_espejo' -> v12: en el MONTAJE, anade juntas y relaciones a la mano
 #                izquierda copiada por simetria. No crea ni mueve geometria.
-MODE='juntas_espejo'
+MODE='alturas'
 
 
 def placement(axis,y_mm):
@@ -436,6 +438,40 @@ def _placement_candidates(occurrence,mirror):
     return result
 
 
+COLUMN_MODULES=('01_BASE','02_TRONCO','03_CINTURA','04_PECHO_HOMBROS','05_CUELLO','06_CABEZA')
+COLUMN_NOMINAL_MM={'01_BASE':(0,200),'02_TRONCO':(200,390),'03_CINTURA':(390,540),
+                   '04_PECHO_HOMBROS':(540,730),'05_CUELLO':(730,790),'06_CABEZA':(790,950)}
+
+
+def report_heights(design,report_path):
+    """Solo lectura (v14): altura minima y maxima de cada modulo del montaje y
+    de cada uno de sus cuerpos, y los huecos o solapes entre modulos seguidos
+    de la columna. No crea, mueve ni borra nada."""
+    report=dict(version='v14',modo='alturas',modulos={},huecos_mm={})
+
+    def z_range(box):
+        return [round(box.minPoint.z*10,3),round(box.maxPoint.z*10,3)]
+    for occurrence in design.rootComponent.occurrences:
+        name=occurrence.component.name
+        entry=dict(ocurrencia=occurrence.name,z_mm=z_range(occurrence.boundingBox),cuerpos={})
+        for body in occurrence.component.bRepBodies:
+            try:
+                proxy=body.createForAssemblyContext(occurrence)
+                entry['cuerpos'][body.name]=z_range(proxy.boundingBox)
+            except Exception as error:
+                entry['cuerpos'][body.name]='error: '+str(error)
+        if name in COLUMN_NOMINAL_MM:
+            entry['nominal_z_mm']=list(COLUMN_NOMINAL_MM[name])
+        report['modulos'][name]=entry
+    for lower,upper in zip(COLUMN_MODULES,COLUMN_MODULES[1:]):
+        if lower in report['modulos'] and upper in report['modulos']:
+            top=report['modulos'][lower]['z_mm'][1]
+            bottom=report['modulos'][upper]['z_mm'][0]
+            report['huecos_mm'][lower+' -> '+upper]=round(bottom-top,3)
+    report_path.write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf-8')
+    return report
+
+
 def add_mirror_joints(design,report_path):
     """v12: juntas y relaciones de la mano IZQUIERDA, creada por el usuario con
     Crear > Simetria (plano YZ) en el montaje. Excepcion autorizada por el
@@ -555,8 +591,16 @@ def run(context):
     try:
         design=adsk.fusion.Design.cast(app.activeProduct)
         if not design: raise RuntimeError('Abre el documento del robot')
-        if MODE not in ('ensayo', 'ver_pinza', 'ensayo_lateral', 'ver_brazo', 'juntas_espejo'):
+        if MODE not in ('ensayo', 'ver_pinza', 'ensayo_lateral', 'ver_brazo', 'juntas_espejo', 'alturas'):
             raise RuntimeError('Modo de ensayo desconocido: '+MODE)
+        if MODE=='alturas':
+            result=report_heights(design,ROOT/'alturas_montaje_v14.json')
+            lines=['{}: {} mm'.format(k,v) for k,v in result['huecos_mm'].items()]
+            app.userInterface.messageBox(
+                'Solo lectura: no se ha cambiado nada.'+'\n\n'+'Huecos (+) o solapes (-) entre modulos:'+'\n'+
+                '\n'.join(lines)+'\n\n'+'Detalles: alturas_montaje_v14.json',
+                'Toreto '+SCRIPT_VERSION+' - alturas del montaje')
+            return
         if MODE=='juntas_espejo':
             result=add_mirror_joints(design,ROOT/'juntas_espejo_v12.json')
             if result['estado']=='juntas_creadas':

@@ -9,7 +9,7 @@ import adsk.fusion
 
 COMPONENT_NAME = "01_BASE"
 BODY_PREFIX = "BASE95_"
-VERSION = "1.9.1"
+VERSION = "1.10.0"
 
 WHITE = (238, 239, 237)
 BLACK = (18, 21, 24)
@@ -359,7 +359,7 @@ def _build_specs(manager, radial_scale, height_scale):
 
     upper_shell = _elliptical_ring(
         manager,
-        rz(12.2),
+        rz(14.3),
         rz(17.3),
         rr(20.0),
         rr(16.25),
@@ -418,11 +418,11 @@ def _build_specs(manager, radial_scale, height_scale):
             manager,
             side * rr(19.45),
             0,
-            rz(7.9),
+            rz(11.5),
             rr(9.4),
-            rz(8.2),
+            rz(16.0),
             rr(1.05),
-            rr(2.05),
+            rr(.65),
         )
         _append(
             specs,
@@ -435,7 +435,7 @@ def _build_specs(manager, radial_scale, height_scale):
         manager,
         0,
         -rr(15.65),
-        rz(9.0),
+        rz(13.5),
         rr(16.4),
         rz(4.0),
         rr(1.3),
@@ -447,7 +447,7 @@ def _build_specs(manager, radial_scale, height_scale):
         manager,
         0,
         -rr(16.42),
-        rz(9.0),
+        rz(13.5),
         rr(13.6),
         rz(2.1),
         rr(0.45),
@@ -459,7 +459,7 @@ def _build_specs(manager, radial_scale, height_scale):
         manager,
         0,
         -rr(15.5),
-        rz(4.1),
+        rz(7.5),
         rr(14.8),
         rz(2.4),
         rr(1.15),
@@ -473,8 +473,8 @@ def _build_specs(manager, radial_scale, height_scale):
     ):
         lens = _cylinder(
             manager,
-            _point(rr(x), -rr(17.3), rz(9.0)),
-            _point(rr(x), -rr(17.75), rz(9.0)),
+            _point(rr(x), -rr(17.3), rz(13.5)),
+            _point(rr(x), -rr(17.75), rz(13.5)),
             rr(radius),
         )
         _append(specs, lens, f"12_SENSOR_FRONTAL_{sensor_index:02d}", color)
@@ -635,7 +635,6 @@ def run(context):
             )
             return
 
-        replaced = _replace_previous_generation(component)
 
         diameter = _parameter_value(design, "diametro_base", 45.0)
         height = _parameter_value(design, "alto_base", 20.0)
@@ -644,6 +643,7 @@ def run(context):
 
         manager = adsk.fusion.TemporaryBRepManager.get()
         specs = _build_specs(manager, radial_scale, height_scale)
+        replaced = _replace_previous_generation(component)
 
         appearances = {
             WHITE: _make_appearance(app, design, "TORETO Blanco satinado", WHITE),

@@ -10,7 +10,11 @@ import adsk.fusion
 COMPONENT_NAME = "02_TRONCO"
 FEATURE_NAME = "TRONCO_EXTERIOR_TORETO_95CM"
 BODY_PREFIX = "TRONCO95_"
-VERSION = "1.3.0"
+# 1.3.1 (29-09-2026): misma geometria. Solo cambia la version para que el
+# complemento se regenere: el montaje tenia el tronco hecho con alto_tronco =
+# 185 mm (acababa en Z 385 y dejaba 5 mm de hueco bajo la cintura) y la
+# comprobacion de version impedia rehacerlo con el valor actual (190).
+VERSION = "1.3.1"
 
 _GEOMETRY_Z = 0.0
 

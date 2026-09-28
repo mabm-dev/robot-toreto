@@ -1,0 +1,639 @@
+{
+  "version": "v14",
+  "modo": "alturas",
+  "modulos": {
+    "00_REFERENCIAS": {
+      "ocurrencia": "00_REFERENCIAS:1",
+      "z_mm": [
+        0.0,
+        0.0
+      ],
+      "cuerpos": {}
+    },
+    "01_BASE": {
+      "ocurrencia": "01_BASE:1",
+      "z_mm": [
+        -0.02,
+        228.909
+      ],
+      "cuerpos": {
+        "BASE95_01_FALDON_NEGRO": [
+          8.889,
+          96.0
+        ],
+        "BASE95_02_BANDA_NEGRA": [
+          26.667,
+          117.333
+        ],
+        "BASE95_03_CARCASA_SUPERIOR_BLANCA": [
+          108.444,
+          153.778
+        ],
+        "BASE95_04_ANILLO_NEGRO": [
+          148.444,
+          154.667
+        ],
+        "BASE95_05_CUBIERTA_TRONCOCONICA": [
+          154.222,
+          185.778
+        ],
+        "BASE95_06_JUNTA_SUPERIOR_NEGRA": [
+          180.0,
+          187.111
+        ],
+        "BASE95_07_TAPA_SUPERIOR_BLANCA": [
+          185.778,
+          200.0
+        ],
+        "BASE95_08_SEPARACION_LATERAL_01": [
+          33.778,
+          106.667
+        ],
+        "BASE95_08_SEPARACION_LATERAL_02": [
+          33.778,
+          106.667
+        ],
+        "BASE95_09_MARCO_SENSOR_FRONTAL": [
+          62.222,
+          97.778
+        ],
+        "BASE95_10_INSERTO_SENSOR_FRONTAL": [
+          70.667,
+          89.333
+        ],
+        "BASE95_11_MARCO_INFERIOR": [
+          25.778,
+          47.111
+        ],
+        "BASE95_12_SENSOR_FRONTAL_01": [
+          71.0,
+          89.0
+        ],
+        "BASE95_12_SENSOR_FRONTAL_02": [
+          73.812,
+          86.188
+        ],
+        "BASE95_12_SENSOR_FRONTAL_03": [
+          71.0,
+          89.0
+        ],
+        "BASE95_20_RUEDA_1_DELANTERA_IZQ": [
+          18.5,
+          131.5
+        ],
+        "BASE95_21_BUJE_1": [
+          45.75,
+          104.25
+        ],
+        "BASE95_22_LUZ_BUJE_1": [
+          69.6,
+          80.4
+        ],
+        "BASE95_23_RODILLO_1_01": [
+          55.067,
+          94.933
+        ],
+        "BASE95_23_RODILLO_1_02": [
+          95.239,
+          131.311
+        ],
+        "BASE95_23_RODILLO_1_03": [
+          123.861,
+          150.0
+        ],
+        "BASE95_23_RODILLO_1_04": [
+          123.861,
+          150.0
+        ],
+        "BASE95_23_RODILLO_1_05": [
+          95.239,
+          131.311
+        ],
+        "BASE95_23_RODILLO_1_06": [
+          55.067,
+          94.933
+        ],
+        "BASE95_23_RODILLO_1_07": [
+          18.689,
+          54.761
+        ],
+        "BASE95_23_RODILLO_1_08": [
+          0.0,
+          26.139
+        ],
+        "BASE95_23_RODILLO_1_09": [
+          0.0,
+          26.139
+        ],
+        "BASE95_23_RODILLO_1_10": [
+          18.689,
+          54.761
+        ],
+        "BASE95_20_RUEDA_2_DELANTERA_DER": [
+          18.5,
+          131.5
+        ],
+        "BASE95_21_BUJE_2": [
+          45.75,
+          104.25
+        ],
+        "BASE95_22_LUZ_BUJE_2": [
+          69.6,
+          80.4
+        ],
+        "BASE95_23_RODILLO_2_01": [
+          55.067,
+          94.933
+        ],
+        "BASE95_23_RODILLO_2_02": [
+          95.239,
+          131.311
+        ],
+        "BASE95_23_RODILLO_2_03": [
+          123.861,
+          150.0
+        ],
+        "BASE95_23_RODILLO_2_04": [
+          123.861,
+          150.0
+        ],
+        "BASE95_23_RODILLO_2_05": [
+          95.239,
+          131.311
+        ],
+        "BASE95_23_RODILLO_2_06": [
+          55.067,
+          94.933
+        ],
+        "BASE95_23_RODILLO_2_07": [
+          18.689,
+          54.761
+        ],
+        "BASE95_23_RODILLO_2_08": [
+          0.0,
+          26.139
+        ],
+        "BASE95_23_RODILLO_2_09": [
+          0.0,
+          26.139
+        ],
+        "BASE95_23_RODILLO_2_10": [
+          18.689,
+          54.761
+        ],
+        "BASE95_20_RUEDA_3_TRASERA_DER": [
+          18.5,
+          131.5
+        ],
+        "BASE95_21_BUJE_3": [
+          45.75,
+          104.25
+        ],
+        "BASE95_22_LUZ_BUJE_3": [
+          69.6,
+          80.4
+        ],
+        "BASE95_23_RODILLO_3_01": [
+          55.067,
+          94.933
+        ],
+        "BASE95_23_RODILLO_3_02": [
+          95.239,
+          131.311
+        ],
+        "BASE95_23_RODILLO_3_03": [
+          123.861,
+          150.0
+        ],
+        "BASE95_23_RODILLO_3_04": [
+          123.861,
+          150.0
+        ],
+        "BASE95_23_RODILLO_3_05": [
+          95.239,
+          131.311
+        ],
+        "BASE95_23_RODILLO_3_06": [
+          55.067,
+          94.933
+        ],
+        "BASE95_23_RODILLO_3_07": [
+          18.689,
+          54.761
+        ],
+        "BASE95_23_RODILLO_3_08": [
+          0.0,
+          26.139
+        ],
+        "BASE95_23_RODILLO_3_09": [
+          0.0,
+          26.139
+        ],
+        "BASE95_23_RODILLO_3_10": [
+          18.689,
+          54.761
+        ],
+        "BASE95_20_RUEDA_4_TRASERA_IZQ": [
+          18.5,
+          131.5
+        ],
+        "BASE95_21_BUJE_4": [
+          45.75,
+          104.25
+        ],
+        "BASE95_22_LUZ_BUJE_4": [
+          69.6,
+          80.4
+        ],
+        "BASE95_23_RODILLO_4_01": [
+          55.067,
+          94.933
+        ],
+        "BASE95_23_RODILLO_4_02": [
+          95.239,
+          131.311
+        ],
+        "BASE95_23_RODILLO_4_03": [
+          123.861,
+          150.0
+        ],
+        "BASE95_23_RODILLO_4_04": [
+          123.861,
+          150.0
+        ],
+        "BASE95_23_RODILLO_4_05": [
+          95.239,
+          131.311
+        ],
+        "BASE95_23_RODILLO_4_06": [
+          55.067,
+          94.933
+        ],
+        "BASE95_23_RODILLO_4_07": [
+          18.689,
+          54.761
+        ],
+        "BASE95_23_RODILLO_4_08": [
+          0.0,
+          26.139
+        ],
+        "BASE95_23_RODILLO_4_09": [
+          0.0,
+          26.139
+        ],
+        "BASE95_23_RODILLO_4_10": [
+          18.689,
+          54.761
+        ],
+        "BASE95_30_BASE_TORRETA_BLANCA": [
+          198.667,
+          206.667
+        ],
+        "BASE95_31_TORRETA_NEGRA": [
+          204.0,
+          228.889
+        ],
+        "BASE95_32_LENTE_TORRETA": [
+          211.719,
+          221.169
+        ]
+      },
+      "nominal_z_mm": [
+        0,
+        200
+      ]
+    },
+    "02_TRONCO": {
+      "ocurrencia": "02_TRONCO:1",
+      "z_mm": [
+        199.98,
+        385.02
+      ],
+      "cuerpos": {
+        "TRONCO95_01_NUCLEO_NEGRO": [
+          206.0,
+          385.0
+        ],
+        "TRONCO95_02_ZOCALO_INFERIOR_REDONDEADO": [
+          200.0,
+          226.0
+        ],
+        "TRONCO95_03_JUNTA_NEGRA_BASE": [
+          217.5,
+          223.5
+        ],
+        "TRONCO95_04_CARCASA_BLANCA_CONICA_SUAVE": [
+          220.0,
+          370.0
+        ],
+        "TRONCO95_05_HOMBRO_SUPERIOR_SUAVE": [
+          362.0,
+          385.0
+        ],
+        "TRONCO95_06_COLLAR_SUPERIOR_NEGRO": [
+          368.0,
+          385.0
+        ],
+        "TRONCO95_07_FIJACION_TRASERA_01": [
+          225.4,
+          230.6
+        ],
+        "TRONCO95_07_FIJACION_TRASERA_02": [
+          225.4,
+          230.6
+        ]
+      },
+      "nominal_z_mm": [
+        200,
+        390
+      ]
+    },
+    "03_CINTURA": {
+      "ocurrencia": "03_CINTURA:1",
+      "z_mm": [
+        389.98,
+        540.02
+      ],
+      "cuerpos": {
+        "CINTURA95_01_BLOQUE_NEGRO_REDONDEADO": [
+          394.5,
+          535.5
+        ],
+        "CINTURA95_02_COLLAR_INFERIOR_GRAFITO": [
+          390.0,
+          406.5
+        ],
+        "CINTURA95_03_COLLAR_SUPERIOR_NEGRO": [
+          523.5,
+          540.0
+        ],
+        "CINTURA95_04_PANEL_FRONTAL_GRAFITO": [
+          435.0,
+          502.5
+        ],
+        "CINTURA95_05_TAPA_TRASERA_GRAFITO": [
+          436.5,
+          505.5
+        ],
+        "CINTURA95_06_JUNTA_TAPA_TRASERA": [
+          442.5,
+          499.5
+        ],
+        "CINTURA95_07_FIJACION_TRASERA_01": [
+          431.3,
+          435.7
+        ],
+        "CINTURA95_07_FIJACION_TRASERA_02": [
+          431.3,
+          435.7
+        ]
+      },
+      "nominal_z_mm": [
+        390,
+        540
+      ]
+    },
+    "04_PECHO_HOMBROS": {
+      "ocurrencia": "04_PECHO_HOMBROS:1",
+      "z_mm": [
+        539.98,
+        737.853
+      ],
+      "cuerpos": {
+        "PECHO95_01_CARCASA_RECTANGULAR_REDONDEADA": [
+          540.0,
+          730.0
+        ],
+        "PECHO95_02_INSERTO_INFERIOR_NEGRO": [
+          540.0,
+          558.333
+        ],
+        "PECHO95_03_INSERTO_CUELLO_NEGRO": [
+          708.333,
+          731.667
+        ],
+        "PECHO95_04_MARCO_PANTALLA_NEGRO": [
+          578.667,
+          691.333
+        ],
+        "PECHO95_05_PANTALLA_GRAFITO": [
+          590.0,
+          680.0
+        ],
+        "PECHO95_06_LINEA_PANTALLA_CIAN": [
+          633.833,
+          636.167
+        ],
+        "PECHO95_06_ONDA_CIAN_01": [
+          632.083,
+          637.917
+        ],
+        "PECHO95_06_ONDA_CIAN_02": [
+          629.792,
+          640.208
+        ],
+        "PECHO95_06_ONDA_CIAN_03": [
+          626.667,
+          643.333
+        ],
+        "PECHO95_06_ONDA_CIAN_04": [
+          621.667,
+          648.333
+        ],
+        "PECHO95_06_ONDA_CIAN_05": [
+          627.5,
+          642.5
+        ],
+        "PECHO95_06_ONDA_CIAN_06": [
+          630.417,
+          639.583
+        ],
+        "PECHO95_06_ONDA_CIAN_07": [
+          625.0,
+          645.0
+        ],
+        "PECHO95_06_ONDA_CIAN_08": [
+          619.167,
+          650.833
+        ],
+        "PECHO95_06_ONDA_CIAN_09": [
+          625.417,
+          644.583
+        ],
+        "PECHO95_06_ONDA_CIAN_10": [
+          629.375,
+          640.625
+        ],
+        "PECHO95_06_ONDA_CIAN_11": [
+          623.75,
+          646.25
+        ],
+        "PECHO95_06_ONDA_CIAN_12": [
+          628.125,
+          641.875
+        ],
+        "PECHO95_06_ONDA_CIAN_13": [
+          631.667,
+          638.333
+        ],
+        "PECHO95_07_CONECTOR_HOMBRO_IZQ": [
+          643.833,
+          737.833
+        ],
+        "PECHO95_07_CONECTOR_HOMBRO_DER": [
+          643.833,
+          737.833
+        ],
+        "PECHO95_08_TAPA_TRASERA_BLANCA": [
+          576.25,
+          695.417
+        ],
+        "PECHO95_09_FIJACION_TRASERA_01": [
+          572.3,
+          577.7
+        ],
+        "PECHO95_09_FIJACION_TRASERA_02": [
+          572.3,
+          577.7
+        ]
+      },
+      "nominal_z_mm": [
+        540,
+        730
+      ]
+    },
+    "05_CUELLO": {
+      "ocurrencia": "05_CUELLO:1",
+      "z_mm": [
+        729.98,
+        785.02
+      ],
+      "cuerpos": {
+        "CUELLO95_01_NUCLEO_NEGRO": [
+          734.0,
+          785.0
+        ],
+        "CUELLO95_02_CARCASA_NEGRA": [
+          730.0,
+          785.0
+        ],
+        "CUELLO95_03_ANILLO_INFERIOR_GRAFITO": [
+          730.0,
+          740.0
+        ],
+        "CUELLO95_04_ANILLO_SUPERIOR_NEGRO": [
+          776.0,
+          785.0
+        ],
+        "CUELLO95_05_FUELLE_01": [
+          742.5,
+          747.5
+        ],
+        "CUELLO95_05_FUELLE_02": [
+          753.5,
+          758.5
+        ],
+        "CUELLO95_05_FUELLE_03": [
+          764.5,
+          769.5
+        ]
+      },
+      "nominal_z_mm": [
+        730,
+        790
+      ]
+    },
+    "06_CABEZA": {
+      "ocurrencia": "06_CABEZA:1",
+      "z_mm": [
+        789.98,
+        950.012
+      ],
+      "cuerpos": {
+        "CABEZA95_01_CARCASA_BLANCA_REDONDEADA": [
+          790.0,
+          950.0
+        ],
+        "CABEZA95_02_MARCO_FRONTAL_NEGRO": [
+          800.0,
+          940.0
+        ],
+        "CABEZA95_03_PANTALLA_GRAFITO": [
+          809.0,
+          931.0
+        ],
+        "CABEZA95_03_OJO_CIAN_IZQ": [
+          843.5,
+          884.5
+        ],
+        "CABEZA95_03_PUPILA_CIAN_IZQ": [
+          860.0,
+          868.0
+        ],
+        "CABEZA95_03_OJO_CIAN_DER": [
+          843.5,
+          884.5
+        ],
+        "CABEZA95_03_PUPILA_CIAN_DER": [
+          860.0,
+          868.0
+        ],
+        "CABEZA95_03_PUNTO_FRONTAL": [
+          809.7,
+          813.3
+        ],
+        "CABEZA95_04_TAPA_POSTERIOR_BLANCA": [
+          816.5,
+          927.5
+        ],
+        "CABEZA95_06_PANEL_LATERAL_IZQ": [
+          848.0,
+          900.0
+        ],
+        "CABEZA95_07_LENTE_LATERAL_IZQ": [
+          862.5,
+          885.5
+        ],
+        "CABEZA95_06_PANEL_LATERAL_DER": [
+          848.0,
+          900.0
+        ],
+        "CABEZA95_07_LENTE_LATERAL_DER": [
+          862.5,
+          885.5
+        ],
+        "CABEZA95_08_ANILLO_INFERIOR_CUELLO": [
+          790.0,
+          804.0
+        ]
+      },
+      "nominal_z_mm": [
+        790,
+        950
+      ]
+    },
+    "Toreto_Brazo_Mano_v13c": {
+      "ocurrencia": "Toreto_Brazo_Mano_v13c:1",
+      "z_mm": [
+        241.683,
+        761.049
+      ],
+      "cuerpos": {}
+    },
+    "Toreto_Brazo_Mano_v11(Simetría)": {
+      "ocurrencia": "Toreto_Brazo_Mano_v11(Simetría):1",
+      "z_mm": [
+        241.683,
+        761.049
+      ],
+      "cuerpos": {}
+    }
+  },
+  "huecos_mm": {
+    "01_BASE -> 02_TRONCO": -28.929,
+    "02_TRONCO -> 03_CINTURA": 4.96,
+    "03_CINTURA -> 04_PECHO_HOMBROS": -0.04,
+    "04_PECHO_HOMBROS -> 05_CUELLO": -7.873,
+    "05_CUELLO -> 06_CABEZA": 4.96
+  }
+}
