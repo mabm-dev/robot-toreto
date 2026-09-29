@@ -12,6 +12,12 @@ para medidas).
 cuerpos, cintura 11, pecho 25 en Z 520–737,8; alturas: tronco→cintura
 −36,04 y cintura→pecho −20,02, como se esperaba). Revisión visual: el
 tronco hueco se veía por la silla (mismo fallo que el pecho).
+**Cabeza 4.1.2 EJECUTADA y aceptada** (13 cuerpos; los ojos serán dibujo de
+la pantalla, no importa que asomen 1,2 mm): el visor
+plano sobresalía como una losa (el frente es curvo: a 107 mm del centro
+está 17 mm atrás) y el hueco de la pantalla rompía las esquinas. Visor
+214×128 R30 y pantalla 200×114 R24 enrasados (zona delantera de la propia
+carcasa), ojos pegados a la cara, sin hueco interior (Waveshare en fase 2).
 **Tronco 1.6.1 EJECUTADO y aceptado** (9 cuerpos): panel frontal sobre el LIDAR, piel
 de 1,5 mm que sigue el cono, 82 mm de ancho, R9, Z 228-310 (lienzo).
 Cabeza 4.1.0 EJECUTADA (14 cuerpos). **Cabeza 4.1.1 EJECUTADA** (13, dorso

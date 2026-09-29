@@ -14,7 +14,7 @@ COMPONENT_NAME = "06_CABEZA"
 FEATURE_NAME = "CABEZA_EXTERIOR_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "CABEZA95_"
-VERSION = "4.1.1"
+VERSION = "4.1.2"
 _GEOMETRY_Z = 0.0
 WHITE = (238, 239, 237)
 BLACK = (18, 21, 24)
@@ -274,37 +274,46 @@ def run(context):
             center = _p(0, (rear + front) / 2, z(zz))
             sections.append((center.z, center.x, center.y, r(half_width), (front - rear) / 2, 3.6))
         shell = _profiles.loft(m, sections, "CABEZA_CUATRO_VISTAS")
-        cavity_w = screen_width + 2 * clearance; cavity_h = screen_height + 2 * clearance
-        cutter = _rounded(
-            m, 0, front_y - d(.55), z(8.15), cavity_w, cavity_h, d(2.7), min(cavity_w, cavity_h) * .10
-        )
-        if not m.booleanOperation(shell, cutter, adsk.fusion.BooleanTypes.DifferenceBooleanType):
-            raise RuntimeError("No se pudo abrir el hueco frontal de la cabeza.")
         neck_cut = _ellipse(m, z(-.2), z(2.2), r(6.8), d(4.8))
         if not m.booleanOperation(shell, neck_cut, adsk.fusion.BooleanTypes.DifferenceBooleanType):
             raise RuntimeError("No se pudo abrir el paso inferior del cuello.")
+        # 4.1.2: el frente no es plano (en planta es una superelipse): a
+        # 107 mm del centro la carcasa esta 17 mm por detras del plano
+        # delantero. El bisel plano quedaba como una losa al aire y el hueco
+        # de la pantalla rompia las esquinas. Ahora visor y pantalla son la
+        # zona delantera de la propia carcasa dentro de su contorno (lienzo:
+        # visor 214 x 128): enrasados y con aro blanco alrededor (render).
+        # Sin hueco interior: el alojamiento de la Waveshare (197 x 115) se
+        # hara en la fase 2 detras del visor.
+        solid = m.copy(shell)
+
+        def front_region(width, height, radius):
+            region = _rounded(
+                m, 0, front_y - d(1.05), z(8.0), width, height, d(3.1), radius
+            )
+            if not m.booleanOperation(region, m.copy(solid), adsk.fusion.BooleanTypes.IntersectionBooleanType):
+                raise RuntimeError("No se pudo recortar el visor con la carcasa.")
+            return region
+
+        bezel = front_region(r(21.4), z(12.8), z(3.0))
+        screen = front_region(r(20.0), z(11.4), z(2.4))
+        for target, tool, label in ((shell, bezel, "visor"), (bezel, screen, "pantalla")):
+            if not m.booleanOperation(target, m.copy(tool), adsk.fusion.BooleanTypes.DifferenceBooleanType):
+                raise RuntimeError("No se pudo encajar " + label + ".")
         _append(specs, shell, "01_CARCASA_BLANCA_REDONDEADA", WHITE)
-        bezel_y = front_y + d(.08)
-        # Mascara exterior visual: no confundir su silueta con la medida
-        # del modulo LCD interno. El lienzo tiene un marco mucho mas curvo.
-        # 4.1.0: el loft del bisel (lamina de 5 mm que se estrechaba de golpe
-        # en los extremos) fallaba en Fusion por autointerseccion. Bisel y
-        # pantalla pasan a rectangulos de esquinas muy redondeadas (render).
-        bezel = _rounded(m, 0, bezel_y, z(8.0), r(23.60), z(14.0), d(.52), z(3.5))
         _append(specs, bezel, "02_MARCO_FRONTAL_NEGRO", BLACK)
-        screen = _rounded(m, 0, bezel_y + d(.30), z(8.0), r(21.60), z(12.20), d(.34), z(2.8))
         _append(specs, screen, "03_PANTALLA_GRAFITO", DARK)
 
-        # Los ojos son apliques exteriores ciegos. Hacen que la pieza de
-        # Fusion coincida con el frontal de referencia incluso sin textura.
-        face_y = bezel_y + d(.50)
+        # Ojos y punto: apliques que asoman 1,2 mm de la cara y entran 3 mm
+        # en ella (la cara se curva hacia atras por los lados).
+        face_y = front_y - d(.30)
         eye_x = min(screen_width * .23, r(4.55))
         for side, label in ((-1.0, "IZQ"), (1.0, "DER")):
             ring = _ring_y(
                 m,
                 side * eye_x,
                 face_y,
-                face_y + d(.12),
+                face_y + d(.42),
                 z(7.40),
                 z(2.05),
                 z(1.80),
@@ -313,7 +322,7 @@ def run(context):
             pupil = _cylinder(
                 m,
                 _p(side * eye_x, face_y + d(.02), z(7.40)),
-                _p(side * eye_x, face_y + d(.15), z(7.40)),
+                _p(side * eye_x, face_y + d(.45), z(7.40)),
                 z(.40),
             )
             _append(specs, pupil, f"03_PUPILA_CIAN_{label}", CYAN)
@@ -321,7 +330,7 @@ def run(context):
         face_dot = _cylinder(
             m,
             _p(0, face_y + d(.02), z(2.15)),
-            _p(0, face_y + d(.12), z(2.15)),
+            _p(0, face_y + d(.42), z(2.15)),
             z(.18),
         )
         _append(specs, face_dot, "03_PUNTO_FRONTAL", DARK)
