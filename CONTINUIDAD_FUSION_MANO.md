@@ -2,8 +2,85 @@
 
 ## 0. AL RETOMAR (29 sept): lo primero
 
-**Pendiente de ejecutar en Fusion, ya preparado** (en el montaje bueno
-`Toreto_hombro_encajado_sin_articulaciones_backup`; guardar versión antes):
+**EJECUTADO (29 sept): cuello–pecho como en el lienzo.** Pecho 25 cuerpos
+(Z 540–737,8), cuello 3 cuerpos; modo `alturas` sin cambios (pecho→cuello
+−7,86). Revisado: interior cerrado; el anillo de la cabeza no se ve.
+Pecho 2.8.0 EJECUTADO: tapa negra que rellena el rebaje hasta Z 722 y disco
+de 97 mm en 722-730 (forma del render 3D; el render vale para forma, no
+para medidas).
+**EJECUTADO: Pecho 2.9.0 + Cintura 2.0.0 + Tronco 1.4.0** (tronco 7
+cuerpos, cintura 11, pecho 25 en Z 520–737,8; alturas: tronco→cintura
+−36,04 y cintura→pecho −20,02, como se esperaba). Revisión visual: el
+tronco hueco se veía por la silla (mismo fallo que el pecho).
+**Tronco 1.6.1 EJECUTADO y aceptado** (9 cuerpos): panel frontal sobre el LIDAR, piel
+de 1,5 mm que sigue el cono, 82 mm de ancho, R9, Z 228-310 (lienzo).
+Cabeza 4.1.0 EJECUTADA (14 cuerpos). **Cabeza 4.1.1 EJECUTADA** (13, dorso
+liso): sin tapa posterior (con el dorso redondo solo asomaban
+sus esquinas). Antes, 4.1.0: loft de 17 secciones con esquinas
+redondeadas reales (frente 264×160 R40, frente del lateral R15, dorso R75)
+en vez de las 9 que hacían un "tejado" con arista. Primer intento: la
+carcasa salió bien pero el loft del bisel (sin tocar, de la 4.0.0 de Codex)
+falló por autointersección; probablemente la 4.0.0 nunca llegó a ejecutarse
+entera. Bisel y pantalla pasan a rectángulos redondeados (R35/R28).
+**Brazo aplazado al final** (proceso largo: documento nuevo + Reemplazar +
+juntas_espejo): disco negro Ø84 visible en el hombro con aro blanco, y
+arreglar el color gris (el script solo aplica "TORETO Blanco satinado" si ya
+existe en el documento; en uno nuevo no existe y queda acero por defecto).
+Base 2.0.0 EJECUTADA (83 cuerpos; base→tronco −28,94). **Base 2.0.1
+EJECUTADA y aceptada**: chasis recortado a R 218 (asomaba del disco), placas de
+rueda R 57, pasadores en los rodillos, carcasa de motor redonda Ø44.
+Base 2.0.0 (simulada: 83 cuerpos, Z 0-228,9, rodillos tocan Z 0). Planta REDONDA Ø450 (la lámina mide igual
+de frente y de lado; antes elipse 450×356), disco blanco Z 160-200 con
+chaflán y aro negro en la tapa, cuerpo negro Z 100-160 con arcos, chasis
+246 mm Z 31-100, pilares blancos laterales, mecanum Ø148 × 66 con 10
+rodillos Ø24 a 45° y dos placas, eje + soporte de motor visibles, LIDAR
+adelantado a Y −150 con el pedestal recortado contra el tronco. Decisiones
+(DECISIONES.md): mecanum con aspecto del render; hombro con discos del
+lienzo. Pendiente después: hombro (cápsula blanca + disco negro exterior),
+cabeza redondeada, panel sobre el LIDAR, brazos blancos.
+
+**EJECUTADO y ACEPTADO (29 sept): Tronco 1.6.0 + Cintura 2.2.0**
+(alturas: tronco→cintura −60,04, resto igual). Decisión del
+usuario: el bloque inferior de la cintura va FIJO y ENTERO por dentro del
+tronco (el giro está en la junta de anillos). La 1.5.0 (espiga, tronco
+elíptico 0,8) se ejecutó y el bloque asomaba por las esquinas: una elipse
+no puede envolver un bloque casi cuadrado. Ahora: cono 200-335 (246→228,
+fondo 0,9 medido en la vista lateral) + collar blanco de planta cuadrada
+redondeada 212×190 R85 (Z 335-390) cuyo hueco es exactamente el bloque
+(182×146 R50, baja a Z 330), silla en U recortada en el collar (fondo 354)
+y tapa interior Z 325-335. Alturas esperadas: tronco→cintura **−60**.
+Antes: Tronco 1.4.1 (8 cuerpos) + Cintura 2.0.1 ejecutados; silla de radio 40 y
+bloque inferior de radio 36 (fondo plano ±55 como el lienzo) y relleno
+blanco 08_RELLENO_SILLA_BLANCO (Z 346-390) que cierra el interior. Ejecutar
+Tronco → Cintura → alturas (debe seguir igual). **Lección:** al abrir una
+carcasa hueca, cerrar siempre el interior con un relleno. Pecho con falda hasta Z 520;
+cintura en 3 piezas (bloque superior 170×136 Z 470-540 con conector redondo
+en cada costado; junta de anillos Ø128 Z 460-470; bloque inferior 182×146
+Z 354-460 con franja y panel 74×70); tronco con borde en silla (Z 390 en
+los costados, 350 delante y detrás) y sin collar negro. Ejecutar Tronco →
+Cintura → Pecho → alturas. **Solapes nuevos a propósito:** tronco→cintura
+−36 y cintura→pecho −20. Siguiente diferencia: cabeza redondeada (render). Pecho 2.7.0
+(rebaje en U de 135 mm con fondo en Z 700, abierto por delante y cerrado a
+30 mm de la trasera; asiento negro de 6 mm que tapa el interior; copa negra
+de 97→73 mm en Z 700-730) y Cuello 2.0.0 (base 97→83 en 730-749, cuello de
+72 en 749-763, collarín de 94 en 763-790; sin fuelle). Ya copiados a
+`%APPDATA%` y comprobados con un Fusion simulado. Ejecutar Pecho → Cuello →
+modo `alturas`. Diferencias con el lienzo que quedan (juego de diferencias
+del 29 sept; las marcas naranjas del lienzo son las juntas 200/390/541/730/
+791): anillo inferior de la cabeza (144 mm, más ancho que el collarín),
+falda blanca del pecho que baja ~20 mm sobre la cintura, cintura en dos
+bloques, cuna en U arriba del tronco, panel blanco sobre el LIDAR y pantalla
+del pecho (el lienzo ~170×118; el Android real 160×90: se decide en fase 2).
+
+**HECHO el 29 sept: montaje de alturas cerrado.** Tronco 200-390, cuello
+730-790; `alturas_montaje_v14.json` da los seis módulos en su cota nominal
+(0 / 200 / 390 / 540 / 730 / 790 / 950). Juntas tronco→cintura,
+cintura→pecho y cuello→cabeza a -0.04 mm (tolerancia de la caja envolvente,
+no hueco real). Solapes a propósito: base→tronco -28.9 (torreta LIDAR hasta
+228.9) y pecho→cuello -7.9 (conectores de hombro hasta 737.8). Lo siguiente
+es la fase 2 (sección 6).
+
+Pasos que se ejecutaron (en `Toreto_hombro_encajado_sin_articulaciones_backup`):
 
 1. Complemento **`Toreto_Tronco_95cm`** (1.3.1) → regenera el tronco con
    `alto_tronco` = 190. Hoy acaba en Z 385 (se hizo con 185) y deja 5 mm de
@@ -30,8 +107,7 @@ Simetría) con el hombro coaxial con el conector del pecho; las dos manos de
 4 motores articuladas (la izquierda con `MODE='juntas_espejo'`). Interferencia
 brazo-pecho limpia y sin huecos en el hombro.
 
-**Siguiente, por orden del usuario:** montar entero (casi hecho: faltan los
-pasos 1-3) → **qué piezas lleva y dónde** (fase 2: sección 6) → dimensiones
+**Siguiente, por orden del usuario:** montar entero (HECHO 29 sept) → **qué piezas lleva y dónde** (fase 2: sección 6) → dimensiones
 reales → límites de articulaciones. Propuesta pendiente de decidir: brazo con
 hombro 2 + codo 1 + muñeca 2 movimientos, y los 4 motores de la mano.
 

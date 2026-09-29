@@ -10,7 +10,7 @@ COMPONENT_NAME = "04_PECHO_HOMBROS"
 FEATURE_NAME = "PECHO_HOMBROS_EXTERIOR_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "PECHO95_"
-VERSION = "2.6.0"
+VERSION = "2.9.0"
 
 _GEOMETRY_Z = 0.0
 
@@ -247,6 +247,38 @@ def _replace_old(component):
     return True
 
 
+def _outer_solid(manager, body_width, depth, height, r, d, z, skirt=0.0):
+    """Silueta exterior maciza del pecho (frontal y lateral redondeadas).
+
+    `skirt` la alarga hacia abajo sin cambiar los radios de las esquinas.
+    """
+    shell = _rounded_panel(
+        manager,
+        0,
+        0,
+        z(11.4) - skirt / 2,
+        body_width,
+        height + skirt,
+        depth,
+        min(body_width, height) * .12,
+    )
+    side_shell = _rounded_side(
+        manager,
+        0,
+        d(.15),
+        z(11.4) - skirt / 2,
+        depth,
+        height + skirt,
+        body_width + r(.5),
+        min(depth, height) * .17,
+    )
+    if not manager.booleanOperation(
+        shell, side_shell, adsk.fusion.BooleanTypes.IntersectionBooleanType
+    ):
+        raise RuntimeError("No se pudo redondear la silueta lateral del pecho.")
+    return shell
+
+
 def _build(
     manager,
     body_width,
@@ -270,30 +302,17 @@ def _build(
     specs = []
 
     # Cuerpo rectangular redondeado; sustituye el antiguo pecho elíptico.
-    shell = _rounded_panel(
-        manager,
-        0,
-        0,
-        z(11.4),
-        body_width,
-        height,
-        depth,
-        min(body_width, height) * .12,
-    )
-    side_shell = _rounded_side(
-        manager,
-        0,
-        d(.15),
-        z(11.4),
-        depth,
-        height,
-        body_width + r(.5),
-        min(depth, height) * .17,
+    # 2.9.0: falda del lienzo, la carcasa baja 20 mm (hasta Z 520) sobre el
+    # bloque superior de la cintura (170 x 136 mm), con 3 mm de holgura.
+    skirt = z(2.4)
+    shell = _outer_solid(manager, body_width, depth, height, r, d, z, skirt)
+    waist_opening = _box(
+        manager, 0, 0, z(1.5) - skirt / 2, r(17.6), r(14.2), z(3.0) + skirt + .2
     )
     if not manager.booleanOperation(
-        shell, side_shell, adsk.fusion.BooleanTypes.IntersectionBooleanType
+        shell, waist_opening, adsk.fusion.BooleanTypes.DifferenceBooleanType
     ):
-        raise RuntimeError("No se pudo redondear la silueta lateral del pecho.")
+        raise RuntimeError("No se pudo abrir la falda sobre la cintura.")
     inner = _rounded_panel(
         manager,
         0,
@@ -340,25 +359,37 @@ def _build(
     ):
         raise RuntimeError("No se pudo abrir el hueco de la pantalla.")
 
-    neck_cut = _ellipse(manager, z(19.0), z(23.2), r(6.4), d(4.3), r(6.1))
+    # 2.7.0: rebaje en U del cuello como en el lienzo frontal (135 mm de
+    # ancho, fondo en Z 700). Antes era una ranura de 112 x 33 mm que
+    # atravesaba el pecho de delante a atrás y dejaba ver el interior hueco.
+    # Se abre por delante y acaba 30 mm antes de la pared trasera (en la vista
+    # trasera de la lámina el borde superior es recto). Un asiento negro de
+    # 6 mm forma el suelo y las paredes del rebaje y cierra la carcasa.
+    notch_width = r(13.5)
+    lining = r(.6)
+    floor_z = z(19.2)
+    notch_top = z(22.8) + 4.0
+    notch_front = -depth / 2 - 1.0
+    notch_back = depth / 2 - d(2.95)
+    envelope_back = notch_back + lining
+    envelope_bottom = floor_z - lining
+
+    def notch_envelope():
+        return _rounded_panel(
+            manager,
+            0,
+            (notch_front + envelope_back) / 2,
+            (envelope_bottom + notch_top) / 2,
+            notch_width,
+            notch_top - envelope_bottom,
+            envelope_back - notch_front,
+            r(3.1),
+        )
+
     if not manager.booleanOperation(
-        shell, neck_cut, adsk.fusion.BooleanTypes.DifferenceBooleanType
+        shell, notch_envelope(), adsk.fusion.BooleanTypes.DifferenceBooleanType
     ):
-        raise RuntimeError("No se pudo abrir el paso superior del cuello.")
-    neck_channel = _rounded_panel(
-        manager,
-        0,
-        0,
-        z(21.05),
-        r(11.2),
-        z(4.5),
-        depth + d(2.0),
-        z(1.45),
-    )
-    if not manager.booleanOperation(
-        shell, neck_channel, adsk.fusion.BooleanTypes.DifferenceBooleanType
-    ):
-        raise RuntimeError("No se pudo abrir la escotadura visible del cuello.")
+        raise RuntimeError("No se pudo abrir el rebaje del cuello.")
     _append(specs, shell, "01_CARCASA_RECTANGULAR_REDONDEADA", WHITE)
 
     lower = _rounded_panel(
@@ -366,10 +397,49 @@ def _build(
     )
     _append(specs, lower, "02_INSERTO_INFERIOR_NEGRO", BLACK)
 
-    neck_insert = _ring(
-        manager, z(20.2), z(23.0), (r(7.25), d(5.05)), (r(5.85), d(3.75))
+    seat = notch_envelope()
+    if not manager.booleanOperation(
+        seat,
+        _outer_solid(manager, body_width, depth, height, r, d, z),
+        adsk.fusion.BooleanTypes.IntersectionBooleanType,
+    ):
+        raise RuntimeError("No se pudo recortar el asiento del cuello.")
+    notch = _rounded_panel(
+        manager,
+        0,
+        (notch_front + notch_back) / 2,
+        (floor_z + notch_top) / 2,
+        notch_width - 2 * lining,
+        notch_top - floor_z,
+        notch_back - notch_front,
+        r(2.5),
     )
-    _append(specs, neck_insert, "03_INSERTO_CUELLO_NEGRO", BLACK)
+    # 2.8.0: como en el render 3D, una tapa negra rellena el rebaje hasta
+    # 8 mm bajo el borde (Z 722); solo se vacía lo que queda por encima.
+    cover_top = z(22.8) - .8
+    if not manager.booleanOperation(
+        notch,
+        _box(
+            manager,
+            0,
+            (notch_front + notch_back) / 2,
+            (cover_top + notch_top) / 2,
+            notch_width,
+            notch_back - notch_front + 1.0,
+            notch_top - cover_top,
+        ),
+        adsk.fusion.BooleanTypes.IntersectionBooleanType,
+    ):
+        raise RuntimeError("No se pudo limitar el vaciado sobre la tapa.")
+    if not manager.booleanOperation(
+        seat, notch, adsk.fusion.BooleanTypes.DifferenceBooleanType
+    ):
+        raise RuntimeError("No se pudo vaciar el asiento del cuello.")
+    _append(specs, seat, "03_TAPA_CUELLO_NEGRA", BLACK)
+
+    # Disco negro sobre la tapa (Z 722-730), 97 mm como la base del cuello.
+    disc = _ellipse(manager, cover_top, z(22.8), r(4.85), r(4.85 * .77))
+    _append(specs, disc, "03_DISCO_CUELLO_NEGRO", BLACK)
 
     front_y = -depth / 2 - d(.08)
     bezel = _rounded_panel(
@@ -608,7 +678,7 @@ def run(context):
             f"Hueco dispositivo: {screen_width * 10:.0f} x {screen_height * 10:.0f} mm\n"
             f"Holgura: {clearance * 10:.0f} mm por lado\n\n"
             "Pantalla y carcasas de hombro incluidas.\n"
-            "Z inferior global previsto: 540 mm.\n"
+            "Z inferior global previsto: 520 mm (falda sobre la cintura).\n"
             + _body_report(component)
             + "\nSin mecánica ni esqueleto.",
             "Robot Toreto 95 cm",

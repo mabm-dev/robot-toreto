@@ -288,6 +288,20 @@ cambian.
 
 Actualizado: `README.md`, `docs/CINEMATICA.md` (nodos `wheel_fl/fr/rl/rr`).
 
+**Confirmado el 29 sept 2026:** el render 3D dibuja ruedas omnidireccionales
+de doble fila, pero se mantienen **mecanum** (lo que dibuja el lienzo y lo
+que da movimiento lateral con las cuatro ruedas paralelas), con el
+**aspecto del render**: rodillos más gruesos y juntos, tapa negra con luz.
+
+## Hombro: unión pecho-brazo con discos apilados (29 sept 2026)
+
+El lienzo dibuja la unión del hombro como **discos negros apilados** y el
+render como un solo cilindro. Se sigue el **lienzo**: el usuario lo prefiere
+porque varios discos grandes reparten mejor el peso del brazo. Lo que sí se
+toma del render y de la vista lateral de la lámina: la parte alta del brazo
+es una cápsula blanca redondeada con un **disco negro grande** en la cara
+exterior (hoy es un bloque con un medio disco).
+
 ## Fuente maestra de cotas: lámina de 4 vistas calibrada (26 ago 2026)
 
 `cad-toreto/toreto_fusion_95cm/reference/lamina_maestra_4vistas.jpg` es la

@@ -10,7 +10,7 @@ COMPONENT_NAME = "03_CINTURA"
 FEATURE_NAME = "CINTURA_EXTERIOR_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "CINTURA95_"
-VERSION = "1.3.0"
+VERSION = "2.2.0"
 
 _GEOMETRY_Z = 0.0
 
@@ -205,53 +205,83 @@ def _replace_old(component):
 
 
 def _build(manager, rs, hs):
-    r = lambda value: value * rs
-    z = lambda value: value * hs
+    # 2.0.0: cintura del lienzo frontal en tres piezas, con la forma del
+    # render 3D. Medidas en mm del lienzo (diametro_base 450, alto_cintura
+    # 150); z = 0 es la junta con el tronco (Z 390). El bloque inferior baja
+    # 36 mm dentro de la silla del tronco y el superior sube bajo la falda
+    # del pecho: ambos solapes son a propósito.
+    r = lambda mm: mm / 10.0 * rs / 1.125
+    z = lambda mm: mm / 10.0 * hs / 1.5
     specs = []
 
-    # Bloque compacto de esquinas redondeadas. En las referencias la cintura
-    # no es un cono: es una cápsula rectangular negra más estrecha que el
-    # pecho y que el pedestal inferior.
-    core = _rounded_xy(
-        manager, 0, 0, z(5.0), r(20.2), r(14.6), z(9.4), r(2.35)
-    )
-    _append(specs, core, "01_BLOQUE_NEGRO_REDONDEADO", BLACK)
+    # Bloque superior: 170 x 136 mm, Z 470-540, con un conector redondo en
+    # cada costado.
+    upper = _rounded_xy(manager, 0, 0, z(115), r(170), r(136), z(70), r(14))
+    _append(specs, upper, "01_BLOQUE_SUPERIOR_NEGRO", BLACK)
+    for side, label in ((-1.0, "IZQ"), (1.0, "DER")):
+        port = _cylinder(
+            manager,
+            _point(side * r(83), 0, z(108)),
+            _point(side * r(91), 0, z(108)),
+            r(12.5),
+        )
+        _union(
+            manager,
+            port,
+            _cylinder(
+                manager,
+                _point(side * r(91), 0, z(108)),
+                _point(side * r(92), 0, z(108)),
+                r(8),
+            ),
+            "conector lateral",
+        )
+        _append(specs, port, f"02_CONECTOR_LATERAL_{label}", DARK)
 
-    lower = _rounded_xy(
-        manager, 0, 0, z(0.55), r(20.8), r(15.2), z(1.1), r(2.55)
-    )
-    _append(specs, lower, "02_COLLAR_INFERIOR_GRAFITO", DARK)
+    # Junta de giro: cilindro de 128 mm (Z 460-470) con dos nervios.
+    joint = _cylinder(manager, _point(0, 0, z(70)), _point(0, 0, z(80)), r(62))
+    for z1 in (72.5, 75.5):
+        _union(
+            manager,
+            joint,
+            _cylinder(manager, _point(0, 0, z(z1)), _point(0, 0, z(z1 + 2)), r(64)),
+            "nervio de la junta",
+        )
+    _append(specs, joint, "03_JUNTA_ANILLOS_GRAFITO", DARK)
 
-    upper = _rounded_xy(
-        manager, 0, 0, z(9.45), r(19.8), r(14.25), z(1.1), r(2.25)
-    )
-    _append(specs, upper, "03_COLLAR_SUPERIOR_NEGRO", BLACK)
+    # Bloque inferior: 182 x 146 mm hasta Z 460. 2.2.0: va fijo y entero
+    # por dentro del collar del tronco hasta Z 330 (planta de esquinas de
+    # radio 50 como en el render); lo que se ve por delante lo marca el
+    # borde en U del collar (fondo en Z 354). Sustituye a la espiga.
+    lower = _rounded_xy(manager, 0, 0, z(5), r(182), r(146), z(130), r(50))
+    _append(specs, lower, "04_BLOQUE_INFERIOR_NEGRO", BLACK)
 
-    # Paneles ciegos sutiles: la lámina frontal sí muestra el rectángulo
-    # central del bloque negro, mientras la trasera conserva su propia tapa.
-    front_y = -r(7.38)
+    # Franja central de 94 mm en los dos bloques y panel cuadrado de 74 x 70.
+    for name, face_y, z1, z2 in (
+        ("05_FRANJA_INFERIOR_GRAFITO", r(73), -z(30), z(70)),
+        ("05_FRANJA_SUPERIOR_GRAFITO", r(68), z(80), z(130)),
+    ):
+        strip = _box(
+            manager, 0, -face_y - r(.5), (z1 + z2) / 2, r(94), r(1), z2 - z1
+        )
+        _append(specs, strip, name, DARK)
     front_panel = _rounded_panel(
-        manager, 0, front_y, z(5.25), r(8.0), z(4.5), r(0.42), r(0.68)
+        manager, 0, -r(74), z(21.5), r(74), z(69), r(2), r(8)
     )
-    _append(specs, front_panel, "04_PANEL_FRONTAL_GRAFITO", DARK)
+    _append(specs, front_panel, "06_PANEL_FRONTAL_GRAFITO", DARK)
 
-    back_y = r(7.38)
-    panel = _rounded_panel(
-        manager, 0, back_y, z(5.4), r(8.4), z(4.6), r(0.45), r(0.72)
+    back_panel = _rounded_panel(
+        manager, 0, r(74), z(21.5), r(74), z(69), r(2), r(8)
     )
-    _append(specs, panel, "05_TAPA_TRASERA_GRAFITO", DARK)
-
-    seam = _box(manager, 0, back_y + r(0.42), z(5.4), r(0.14), r(0.16), z(3.8))
-    _append(specs, seam, "06_JUNTA_TAPA_TRASERA", BLACK)
-
-    for index, x in enumerate((-2.6, 2.6), start=1):
+    _append(specs, back_panel, "07_TAPA_TRASERA_GRAFITO", DARK)
+    for index, x in enumerate((-25, 25), start=1):
         fastener = _cylinder(
             manager,
-            _point(r(x), back_y + r(0.40), z(2.9)),
-            _point(r(x), back_y + r(0.62), z(2.9)),
-            r(0.22),
+            _point(r(x), r(75), z(-8)),
+            _point(r(x), r(77), z(-8)),
+            r(2.2),
         )
-        _append(specs, fastener, f"07_FIJACION_TRASERA_{index:02d}", BLACK)
+        _append(specs, fastener, f"08_FIJACION_TRASERA_{index:02d}", BLACK)
     return specs
 
 

@@ -11,7 +11,8 @@ BODY_PREFIX = "CUELLO95_"
 # complemento se regenere: el montaje tenia el cuello hecho con alto_cuello =
 # 55 mm (acababa en Z 785 y dejaba 5 mm de hueco bajo la cabeza) y la
 # comprobacion de version impedia rehacerlo con el valor actual (60).
-VERSION = "1.2.1"
+# 2.0.0 (29-09-2026): cuello del lienzo (base, cuello de 72 mm y collarin).
+VERSION = "2.0.0"
 _GEOMETRY_Z = 0.0
 BLACK = (18, 21, 24)
 DARK = (43, 48, 53)
@@ -111,27 +112,21 @@ def run(context):
             )
         )
         rs = _value(design, "ancho_pecho", 34.0) / 34.0
-        hs = height / 5.5
+        hs = height / 6.0
         r = lambda x: x * rs
         z = lambda x: x * hs
+        # 2.0.0: tramos del lienzo frontal, sin fuelle. Anchos 97->83 / 72 / 94
+        # mm; fondo con la proporción elíptica anterior (0,77). La copa que
+        # queda bajo Z 730 es del pecho (03_COPA_CUELLO_NEGRA).
+        k = .77
         m = adsk.fusion.TemporaryBRepManager.get()
         specs = []
-        core = _ellipse(m, z(.4), z(5.5), r(4.1), r(3.2))
-        _append(specs, core, "01_NUCLEO_NEGRO", BLACK)
-        shell = _ring(m, z(0), z(5.5), (r(5.5), r(4.25)), (r(4.65), r(3.40)))
-        _append(specs, shell, "02_CARCASA_NEGRA", BLACK)
-        lower = _ring(m, z(0), z(1.0), (r(6.0), r(4.6)), (r(4.25), r(3.15)))
-        _append(specs, lower, "03_ANILLO_INFERIOR_GRAFITO", DARK)
-        upper = _ring(m, z(4.6), z(5.5), (r(5.3), r(4.05)), (r(4.1), r(3.05)))
-        _append(specs, upper, "04_ANILLO_SUPERIOR_NEGRO", BLACK)
-        for index, (z1, z2, major, minor) in enumerate(
-            ((1.25, 1.75, 5.35, 4.10), (2.35, 2.85, 5.15, 3.95), (3.45, 3.95, 4.95, 3.80)),
-            start=1,
-        ):
-            bellows = _ring(
-                m, z(z1), z(z2), (r(major), r(minor)), (r(4.25), r(3.15))
-            )
-            _append(specs, bellows, f"05_FUELLE_{index:02d}", DARK)
+        base = _ellipse(m, z(0), z(1.9), r(4.85), r(4.85 * k), r(4.15))
+        _append(specs, base, "01_BASE_GRAFITO", DARK)
+        neck = _ellipse(m, z(1.9), z(3.3), r(3.6), r(3.6 * k))
+        _append(specs, neck, "02_CUELLO_NEGRO", BLACK)
+        collar = _ellipse(m, z(3.3), z(6.0), r(4.7), r(4.7 * k))
+        _append(specs, collar, "03_COLLARIN_NEGRO", BLACK)
         appearances = {
             BLACK: _appearance(app, design, "TORETO Negro profundo", BLACK),
             DARK: _appearance(app, design, "TORETO Grafito", DARK),

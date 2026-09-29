@@ -14,7 +14,7 @@ COMPONENT_NAME = "06_CABEZA"
 FEATURE_NAME = "CABEZA_EXTERIOR_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "CABEZA95_"
-VERSION = "4.0.0"
+VERSION = "4.1.1"
 _GEOMETRY_Z = 0.0
 WHITE = (238, 239, 237)
 BLACK = (18, 21, 24)
@@ -255,14 +255,22 @@ def run(context):
         front_y = 8.9
         # Horizontal contour sections: bowed frontal crown and asymmetric
         # lateral rear. No rectangle/ellipse intersection seam on the crown.
+        # 4.1.0: las 9 secciones antiguas se estrechaban de golpe arriba y
+        # abajo (234 -> 176 -> 70 mm en los ultimos 15 mm) con el frente fijo:
+        # quedaba un "tejado" con arista. Ahora cada seccion sale de esquinas
+        # redondeadas reales en las tres vistas: de frente 264 x 160 con radio
+        # 40 (lienzo); de lado en D, frente casi recto con canto de radio 1,5
+        # (no pisa el bisel) y dorso muy redondo de radio 7,5 (lamina, render).
+        def arc(radius, zz):
+            edge = max(0.0, radius - min(zz, 16.0 - zz))
+            return radius - (radius * radius - edge * edge) ** .5
+
         sections = []
-        for zz, half_width, rear, front in (
-            (0.0, 4.0, -2.0, 6.5), (.45, 9.4, -5.5, 8.3),
-            (1.5, 11.9, -9.2, 8.9), (3.5, 12.95, -11.5, 8.9),
-            (7.7, 13.2, -12.4, 8.9), (12.1, 12.95, -11.5, 8.9),
-            (14.5, 11.7, -8.8, 8.8), (15.55, 8.8, -5.3, 8.1),
-            (16.0, 3.5, -2.0, 6.0),
-        ):
+        for zz in (0.0, .2, .5, 1.0, 1.7, 2.5, 3.5, 4.5, 8.0,
+                   11.5, 12.5, 13.5, 14.3, 15.0, 15.5, 15.8, 16.0):
+            half_width = 13.2 - arc(4.0, zz)
+            rear = back_y + arc(7.5, zz)
+            front = front_y - arc(1.5, zz)
             center = _p(0, (rear + front) / 2, z(zz))
             sections.append((center.z, center.x, center.y, r(half_width), (front - rear) / 2, 3.6))
         shell = _profiles.loft(m, sections, "CABEZA_CUATRO_VISTAS")
@@ -279,9 +287,12 @@ def run(context):
         bezel_y = front_y + d(.08)
         # Mascara exterior visual: no confundir su silueta con la medida
         # del modulo LCD interno. El lienzo tiene un marco mucho mas curvo.
-        bezel = _bowed_face(m, bezel_y, z(8.0), r(23.60), z(14.0), d(.52), "BISEL_CURVO")
+        # 4.1.0: el loft del bisel (lamina de 5 mm que se estrechaba de golpe
+        # en los extremos) fallaba en Fusion por autointerseccion. Bisel y
+        # pantalla pasan a rectangulos de esquinas muy redondeadas (render).
+        bezel = _rounded(m, 0, bezel_y, z(8.0), r(23.60), z(14.0), d(.52), z(3.5))
         _append(specs, bezel, "02_MARCO_FRONTAL_NEGRO", BLACK)
-        screen = _bowed_face(m, bezel_y + d(.30), z(8.0), r(21.60), z(12.20), d(.34), "CARA_CURVA")
+        screen = _rounded(m, 0, bezel_y + d(.30), z(8.0), r(21.60), z(12.20), d(.34), z(2.8))
         _append(specs, screen, "03_PANTALLA_GRAFITO", DARK)
 
         # Los ojos son apliques exteriores ciegos. Hacen que la pieza de
@@ -319,11 +330,9 @@ def run(context):
         # fina, sin el marco negro grueso de la versión anterior.
         # Recortar contra la envolvente curva evita la placa plana flotando
         # por detras del casco que sobresalia en las vistas laterales.
-        back_panel = _rounded(m, 0, back_y + d(1.90), z(8.2), r(22.1), z(11.1), d(4.0), z(2.8))
-        back_envelope = _d_side_envelope(m, width, height, back_y, front_y)
-        if not m.booleanOperation(back_panel, back_envelope, adsk.fusion.BooleanTypes.IntersectionBooleanType):
-            raise RuntimeError("No se pudo adaptar la tapa posterior al casco.")
-        _append(specs, back_panel, "04_TAPA_POSTERIOR_BLANCA", WHITE)
+        # 4.1.1: sin tapa posterior. Con el dorso redondo de la 4.1.0 quedaba
+        # casi entera dentro del casco y solo asomaban sus esquinas; la lamina
+        # y el render muestran el dorso liso.
         for side, label in ((-1.0, "IZQ"), (1.0, "DER")):
             cx = side * (width / 2 + r(.12))
             camera = _rounded_side(m, cx, 0, z(8.4), d(5.2), z(5.2), r(.55), z(.9))

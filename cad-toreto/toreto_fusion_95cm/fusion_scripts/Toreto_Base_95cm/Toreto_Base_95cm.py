@@ -9,7 +9,11 @@ import adsk.fusion
 
 COMPONENT_NAME = "01_BASE"
 BODY_PREFIX = "BASE95_"
-VERSION = "1.10.0"
+# 2.0.0 (29-09-2026): planta redonda, disco + cuerpo con arcos + pilares,
+# ruedas mecanum con aspecto del render, eje y soporte visibles.
+# 2.0.1 (29-09-2026): chasis recortado al disco, placas R 57, pasadores en
+# los rodillos y carcasa de motor redonda.
+VERSION = "2.0.1"
 
 WHITE = (238, 239, 237)
 BLACK = (18, 21, 24)
@@ -282,326 +286,286 @@ def _make_appearance(app, design, name, rgb):
     return appearance
 
 
+def _intersect(manager, target, tool, label):
+    if not manager.booleanOperation(
+        target, tool, adsk.fusion.BooleanTypes.IntersectionBooleanType
+    ):
+        raise RuntimeError(f"Falló la intersección: {label}")
+    return target
+
+
+def _rounded_xy(manager, x, y, z, width, depth, height, radius):
+    """Prisma vertical con planta rectangular y cuatro esquinas redondas."""
+    radius = min(radius, width * 0.48, depth * 0.48)
+    body = _box(manager, x, y, z, width - 2 * radius, depth, height)
+    _union(
+        manager,
+        body,
+        _box(manager, x, y, z, width, depth - 2 * radius, height),
+        "centro de planta redondeada",
+    )
+    for sx in (-1.0, 1.0):
+        for sy in (-1.0, 1.0):
+            cx = x + sx * (width / 2 - radius)
+            cy = y + sy * (depth / 2 - radius)
+            _union(
+                manager,
+                body,
+                _cylinder(
+                    manager,
+                    _point(cx, cy, z - height / 2),
+                    _point(cx, cy, z + height / 2),
+                    radius,
+                ),
+                "esquina de planta redondeada",
+            )
+    return body
+
+
 def _build_specs(manager, radial_scale, height_scale):
-    rs = radial_scale
-    hs = height_scale
+    """Base 2.0.0: lámina de 4 vistas (medidas) y render 3D (forma).
+
+    Planta REDONDA de 450 mm (la lámina mide lo mismo de frente y de lado;
+    antes era una elipse de 450 x 356). Disco blanco de Z 160 a 200 con un
+    aro negro en la tapa, cuerpo negro con arcos sobre las ruedas, chasis
+    negro delante y detrás, pilares blancos entre las ruedas, ruedas
+    mecanum con aspecto del render, eje y soporte de motor visibles.
+    """
     specs = []
 
-    def rz(value):
-        return value * hs
+    # Medidas en mm (diametro_base 450, alto_base 200).
+    def rr(mm):
+        return mm / 10.0 * radial_scale / 1.125
 
-    def rr(value):
-        return value * rs
+    def rz(mm):
+        return mm / 10.0 * height_scale * 22.5 / 20.0
 
-    wheel_angles = tuple(
-        math.radians(value) for value in (-135.0, -45.0, 45.0, 135.0)
-    )
-    # Centros medidos en la lamina: via 370 mm, batalla 296 mm.
-    # Los ejes son paralelos a X: bujes en laterales, rodillos en frontal.
-    wheel_center_radius = 18.5
+    radius = 225.0
+
+    # --- Ruedas: centros de la lámina (vía 390, batalla 296). -------------
+    wheel_x, wheel_y = 195.0, 148.0
+    # 66 mm de ancho (lienzo ~70): placas en ±29-33, rodillos hasta ±26.
     roller_count = 10
-    roller_length = 3.4
-    roller_radius = 1.0
-    # Diez rodillos: el mas bajo esta a 18 grados de la vertical.
-    # Resolver su envolvente para un diametro exterior de 150 mm.
-    contact_angle = 2 * math.pi * 2 / roller_count
-    roller_ring = (
-        7.5 - roller_radius
-        - roller_length / 2 * 0.72 * abs(math.cos(contact_angle))
-        / math.sqrt(1 + 0.72 ** 2)
-    ) / abs(math.sin(contact_angle))
-    # Incluir las puntas de los rodillos, no solo el disco, al apoyar en Z=0.
+    roller_radius = 12.0         # rodillos de 24 mm
+    roller_core = 40.0           # entre centros de las puntas: 64 mm en total
+    roller_ring = 60.5
+    slope = 1.0                  # 45 grados, mecanum
     wheel_z = max(
         abs(roller_ring * math.sin(2 * math.pi * i / roller_count))
-        + roller_length / 2 * abs(0.72 * math.cos(2 * math.pi * i / roller_count))
-        / math.sqrt(1 + 0.72 ** 2) + roller_radius
+        + roller_core / 2 * abs(slope * math.cos(2 * math.pi * i / roller_count))
+        / math.sqrt(1 + slope ** 2)
+        + roller_radius
         for i in range(roller_count)
     )
-    well_radius = wheel_z + 0.4
+    arch_radius = wheel_z + 8.0
+    wheel_positions = (
+        (-1.0, -1.0, "DELANTERA_IZQ"),
+        (1.0, -1.0, "DELANTERA_DER"),
+        (1.0, 1.0, "TRASERA_DER"),
+        (-1.0, 1.0, "TRASERA_IZQ"),
+    )
 
-    lower_skirt = _elliptical_ring(
-        manager,
-        rz(1.0),
-        rz(10.8),
-        rr(20.0),
-        rr(15.8),
-        rr(19.15),
-        rr(14.95),
-    )
-    _cut_wheel_wells(
-        manager,
-        lower_skirt,
-        wheel_angles,
-        wheel_center_radius,
-        wheel_z,
-        well_radius,
-    )
-    _append(specs, lower_skirt, "01_FALDON_NEGRO", BLACK)
-
-    sensor_band = _elliptical_ring(
-        manager,
-        rz(3.0),
-        rz(13.2),
-        rr(19.15),
-        rr(14.95),
-        rr(18.55),
-        rr(14.35),
-    )
-    _cut_wheel_wells(
-        manager,
-        sensor_band,
-        wheel_angles,
-        wheel_center_radius,
-        wheel_z,
-        well_radius,
-    )
-    _append(specs, sensor_band, "02_BANDA_NEGRA", BLACK)
-
-    upper_shell = _elliptical_ring(
-        manager,
-        rz(14.3),
-        rz(17.3),
-        rr(20.0),
-        rr(16.25),
-        rr(19.15),
-        rr(15.40),
-    )
-    _cut_wheel_wells(
-        manager,
-        upper_shell,
-        wheel_angles,
-        wheel_center_radius,
-        wheel_z,
-        well_radius,
-    )
-    _append(specs, upper_shell, "03_CARCASA_SUPERIOR_BLANCA", WHITE)
-
-    trim = _elliptical_ring(
-        manager,
-        rz(16.7),
-        rz(17.4),
-        rr(19.75),
-        rr(16.0),
-        rr(17.55),
-        rr(13.8),
-    )
-    _append(specs, trim, "04_ANILLO_NEGRO", BLACK)
-
-    deck = _ellipse(
-        manager,
-        rz(17.35),
-        rz(20.9),
-        rr(19.55),
-        rr(15.8),
-        rr(17.55),
-    )
-    _append(specs, deck, "05_CUBIERTA_TRONCOCONICA", WHITE)
-
-    deck_trim = _elliptical_ring(
-        manager,
-        rz(20.25),
-        rz(21.05),
-        rr(17.15),
-        rr(13.75),
-        rr(13.1),
-        rr(9.9),
-    )
-    _append(specs, deck_trim, "06_JUNTA_SUPERIOR_NEGRA", BLACK)
-
-    top_lid = _ellipse(
-        manager, rz(20.9), rz(22.5), rr(16.2), rr(12.9)
-    )
-    _append(specs, top_lid, "07_TAPA_SUPERIOR_BLANCA", WHITE)
-
-    for side_index, side in enumerate((-1.0, 1.0), start=1):
-        side_cover = _rounded_side_panel(
+    def arch(side_x, side_y):
+        cx, cy = side_x * wheel_x, side_y * wheel_y
+        return _cylinder(
             manager,
-            side * rr(19.45),
-            0,
-            rz(11.5),
-            rr(9.4),
-            rz(16.0),
-            rr(1.05),
-            rr(.65),
-        )
-        _append(
-            specs,
-            side_cover,
-            f"08_SEPARACION_LATERAL_{side_index:02d}",
-            WHITE,
+            _point(rr(cx - side_x * 45), rr(cy), rz(wheel_z)),
+            _point(rr(cx + side_x * 60), rr(cy), rz(wheel_z)),
+            rr(arch_radius),
         )
 
+    # --- Pilares blancos entre las ruedas (vista lateral de la lámina). ---
+    def side_pillar(side):
+        pillar = _rounded_side_panel(
+            manager, rr(side * 187.5), 0, rz(117.5), rr(112), rz(165),
+            rr(75), rr(25),
+        )
+        # Solo hasta el disco (Z 160) y con la cara exterior curva.
+        _intersect(
+            manager, pillar,
+            _box(manager, rr(side * 187.5), 0, rz(97.5), rr(80), rr(120), rz(125)),
+            "pilar hasta el disco",
+        )
+        _intersect(
+            manager, pillar,
+            _cylinder(manager, _point(0, 0, rz(30)), _point(0, 0, rz(165)), rr(radius)),
+            "pilar enrasado",
+        )
+        return pillar
+
+    # --- Chasis negro (Z 31-100) y cuerpo con arcos (Z 100-160). ---------
+    chassis = _rounded_xy(
+        manager, 0, 0, rz(65.5), rr(246), rr(410), rz(69), rr(20)
+    )
+    # 2.0.1: recortado al círculo del cuerpo negro; sus esquinas asomaban
+    # fuera del disco (a 231 mm del centro).
+    _intersect(
+        manager, chassis,
+        _cylinder(manager, _point(0, 0, rz(30)), _point(0, 0, rz(101)), rr(218)),
+        "chasis bajo el disco",
+    )
+    _append(specs, chassis, "01_CHASIS_NEGRO", BLACK)
+
+    body = _cylinder(manager, _point(0, 0, rz(100)), _point(0, 0, rz(160)), rr(218))
+    for side_y in (-1.0, 1.0):
+        # Frente y trasera planos, enrasados con el chasis.
+        _difference(
+            manager, body,
+            _box(manager, 0, rr(side_y * 230), rz(130), rr(246), rr(50), rz(62)),
+            "frente plano",
+        )
+    for side_x, side_y, _label in wheel_positions:
+        _difference(manager, body, arch(side_x, side_y), "arco de rueda")
+    for side in (-1.0, 1.0):
+        _difference(manager, body, side_pillar(side), "hueco del pilar")
+    _append(specs, body, "02_CUERPO_NEGRO_ARCOS", BLACK)
+
+    # --- Disco blanco de Z 160 a 200 con chaflán y aro negro. ------------
+    disc = _cylinder(manager, _point(0, 0, rz(160)), _point(0, 0, rz(192)), rr(radius))
+    _union(
+        manager, disc,
+        manager.createCylinderOrCone(
+            _point(0, 0, rz(192)), rr(radius), _point(0, 0, rz(200)), rr(217)
+        ),
+        "chaflán del disco",
+    )
+
+    def top_ring(z1, z2):
+        ring = _cylinder(manager, _point(0, 0, z1), _point(0, 0, z2), rr(212))
+        _difference(
+            manager, ring,
+            _cylinder(manager, _point(0, 0, z1 - .1), _point(0, 0, z2 + .1), rr(200)),
+            "aro de la tapa",
+        )
+        return ring
+
+    _difference(manager, disc, top_ring(rz(197), rz(200.1)), "ranura del aro")
+    _append(specs, disc, "03_DISCO_SUPERIOR_BLANCO", WHITE)
+    _append(specs, top_ring(rz(197), rz(200.5)), "04_ARO_NEGRO_TAPA", BLACK)
+
+    for index, side in enumerate((-1.0, 1.0), start=1):
+        _append(specs, side_pillar(side), f"08_PILAR_LATERAL_{index:02d}", WHITE)
+
+    # --- Frente: ventanas de sensores (misma forma, sobre el chasis). -----
+    front = -205.0
     fascia = _rounded_panel(
-        manager,
-        0,
-        -rr(15.65),
-        rz(13.5),
-        rr(16.4),
-        rz(4.0),
-        rr(1.3),
-        rr(1.15),
+        manager, 0, rr(front - 6.3), rz(120), rr(184.5), rz(35.6), rr(14.6), rr(12.9)
     )
     _append(specs, fascia, "09_MARCO_SENSOR_FRONTAL", BLACK)
-
-    sensor_insert = _rounded_panel(
-        manager,
-        0,
-        -rr(16.42),
-        rz(13.5),
-        rr(13.6),
-        rz(2.1),
-        rr(0.45),
-        rr(0.62),
+    insert = _rounded_panel(
+        manager, 0, rr(front - 15.0), rz(120), rr(153), rz(18.7), rr(5.1), rr(7.0)
     )
-    _append(specs, sensor_insert, "10_INSERTO_SENSOR_FRONTAL", DARK)
-
+    _append(specs, insert, "10_INSERTO_SENSOR_FRONTAL", DARK)
     lower_fascia = _rounded_panel(
-        manager,
-        0,
-        -rr(15.5),
-        rz(7.5),
-        rr(14.8),
-        rz(2.4),
-        rr(1.15),
-        rr(0.72),
+        manager, 0, rr(front - 6.5), rz(66.7), rr(166.5), rz(21.3), rr(12.9), rr(8.1)
     )
     _append(specs, lower_fascia, "11_MARCO_INFERIOR", BLACK)
-
-    for sensor_index, (x, radius, color) in enumerate(
-        [(-5.8, 0.8, DARK), (0.0, 0.55, CYAN), (5.8, 0.8, DARK)],
-        start=1,
+    for index, (x, lens_radius, color) in enumerate(
+        [(-65.25, 9.0, DARK), (0.0, 6.2, CYAN), (65.25, 9.0, DARK)], start=1
     ):
         lens = _cylinder(
             manager,
-            _point(rr(x), -rr(17.3), rz(13.5)),
-            _point(rr(x), -rr(17.75), rz(13.5)),
-            rr(radius),
+            _point(rr(x), rr(front - 17.0), rz(120)),
+            _point(rr(x), rr(front - 20.5), rz(120)),
+            rr(lens_radius),
         )
-        _append(specs, lens, f"12_SENSOR_FRONTAL_{sensor_index:02d}", color)
+        _append(specs, lens, f"12_SENSOR_FRONTAL_{index:02d}", color)
 
-    wheel_labels = (
-        "DELANTERA_IZQ",
-        "DELANTERA_DER",
-        "TRASERA_DER",
-        "TRASERA_IZQ",
-    )
+    # --- Ruedas mecanum con aspecto del render. --------------------------
+    for number, (side_x, side_y, label) in enumerate(wheel_positions, start=1):
+        cx, cy = side_x * wheel_x, side_y * wheel_y
 
-    for wheel_number, (wheel_angle, label) in enumerate(
-        zip(wheel_angles, wheel_labels), start=1
-    ):
-        axis_x = -1.0 if math.cos(wheel_angle) < 0 else 1.0
-        axis_y = 0.0
-        tangent_x = -axis_y
-        tangent_y = axis_x
-        cx = axis_x * wheel_center_radius
-        cy = (-1.0 if math.sin(wheel_angle) < 0 else 1.0) * 14.8
-        half_width = 2.8
-        tire = _cylinder(
-            manager,
-            _point(
-                cx - axis_x * half_width,
-                cy - axis_y * half_width,
-                wheel_z,
-            ),
-            _point(
-                cx + axis_x * half_width,
-                cy + axis_y * half_width,
-                wheel_z,
-            ),
-            5.65,
-        )
-        _append(specs, tire, f"20_RUEDA_{wheel_number}_{label}", BLACK)
-
-        hub = _cylinder(
-            manager,
-            _point(
-                cx + axis_x * rr(1.75),
-                cy + axis_y * rr(1.75),
-                wheel_z,
-            ),
-            _point(
-                cx + axis_x * rr(2.55),
-                cy + axis_y * rr(2.55),
-                wheel_z,
-            ),
-            rr(2.60),
-        )
-        _append(specs, hub, f"21_BUJE_{wheel_number}", DARK)
-
-        cap = _cylinder(
-            manager,
-            _point(
-                cx + axis_x * rr(2.5),
-                cy + axis_y * rr(2.5),
-                wheel_z,
-            ),
-            _point(
-                cx + axis_x * rr(2.78),
-                cy + axis_y * rr(2.78),
-                wheel_z,
-            ),
-            rr(0.48),
-        )
-        _append(specs, cap, f"22_LUZ_BUJE_{wheel_number}", CYAN)
-
-        for roller_index in range(roller_count):
-            roller_angle = 2.0 * math.pi * roller_index / roller_count
-            ring_offset = roller_ring * math.cos(roller_angle)
-            center = _point(
-                cx + tangent_x * ring_offset,
-                cy + tangent_y * ring_offset,
-                wheel_z + roller_ring * math.sin(roller_angle),
+        def along(a, b, r, _cx=cx, _cy=cy, _s=side_x):
+            return _cylinder(
+                manager,
+                _point(rr(_cx + _s * a), rr(_cy), rz(wheel_z)),
+                _point(rr(_cx + _s * b), rr(_cy), rz(wheel_z)),
+                rr(r),
             )
-            handedness = 1.0 if wheel_number in (1, 3) else -1.0
+
+        _append(specs, along(-29, 29, 44), f"20_RUEDA_{number}_{label}", BLACK)
+        # 2.0.1: placas de R 57 que tapan las puntas de los rodillos.
+        _append(specs, along(-33, -29, 57), f"24_PLACA_INTERIOR_{number}", DARK)
+        _append(specs, along(29, 33, 57), f"24_PLACA_EXTERIOR_{number}", DARK)
+        _append(specs, along(33, 36, 30), f"21_BUJE_{number}", BLACK)
+        _append(specs, along(36, 37, 5.4), f"22_LUZ_BUJE_{number}", CYAN)
+
+        # Eje visible entre el chasis y la rueda, y soporte del motor.
+        _append(
+            specs,
+            _cylinder(
+                manager,
+                _point(rr(side_x * 150), rr(cy), rz(wheel_z)),
+                _point(rr(cx - side_x * 33), rr(cy), rz(wheel_z)),
+                rr(18),
+            ),
+            f"25_EJE_{number}",
+            BLACK,
+        )
+        # 2.0.1: carcasa de motor redonda (Ø 44) en vez del bloque cuadrado.
+        _append(
+            specs,
+            _cylinder(
+                manager,
+                _point(rr(side_x * 123), rr(cy), rz(wheel_z)),
+                _point(rr(side_x * 150), rr(cy), rz(wheel_z)),
+                rr(22),
+            ),
+            f"26_SOPORTE_MOTOR_{number}",
+            DARK,
+        )
+
+        handedness = 1.0 if number in (1, 3) else -1.0
+        for index in range(roller_count):
+            angle = 2.0 * math.pi * index / roller_count
+            # Tangente en el plano YZ de la rueda (eje de la rueda = X).
+            center = _point(
+                rr(cx),
+                rr(cy + roller_ring * math.cos(angle)),
+                rz(wheel_z + roller_ring * math.sin(angle)),
+            )
             direction = _vector(
-                tangent_x * (-0.72 * math.sin(roller_angle))
-                + axis_x * handedness,
-                tangent_y * (-0.72 * math.sin(roller_angle))
-                + axis_y * handedness,
-                0.72 * math.cos(roller_angle),
+                handedness,
+                -slope * math.sin(angle),
+                slope * math.cos(angle),
             )
             roller = _capsule(
-                manager,
-                center,
-                direction,
-                roller_length,
-                roller_radius,
+                manager, center, direction, rr(roller_core), rr(roller_radius)
             )
-            _append(
-                specs,
-                roller,
-                f"23_RODILLO_{wheel_number}_{roller_index + 1:02d}",
-                ROLLER,
-            )
+            # 2.0.1: pasador del rodillo, 4 mm fuera de cada punta (render).
+            pin = direction.copy()
+            pin.normalize()
+            pin.scaleBy(rr(roller_core / 2 + roller_radius + 4))
+            p1 = center.copy()
+            p1.translateBy(_vector(-pin.x, -pin.y, -pin.z))
+            p2 = center.copy()
+            p2.translateBy(pin)
+            _union(manager, roller, _cylinder(manager, p1, p2, rr(3)), "pasador")
+            _append(specs, roller, f"23_RODILLO_{number}_{index + 1:02d}", ROLLER)
 
-    # La torreta superior esta centrada en X en el lienzo frontal. El valor
-    # antiguo de +88 mm procedia de una composicion previa y la desplazaba a
-    # la derecha del pedestal.
-    pod_x = 0.0
-    pod_y = -rr(8.7)
+    # --- LIDAR: delante del tronco, con el pedestal abrazándolo. ----------
+    # El zócalo del tronco (1.6.0) mide 254 x 229 mm en Z 200.
+    pod_y = -150.0
     pod_base = _cylinder(
-        manager,
-        _point(pod_x, pod_y, rz(22.35)),
-        _point(pod_x, pod_y, rz(23.25)),
-        rr(4.15),
+        manager, _point(0, rr(pod_y), rz(198.7)), _point(0, rr(pod_y), rz(206.7)), rr(46.7)
+    )
+    _difference(
+        manager, pod_base,
+        _ellipse(manager, rz(195), rz(210), rr(127), rr(114.3)),
+        "pedestal contra el tronco",
     )
     _append(specs, pod_base, "30_BASE_TORRETA_BLANCA", WHITE)
-
     pod = _cylinder(
-        manager,
-        _point(pod_x, pod_y, rz(22.95)),
-        _point(pod_x, pod_y, rz(25.75)),
-        rr(3.05),
+        manager, _point(0, rr(pod_y), rz(204)), _point(0, rr(pod_y), rz(228.9)), rr(34.3)
     )
     _append(specs, pod, "31_TORRETA_NEGRA", BLACK)
-
-    pod_lens = _cylinder(
+    lens = _cylinder(
         manager,
-        _point(pod_x, pod_y - rr(3.0), rz(24.35)),
-        _point(pod_x, pod_y - rr(3.35), rz(24.35)),
-        rr(0.42),
+        _point(0, rr(pod_y - 33.75), rz(216.4)),
+        _point(0, rr(pod_y - 37.7), rz(216.4)),
+        rr(4.7),
     )
-    _append(specs, pod_lens, "32_LENTE_TORRETA", CYAN)
+    _append(specs, lens, "32_LENTE_TORRETA", CYAN)
 
     return specs
 
