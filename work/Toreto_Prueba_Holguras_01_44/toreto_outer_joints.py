@@ -37,7 +37,7 @@ def _axis_points(center,axis,length_mm):
 
 def parameters(parts,master_y_mm,shoulder_center=None,shoulder_size=None,
                shoulder_axis=None,shoulder_axle_radius=None,shoulder_axle_span=None,
-               shoulder_bore_span=None):
+               shoulder_bore_span=None,shoulder_face=None):
     """shoulder_center (mm, marco plano): v11 coloca el eje del hombro en el
     pivote de la lamina, dentro de la cabeza de la carcasa. Sin el, se usa el
     perfil superior como antes.
@@ -111,7 +111,63 @@ def parameters(parts,master_y_mm,shoulder_center=None,shoulder_size=None,
         start,end=shoulder_bore_span
         item['bore_p1']=tuple(item['center'][i]+item['axis'][i]*start for i in range(3))
         item['bore_p2']=tuple(item['center'][i]+item['axis'][i]*end for i in range(3))
+    if shoulder_face is not None:
+        # v14: disco negro en la cara exterior (ver _shoulder_face).
+        result['shoulder']['face']=dict(shoulder_face)
+        _,up,_=_frame(upper)
+        result['shoulder']['arm_up']=(up[0],0.0,up[1])
     return result
+
+
+def _shoulder_face(manager,shell,axle,spec):
+    """v14: cara exterior del hombro como en la lamina lateral y el render.
+
+    La carcasa se recorta plana en la cara exterior del alojamiento (dentro
+    de trim_radius) para que su tramo inclinado no tape el disco; el disco
+    negro y su escalon central se unen a la tapa del eje."""
+    import adsk.fusion
+    face=spec['face']
+    axis=spec['axis']
+    half=spec['outer_length']*.5
+    def at(distance):
+        return tuple(spec['center'][i]+axis[i]*distance for i in range(3))
+    def cylinder(d1,d2,radius):
+        body=manager.createCylinderOrCone(_point(at(d1)),radius*.1,_point(at(d2)),radius*.1)
+        if not body:
+            raise RuntimeError('No se pudo crear la cara del hombro')
+        return body
+    trim=cylinder(half,half+150.0,face['trim_radius'])
+    if not manager.booleanOperation(shell,trim,adsk.fusion.BooleanTypes.DifferenceBooleanType):
+        raise RuntimeError('No se pudo recortar la cara del hombro')
+    # Parte alta redonda (render): mas alla del eje, hacia arriba del brazo,
+    # solo queda lo que esta dentro de la capsula: el radio Y EL LARGO del
+    # alojamiento (con el largo infinito quedaban restos del brazo fuera de
+    # sus caras, una franja arriba y un escalon del lado del pecho).
+    import adsk.core
+    up=spec['arm_up']
+    size=400.0
+    box_center=tuple(spec['center'][i]+up[i]*size*.5 for i in range(3))
+    above=manager.createBox(adsk.core.OrientedBoundingBox3D.create(
+        _point(box_center),adsk.core.Vector3D.create(*up),adsk.core.Vector3D.create(0,1,0),
+        size*.1,size*.1,size*.1))
+    capsule=cylinder(-half,half,spec['outer_radius'])
+    if not above or not manager.booleanOperation(above,capsule,adsk.fusion.BooleanTypes.DifferenceBooleanType):
+        raise RuntimeError('No se pudo preparar la parte alta del hombro')
+    if not manager.booleanOperation(shell,above,adsk.fusion.BooleanTypes.DifferenceBooleanType):
+        raise RuntimeError('No se pudo redondear la parte alta del hombro')
+    if not shell.isSolid or shell.lumps.count!=1:
+        raise RuntimeError('Redondear el hombro dividio el brazo')
+    if not shell.isSolid or shell.lumps.count!=1:
+        raise RuntimeError('El recorte de la cara del hombro dividio el brazo')
+    thickness=face['thickness']
+    for body in (cylinder(half,half+thickness,face['radius']),
+                 cylinder(half+thickness,half+thickness+face['boss_thickness'],face['boss_radius'])):
+        if not manager.booleanOperation(axle,body,adsk.fusion.BooleanTypes.UnionBooleanType):
+            raise RuntimeError('No se pudo unir el disco del hombro')
+    return ('hombro v14: cara plana R{:.0f}, disco negro R{:.0f} x {:.0f} mm y escalon '
+            'R{:.0f} x {:.0f} mm; aro blanco de {:.0f} mm').format(
+                face['trim_radius'],face['radius'],thickness,face['boss_radius'],
+                face['boss_thickness'],spec['outer_radius']-face['radius'])
 
 
 def _integrate(manager,shell,spec,label,clearance_mm=0.8,margin_mm=2.0):
@@ -186,5 +242,8 @@ def build(manager,upper_body,forearm_body,parts,master_y_mm,shoulder_center=None
     specs=parameters(parts,master_y_mm,shoulder_center=shoulder_center,
                      shoulder_size=shoulder_size,**shoulder_overrides)
     shoulder,shoulder_report=_integrate(manager,upper_body,specs['shoulder'],'hombro')
+    reports=[shoulder_report]
+    if 'face' in specs['shoulder']:
+        reports.append(_shoulder_face(manager,upper_body,shoulder,specs['shoulder']))
     wrist,wrist_report=_integrate_closed_wrist(manager,forearm_body,specs['wrist'])
-    return shoulder,wrist,[shoulder_report,wrist_report]
+    return shoulder,wrist,reports+[wrist_report]

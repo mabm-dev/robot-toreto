@@ -27,7 +27,7 @@
         0.0
       ],
       "taladro_radio_mm": 37.3,
-      "pared_alojamiento_mm": 7.7,
+      "pared_alojamiento_mm": 17.7,
       "alojamiento_x_mm": [
         169.4,
         222.6
@@ -45,12 +45,12 @@
     "comprobacion_fusion": {
       "tapa_hombro": {
         "esperado_mm": [
-          210.953,
+          212.453,
           0.0,
           690.833
         ],
         "fusion_mm": [
-          210.953,
+          212.453,
           0.0,
           690.833
         ],

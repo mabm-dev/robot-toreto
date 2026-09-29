@@ -28,7 +28,23 @@ en vez de las 9 que hacían un "tejado" con arista. Primer intento: la
 carcasa salió bien pero el loft del bisel (sin tocar, de la 4.0.0 de Codex)
 falló por autointersección; probablemente la 4.0.0 nunca llegó a ejecutarse
 entera. Bisel y pantalla pasan a rectángulos redondeados (R35/R28).
-**Brazo aplazado al final** (proceso largo: documento nuevo + Reemplazar +
+**HECHO (30 sept): brazo v14 en el montaje.** `Toreto_Brazo_Mano_v14`
+reemplazó al v13c (derecho; el izquierdo por simetría), juntas_espejo: 20
+juntas y 16 relaciones (peor pasador 0,001 mm); alturas iguales; modo nuevo
+`interferencias` (solo lectura): 0 choques brazos-resto (212 × 144 cuerpos).
+Con esto el exterior queda igualado al lienzo y al render. SIGUIENTE: fase 2
+(qué piezas lleva y dónde). Detalle del brazo v14: (`MODE='ver_brazo'` en `Toreto_Prueba_Holguras_01_44`):
+cápsula blanca del hombro R55 (antes R45), cara exterior recortada plana
+(R60) para que el tramo inclinado no tape el disco, disco negro R45×3 +
+escalón R20×2 unidos a la tapa del eje (que ahora acaba en la cara), y
+`_appearance` crea los colores si faltan. Primera ejecución OK (tapa y
+rótula a 0,0 mm; blanco/negro bien); el usuario pidió la parte alta como la
+cápsula redonda del render: por encima del eje se quita todo lo que esté a
+más de R55 del eje (tapa semicircular concéntrica al disco). Simuladores y 20 pruebas OK
+(test_arm_pose actualizado a v14). Pasos: documento HÍBRIDO vacío → ejecutar
+→ guardar como `Toreto_Brazo_Mano_v14` → en el montaje Reemplazar componente
+(brazo derecho) → borrar juntas de la mano izquierda → `MODE='juntas_espejo'`
+→ `MODE='alturas'`. Antes estaba aplazado (proceso largo: documento nuevo + Reemplazar +
 juntas_espejo): disco negro Ø84 visible en el hombro con aro blanco, y
 arreglar el color gris (el script solo aplica "TORETO Blanco satinado" si ya
 existe en el documento; en uno nuevo no existe y queda acero por defecto).

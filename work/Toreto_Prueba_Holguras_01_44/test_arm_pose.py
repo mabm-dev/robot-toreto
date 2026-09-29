@@ -90,8 +90,15 @@ class GeometryTests(unittest.TestCase):
         # v13: el eje va en X y cruza la carcasa en diagonal: algo más largo.
         self.assertGreaterEqual(length, width)
         self.assertAlmostEqual(V11['shoulder_size_mm'][0], V11['shoulder_section_mm'][0])
-        self.assertLessEqual(radius, depth / 2 - pose.SHOULDER_WALL_MM)
-        self.assertEqual(radius, pose.SHOULDER_DISC_RADIUS_MM)
+        # v11 (sin pecho): el disco cabe en la carcasa.
+        v11_depth = V11['shoulder_section_mm'][1]
+        self.assertLessEqual(V11['shoulder_size_mm'][1], v11_depth / 2 - pose.SHOULDER_WALL_MM)
+        # v14: la cápsula blanca redonda es más ancha que el brazo, como en la
+        # lámina lateral y el render, pero solo unos milímetros.
+        self.assertEqual(radius, pose.SHOULDER_CAP_RADIUS_MM)
+        self.assertLessEqual(radius - depth / 2, 5.0)
+        # El disco negro deja un aro blanco visible alrededor.
+        self.assertGreaterEqual(radius - pose.SHOULDER_FACE['radius'], 8.0)
         spec = outer_joints.parameters(
             RESULT['parts'], ARM['master_plane_y_mm'],
             shoulder_center=RESULT['shoulder_center_flat'],

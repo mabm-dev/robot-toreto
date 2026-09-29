@@ -42,6 +42,16 @@ SHOULDER_DISC_RADIUS_MM = 45.0
 # Margen mínimo entre el disco y la cara delantera/trasera de la carcasa.
 SHOULDER_WALL_MM = 3.0
 
+# v14 (lámina lateral y render): la parte alta del brazo es una cápsula
+# blanca redonda de Ø110 con un DISCO NEGRO de Ø90 en la cara exterior (tapa
+# de motor con un escalón central). Antes el disco era la tapa R36,5 del eje,
+# 2 mm fuera de la cara, y la carcasa inclinada del brazo tapaba su mitad de
+# abajo. Ahora la carcasa se recorta plana en la cara exterior (R60) y el
+# disco queda entero a la vista, con un aro blanco de 10 mm alrededor.
+SHOULDER_CAP_RADIUS_MM = 55.0
+SHOULDER_FACE = dict(radius=45.0, thickness=3.0, boss_radius=20.0,
+                     boss_thickness=2.0, trim_radius=60.0)
+
 # v13: conector negro del hombro DERECHO del pecho, tal como lo genera
 # `Toreto_Pecho_Hombros_95cm` 2.5.0 con sus parámetros por defecto (ancho_pecho
 # 340, alto_pecho 190 y base+tronco+cintura = 540 mm): cilindro en el eje X de
@@ -274,12 +284,14 @@ def solve(parts, master_y_mm, terminals, outer_joints, lamina=LAMINA_MM,
         # Eje en X exacta: atraviesa la carcasa en diagonal (la carcasa baja
         # inclinada ~15° en la vista frontal), así que el alojamiento es algo
         # más largo que el ancho del perfil.
+        outer_radius = SHOULDER_CAP_RADIUS_MM
         shoulder_size = (width_mm / abs(up[2]), outer_radius)
         # Taladro = conector + holgura (lo hace outer_joints con axle+0,8);
         # el eje propio del brazo queda como tapa, desde justo después del
-        # extremo del conector hasta la cara exterior.
+        # extremo del conector hasta la cara exterior (v14: hasta la cara;
+        # el disco negro va encima).
         cap_start = chest['x_outer'] + CAP_GAP_MM - shoulder_l[0]
-        cap_end = (shoulder_size[0] + 4.0) / 2
+        cap_end = shoulder_size[0] / 2
         # v13b: el taladro empieza BORE_MARGIN_MM antes del extremo interior
         # del conector. La carcasa baja inclinada ~15° y, con el taladro solo
         # del largo del alojamiento, rozaba el conector (1807 mm3 en el montaje).
@@ -288,7 +300,8 @@ def solve(parts, master_y_mm, terminals, outer_joints, lamina=LAMINA_MM,
         shoulder_overrides = dict(shoulder_axis=(1.0, 0.0, 0.0),
                                   shoulder_axle_radius=chest['radius'],
                                   shoulder_axle_span=(cap_start, cap_end),
-                                  shoulder_bore_span=(bore_start, bore_end))
+                                  shoulder_bore_span=(bore_start, bore_end),
+                                  shoulder_face=SHOULDER_FACE)
 
     joints = outer_joints.parameters(scaled, master_y_mm, shoulder_center=shoulder_f,
                                      shoulder_size=shoulder_size, **shoulder_overrides)
@@ -323,8 +336,13 @@ def solve(parts, master_y_mm, terminals, outer_joints, lamina=LAMINA_MM,
     }
     placed['muneca_rotula'] = placed['fin_antebrazo']
     # La pieza negra del hombro: el eje entero (v11) o la tapa exterior (v13).
-    cap_center_f = tuple((a + b) / 2 for a, b in zip(joints['shoulder']['axle_p1'],
-                                                     joints['shoulder']['axle_p2']))
+    # v14: la pieza incluye el disco y su escalón, que salen de la cara.
+    cap_outer = joints['shoulder']['axle_p2']
+    face = joints['shoulder'].get('face')
+    if face:
+        extra = face['thickness'] + face['boss_thickness']
+        cap_outer = tuple(p + a * extra for p, a in zip(cap_outer, joints['shoulder']['axis']))
+    cap_center_f = tuple((a + b) / 2 for a, b in zip(joints['shoulder']['axle_p1'], cap_outer))
     placed['tapa_hombro'] = upper_t.point(cap_center_f)
     residuals = {name: round(math.dist(placed[name], lamina[key]), 2)
                  for name, key in (('hombro', 'hombro'), ('codo', 'codo'),

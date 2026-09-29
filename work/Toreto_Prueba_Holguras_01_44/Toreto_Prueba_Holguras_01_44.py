@@ -16,8 +16,11 @@ SCRIPT_VERSION='v14'
 # 'ver_brazo' -> v11: brazo con las medidas y la postura de la lamina y la
 #                mano abierta (toreto_arm_pose.py); publica para mirarlo.
 #                v13: con el hombro encajado en el conector del pecho.
+#                v14: disco negro del hombro visible y colores.
 # 'alturas'      -> v14: en el MONTAJE, SOLO LECTURA: alturas de cada modulo y
 #                cuerpo y huecos entre modulos (alturas_montaje_v14.json).
+# 'interferencias' -> v14: en el MONTAJE, SOLO LECTURA: choques de cada cuerpo
+#                de los brazos con el resto (interferencias_brazos_v14.json).
 # 'juntas_espejo' -> v12: en el MONTAJE, anade juntas y relaciones a la mano
 #                izquierda copiada por simetria. No crea ni mueve geometria.
 MODE='alturas'
@@ -41,6 +44,38 @@ def placement(axis,y_mm):
     return matrix
 
 
+# v14: colores de los modulos. Antes solo se aplicaba la apariencia si ya
+# existia en el documento; el brazo se publica en un documento nuevo, donde no
+# existe, y quedaba con el acero gris por defecto.
+_COLORS={'TORETO Blanco satinado':(238,239,237),'TORETO Negro profundo':(18,21,24),
+         'TORETO Grafito':(43,48,53),'TORETO Cian':(0,174,235)}
+
+
+def _appearance(design,name):
+    existing=design.appearances.itemByName(name)
+    if existing or name not in _COLORS:
+        return existing
+    try:
+        app=adsk.core.Application.get()
+        generic=None
+        library=app.materialLibraries.itemById('BA5EE55E-9982-449B-9D66-9F036540E140')
+        if library:
+            generic=library.appearances.itemById('Prism-129')
+        for index in range(app.materialLibraries.count):
+            if generic:
+                break
+            generic=app.materialLibraries.item(index).appearances.itemById('Prism-129')
+        if not generic:
+            return None
+        appearance=design.appearances.addByCopy(generic,name)
+        color=appearance.appearanceProperties.itemById('opaque_albedo')
+        if color:
+            color.value=adsk.core.Color.create(*_COLORS[name],255)
+        return appearance
+    except Exception:
+        return None
+
+
 def import_temp_bodies(component,items,feature_name,design):
     """Import transient bodies into one component without changing coordinates."""
     base=component.features.baseFeatures.add()
@@ -53,7 +88,7 @@ def import_temp_bodies(component,items,feature_name,design):
             if not body:
                 raise RuntimeError('No se pudo crear '+label)
             body.name=label
-            appearance=design.appearances.itemByName(appearance_name)
+            appearance=_appearance(design,appearance_name)
             if appearance:
                 body.appearance=appearance
             body.isLightBulbOn=True
@@ -472,6 +507,54 @@ def report_heights(design,report_path):
     return report
 
 
+def report_arm_interference(design,report_path,min_mm3=0.01):
+    """Solo lectura (v14): volumen de cada choque entre un cuerpo de un brazo
+    (incluida la mano) y un cuerpo de otro modulo del montaje. No crea, mueve
+    ni borra nada: trabaja con copias temporales."""
+    manager=adsk.fusion.TemporaryBRepManager.get()
+    report=dict(version='v14',modo='interferencias',choques=[],errores=[])
+    arm_bodies=[]
+    other_bodies=[]
+    for occurrence in design.rootComponent.allOccurrences:
+        path=occurrence.fullPathName
+        top=path.split('+')[0]
+        is_arm='Brazo_Mano' in top
+        for body in occurrence.component.bRepBodies:
+            if not body.isSolid:
+                continue
+            try:
+                proxy=body.createForAssemblyContext(occurrence)
+            except Exception as error:
+                report['errores'].append(path+'/'+body.name+': '+str(error))
+                continue
+            (arm_bodies if is_arm else other_bodies).append((top,body.name,proxy))
+
+    def overlap(a,b):
+        return all(a.minPoint.asArray()[i]<b.maxPoint.asArray()[i] and
+                   b.minPoint.asArray()[i]<a.maxPoint.asArray()[i] for i in range(3))
+    for arm_top,arm_name,arm_proxy in arm_bodies:
+        for other_top,other_name,other_proxy in other_bodies:
+            if not overlap(arm_proxy.boundingBox,other_proxy.boundingBox):
+                continue
+            try:
+                a=manager.copy(arm_proxy)
+                b=manager.copy(other_proxy)
+                if not manager.booleanOperation(a,b,adsk.fusion.BooleanTypes.IntersectionBooleanType):
+                    continue
+                volume=a.volume*1000.0
+            except Exception as error:
+                report['errores'].append(arm_name+' x '+other_name+': '+str(error))
+                continue
+            if volume>=min_mm3:
+                report['choques'].append(dict(brazo=arm_top,cuerpo_brazo=arm_name,
+                    modulo=other_top,cuerpo_modulo=other_name,volumen_mm3=round(volume,2)))
+    report['choques'].sort(key=lambda c:-c['volumen_mm3'])
+    report['cuerpos_brazo']=len(arm_bodies)
+    report['cuerpos_resto']=len(other_bodies)
+    report_path.write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf-8')
+    return report
+
+
 def add_mirror_joints(design,report_path):
     """v12: juntas y relaciones de la mano IZQUIERDA, creada por el usuario con
     Crear > Simetria (plano YZ) en el montaje. Excepcion autorizada por el
@@ -591,8 +674,21 @@ def run(context):
     try:
         design=adsk.fusion.Design.cast(app.activeProduct)
         if not design: raise RuntimeError('Abre el documento del robot')
-        if MODE not in ('ensayo', 'ver_pinza', 'ensayo_lateral', 'ver_brazo', 'juntas_espejo', 'alturas'):
+        if MODE not in ('ensayo', 'ver_pinza', 'ensayo_lateral', 'ver_brazo', 'juntas_espejo',
+                        'alturas', 'interferencias'):
             raise RuntimeError('Modo de ensayo desconocido: '+MODE)
+        if MODE=='interferencias':
+            result=report_arm_interference(design,ROOT/'interferencias_brazos_v14.json')
+            lines=['{} / {}: {} mm3'.format(c['cuerpo_brazo'],c['cuerpo_modulo'],c['volumen_mm3'])
+                   for c in result['choques'][:12]]
+            app.userInterface.messageBox(
+                'Solo lectura: no se ha cambiado nada.\n\n'
+                'Choques brazo-resto del robot: {} (cuerpos de brazo {}, resto {}).\n'.format(
+                    len(result['choques']),result['cuerpos_brazo'],result['cuerpos_resto'])+
+                '\n'.join(lines)+('\n...' if len(result['choques'])>12 else '')+
+                '\n\nDetalles: interferencias_brazos_v14.json',
+                'Toreto '+SCRIPT_VERSION+' - interferencias de los brazos')
+            return
         if MODE=='alturas':
             result=report_heights(design,ROOT/'alturas_montaje_v14.json')
             lines=['{}: {} mm'.format(k,v) for k,v in result['huecos_mm'].items()]
@@ -780,7 +876,7 @@ def run(context):
             fit=arm_pose['chest_fit'] or {}
             app.userInterface.messageBox(
                 'Brazo con las medidas de la lamina ENCAJADO en el conector del pecho '
-                '(v13c: para el pecho 2.6.0), mano abierta.\n\n'
+                '(v14: disco negro del hombro visible y colores blanco/negro), mano abierta.\n\n'
                 'Hombro: eje en X sobre el eje del conector ({} mm); taladro R{} mm para '
                 'el conector R36,5; pared {} mm. Queda {} mm del punto de la lamina.\n'
                 'Giros de la postura: hombro {} grados, codo {} grados.\n'
@@ -789,7 +885,7 @@ def run(context):
                 'Comprobado en Fusion: tapa del hombro a {} mm y rotula a {} mm de donde '
                 'deben estar.\n'
                 'Mano en su sitio respecto al ensayo: {} (peor falange {} mm).\n\n'
-                'Guardalo como Toreto_Brazo_Mano_v13c y en el montaje usa Reemplazar componente.\n'
+                'Guardalo como Toreto_Brazo_Mano_v14 y en el montaje usa Reemplazar componente.\n'
                 'Detalles: vista_brazo_v11.json'.format(
                     fit.get('pivote_a_eje_conector_mm'),fit.get('taladro_radio_mm'),
                     fit.get('pared_alojamiento_mm'),
