@@ -293,6 +293,41 @@ de doble fila, pero se mantienen **mecanum** (lo que dibuja el lienzo y lo
 que da movimiento lateral con las cuatro ruedas paralelas), con el
 **aspecto del render**: rodillos más gruesos y juntos, tapa negra con luz.
 
+## Brazo: requisitos de movimiento y fuerza (30 sept 2026)
+
+- **Juntar las manos delante del pecho.** Con un solo eje en el hombro y otro
+  en el codo cada brazo se mueve en su propio plano vertical (separados unos
+  400 mm) y las manos nunca se acercan. Por eso el brazo lleva **hombro 2
+  (subir/bajar + rotación del brazo sobre su eje) + codo 1 + muñeca 2**; con
+  el codo a 90° y el brazo girado, antebrazo (164 mm) y mano (~90) llegan al
+  centro. Pendiente comprobar en el modelo que al plegarlos no chocan con el
+  pecho.
+- **Carga: 1 kg por mano, también con el brazo estirado** (el usuario
+  descartó rebajarlo a 0,5 kg estirado: "es muy poco").
+- **Coste:** los actuadores comerciales (2.000-4.000 € los dos brazos) son
+  demasiado caros. Vía elegida: **reductoras impresas en la P1S** (cicloidal
+  en hombro y rotación del brazo, NEMA17 + TMC2209), servos baratos en la
+  muñeca y micromotores con tendones en la mano; objetivo ~300 € los dos
+  brazos. Motores del hombro dentro del pecho y el del codo cerca del
+  hombro para aligerar el brazo. Primero un prototipo del hombro que
+  demuestre 15 N·m; si aguanta, se repite en el resto.
+- **Par mínimo por articulación** (brazo estirado en horizontal con 1 kg,
+  margen ×2). Masas SUPUESTAS hasta elegir piezas: brazo con motor de codo
+  0,6 kg, antebrazo con motores de muñeca y mano 0,8 kg, mano 0,25 kg;
+  largos del modelo: hombro-codo 157 mm, codo-fin del antebrazo 164 mm.
+
+  | Articulación | Par estático | Mínimo con margen |
+  |---|---|---|
+  | Hombro subir/bajar | ~7,2 N·m | **~15 N·m** |
+  | Hombro rotación del brazo (codo a 90°) | ~3,6 N·m | ~7 N·m |
+  | Codo | ~3,6 N·m | ~7 N·m |
+  | Muñeca | ~0,9 N·m | ~2 N·m |
+
+  Recalcular con las masas reales en cuanto se elijan los motores. Aligerar
+  el antebrazo (motores de la mano cerca del codo) es lo que más baja el par
+  del hombro. La carga adelanta el centro de masas: comprobar el equilibrio
+  con el brazo estirado y 1 kg.
+
 ## Hombro: unión pecho-brazo con discos apilados (29 sept 2026)
 
 El lienzo dibuja la unión del hombro como **discos negros apilados** y el
