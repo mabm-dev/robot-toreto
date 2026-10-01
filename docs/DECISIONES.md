@@ -76,6 +76,10 @@ resuelve la primera pero no necesariamente la segunda.
 
 ## Ordenador de a bordo: ROG Ally X Z2 en bahía extraíble (29 ago 2026)
 
+> **Superada el 1 oct 2026** en cuanto a la ubicación: la Ally va en el
+> pecho, a la vista (ver "Ally en el pecho, iPhone en la cabeza"). Sigue
+> vigente que es el ordenador de a bordo y todo local.
+
 El usuario **ya tiene** una ASUS ROG Ally X con Ryzen AI Z2 Extreme. Pasa a
 ser el ordenador de a bordo, en lugar del Jetson Orin Nano de la entrada
 anterior. Lo esencial de aquella decisión no cambia: **todo local, sin
@@ -327,6 +331,64 @@ que da movimiento lateral con las cuatro ruedas paralelas), con el
   el antebrazo (motores de la mano cerca del codo) es lo que más baja el par
   del hombro. La carga adelanta el centro de masas: comprobar el equilibrio
   con el brazo estirado y 1 kg.
+
+## Ally en el pecho, iPhone en la cabeza (1 oct 2026)
+
+**Decidido** tras revisarlo con la maqueta `Toreto_Maqueta_Ally_Pecho`
+1.2.2 (todo cabe; los choques que quedan son de cómo se dibujaron las zonas
+reservadas). **Sustituye** a "Ordenador de a bordo: … bahía extraíble en la
+base": la Ally ya no va en la base. **Cabeza ~15 mm más alta** (160 → 175)
+para que el giro del iPhone (156 mm) no asome por los cantos; pendiente
+decidir si el robot pasa a ~965 mm o se acorta el cuello 15 mm.
+
+- **ROG Xbox Ally X en el pecho, a la vista** (pantalla táctil y mandos
+  usables desde fuera, aire retro). Pecho ensanchado de 252 a 321 mm hacia
+  el hueco de los discos del hombro, con un aro negro fino; los brazos no
+  se mueven. Ventilación de la Ally: toma aire por los lados y lo expulsa
+  por arriba (análisis de MuyComputer, 15-10-2025).
+- **iPhone 12 Pro Max en la cabeza con giro tipo libro** (eje en su borde
+  largo, guías en semicírculo, servo pequeño): modo cara (pantalla al
+  frente, cámara TrueDepth) y modo visión (3 cámaras + LiDAR al frente, sin
+  recortes de visión). Las cámaras no se pueden separar ni alargar del
+  iPhone (emparejamiento de piezas y calibración de fábrica).
+- Ahorro seguro ~100-170 € (pantalla de cabeza, micrófonos, altavoz); la
+  OAK-D sigue prevista hasta probar el iPhone en modo visión.
+- Resuelto: la cabeza (160 mm) era justa para los 156 mm del giro y los
+  cantos dejaban asomar el iPhone 2-5 mm; se hace ~15 mm más alta.
+- Puertos de la Ally (2 × USB4, jack) y botón de encendido con huella:
+  **borde superior, a la izquierda** vista de frente. Hueco de cables
+  reservado ahí (fuera del bloque del cuello). Pecho a 327 mm para dejar
+  10 mm de aire a cada lado de la Ally.
+- **Encendido por software, sin pulsador mecánico** (podría pulsar o
+  dañar el botón con las vibraciones). La Ally queda en reposo moderno y la
+  despierta el microcontrolador de seguridad haciendo de teclado USB
+  (activar "permitir que este dispositivo reactive el equipo" en el
+  Administrador de dispositivos). **Wake-on-WLAN descartado:** el reposo
+  moderno no responde al paquete de despertar por red. Desde apagada solo
+  serviría cortar y devolver la corriente del USB-C si la Ally arranca sola
+  al recibirla (pendiente de comprobar); si no, no apagarla nunca del todo.
+  Configuración: en el dispositivo HID del microcontrolador y en los
+  concentradores raíz USB, permitir reactivar el equipo y NO permitir
+  apagarlos para ahorrar energía; suspensión selectiva de USB desactivada
+  (con `powercfg` si está oculta). El microcontrolador se alimenta de la
+  batería del robot, no del USB de la Ally, para poder despertarla aunque
+  el puerto quede sin corriente.
+
+## Cables y calor: requisitos (1 oct 2026)
+
+- **Bus CAN** para todos los motores: cada brazo baja a 4 hilos (24 V, GND,
+  CAN-H, CAN-L) que pasan **por dentro del eje del hombro, hueco (Ø10-12)**.
+- **Canal central** de ~60 × 60 mm de arriba abajo del pecho, con la
+  **columna de aluminio 2020** que sube desde la base y lleva el mazo de
+  cables hacia la cintura y el cuello. Nada puede ocuparlo.
+- **Aire:** entrada por rejillas en los costados del pecho (≥10 mm entre la
+  Ally y la pared), salida por rejillas en el techo del pecho a los lados
+  del cuello; rejilla trasera en la cabeza para el iPhone; el cuello no
+  debe meter en la cabeza el aire caliente del pecho.
+- Calor estimado en el pecho, peor caso: ~45-55 W (Ally 35 W + motores del
+  hombro). Los drivers bajan la corriente con el brazo quieto.
+- **Siguientes temas:** límites de giro de cada articulación y baterías
+  (Ally + iPhone + motores; primera estimación 300-500 Wh).
 
 ## Hombro: unión pecho-brazo con discos apilados (29 sept 2026)
 

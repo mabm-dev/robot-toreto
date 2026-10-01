@@ -28,6 +28,16 @@ en vez de las 9 que hacían un "tejado" con arista. Primer intento: la
 carcasa salió bien pero el loft del bisel (sin tocar, de la 4.0.0 de Codex)
 falló por autointersección; probablemente la 4.0.0 nunca llegó a ejecutarse
 entera. Bisel y pantalla pasan a rectángulos redondeados (R35/R28).
+**EN CURSO (1 oct): fase 2, maqueta `Toreto_Maqueta_Ally_Pecho` 1.2.0**
+(complemento aparte, componente 90_MAQUETA_ALLY_PECHO; para verla ocultar
+04_PECHO_HOMBROS y 06_CABEZA): pecho 321 mm con la Ally X a la vista,
+reductoras Ø60 + NEMA17 del hombro, iPhone 12 Pro Max con giro tipo libro,
+zonas reservadas de cables y aire. Choques en maqueta_ally_pecho.json.
+Ver `docs/DECISIONES.md` (propuesta Ally/iPhone, cables y calor, requisitos
+del brazo: 1 kg por mano, hombro 2 + codo 1 + muñeca 2, reductoras
+impresas, prototipo del hombro con opción A NEMA17 + MKS SERVO42D).
+Siguientes: decidir la maqueta, giros (límites) y baterías.
+
 **HECHO (30 sept): brazo v14 en el montaje.** `Toreto_Brazo_Mano_v14`
 reemplazó al v13c (derecho; el izquierdo por simetría), juntas_espejo: 20
 juntas y 16 relaciones (peor pasador 0,001 mm); alturas iguales; modo nuevo

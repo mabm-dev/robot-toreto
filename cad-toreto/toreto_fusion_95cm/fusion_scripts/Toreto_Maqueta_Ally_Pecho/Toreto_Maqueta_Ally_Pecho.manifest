@@ -1,0 +1,9 @@
+{
+  "autodeskProduct": "Fusion360",
+  "type": "script",
+  "author": "Robot Toreto",
+  "description": "MAQUETA solo para mirar: ROG Ally X en el pecho ensanchado, reductoras del hombro y movil en la cabeza.",
+  "version": "1.0.0",
+  "runOnStartup": false,
+  "supportedOS": "windows"
+}
