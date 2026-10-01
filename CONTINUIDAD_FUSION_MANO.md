@@ -36,7 +36,14 @@ zonas reservadas de cables y aire. Choques en maqueta_ally_pecho.json.
 Ver `docs/DECISIONES.md` (propuesta Ally/iPhone, cables y calor, requisitos
 del brazo: 1 kg por mano, hombro 2 + codo 1 + muñeca 2, reductoras
 impresas, prototipo del hombro con opción A NEMA17 + MKS SERVO42D).
-Siguientes: decidir la maqueta, giros (límites) y baterías.
+Decidido el 1-2 oct (todo en DECISIONES.md y CINEMATICA.md): Ally en el
+pecho (327 mm), iPhone volteable en la cabeza (+15 mm, robot ~965 mm),
+batería LiFePO4 24 V ~384 Wh en la base (5 h, carga a mano con sitio para
+contactos), giros deseados y cadera nueva (actuador lineal, mecánica 85°,
+software 30°). Siguientes: pasar la maqueta al pecho 3.0.0 y la cabeza
+(175 mm), diseñar la cadera, y el prototipo del hombro (opción A).
+Aparcado: desmontar la Epson WF-2820 (negro atascado) para sensores ópticos
+y goma de yemas; si no, comprar "optical endstop" y lámina antideslizante.
 
 **HECHO (30 sept): brazo v14 en el montaje.** `Toreto_Brazo_Mano_v14`
 reemplazó al v13c (derecho; el izquierdo por simetría), juntas_espejo: 20
