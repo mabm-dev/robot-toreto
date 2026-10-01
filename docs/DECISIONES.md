@@ -374,6 +374,32 @@ acepta que el robot pase de 950 a **~965 mm**; el cuello no se acorta.
   batería del robot, no del USB de la Ally, para poder despertarla aunque
   el puerto quede sin corriente.
 
+## Batería: LiFePO4 24 V ~384 Wh en la base, 5 h de uso (1 oct 2026)
+
+- **Requisito del usuario: 5 horas de uso continuo** sin cargar.
+- Consumo estimado (a medir con los motores reales): ~60-70 W de media
+  (Ally ~20 W, iPhone ~5 W, ruedas ~10 W, brazos ~10-20 W, cuello y
+  cintura ~3 W, LIDAR + OAK-D + electrónica ~8 W, pérdidas ~10 %); picos de
+  ~250-300 W. La Ally (80 Wh) y el iPhone (~14 Wh) llevan su propia batería
+  y siguen vivos un rato si se agota la del robot.
+- **Batería: LiFePO4 de 24 V, ~15 Ah (~384 Wh)**, ~4-5 kg, con BMS. Elegida
+  frente a Li-ion por seguridad en casa (no arde) y vida útil (2.000-4.000
+  ciclos). 24 V es la tensión de los motores y drivers.
+- **Va en la base**, libre desde que la Ally pasó al pecho: el peso abajo
+  compensa la Ally en el pecho y el kilo en la mano.
+- Acompañan: fusible, interruptor general y seta de emergencia que corta
+  los motores; convertidor 24 V → USB-C PD 65-100 W para la Ally;
+  convertidor 24 V → 5 V para el microcontrolador y el iPhone; cargador
+  LiFePO4 de 24 V.
+- **Carga a mano** por ahora: conector de carga en la parte trasera de la
+  base, junto al interruptor general (tipo aviación GX16 o XT60, para los
+  ~5 A del cargador). Comprar la batería solo tras comprobar sus medidas
+  contra el hueco del chasis (~246 × 410 × 69 mm; la altura es lo justo).
+- **Sitio reservado para una base de carga automática futura:** dos
+  contactos de muelle en la parte trasera e inferior de la base, a
+  ~40-60 mm del suelo, con su cableado previsto hasta la batería. Se añaden
+  sin rehacer la base cuando la navegación sepa volver a la estación.
+
 ## Cables y calor: requisitos (1 oct 2026)
 
 - **Bus CAN** para todos los motores: cada brazo baja a 4 hilos (24 V, GND,
