@@ -338,8 +338,8 @@ que da movimiento lateral con las cuatro ruedas paralelas), con el
 1.2.2 (todo cabe; los choques que quedan son de cómo se dibujaron las zonas
 reservadas). **Sustituye** a "Ordenador de a bordo: … bahía extraíble en la
 base": la Ally ya no va en la base. **Cabeza ~15 mm más alta** (160 → 175)
-para que el giro del iPhone (156 mm) no asome por los cantos; pendiente
-decidir si el robot pasa a ~965 mm o se acorta el cuello 15 mm.
+para que el giro del iPhone (156 mm) no asome por los cantos. El usuario
+acepta que el robot pase de 950 a **~965 mm**; el cuello no se acorta.
 
 - **ROG Xbox Ally X en el pecho, a la vista** (pantalla táctil y mandos
   usables desde fuera, aire retro). Pecho ensanchado de 252 a 321 mm hacia
