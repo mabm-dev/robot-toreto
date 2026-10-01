@@ -37,17 +37,23 @@ graph TD
     base -->|"continuous · TBD"| w4
     base -->|fixed| lidar
 
-    waist[waist_link]:::estructura
-    torso[torso_link]:::estructura
-    base -->|fixed| waist
+    trunk[trunk_link<br/>tronco]:::estructura
+    hip[hip_link<br/>cintura inferior]:::actuador
+    waist[waist_link<br/>cintura superior]:::actuador
+    torso[torso_link<br/>pecho + Ally]:::estructura
+    base -->|fixed| trunk
+    trunk -->|"revolute cadera · 0/+30° adelante · actuador lineal 24 V"| hip
+    hip -->|"revolute giro cintura · ±150° · TBD"| waist
     waist -->|fixed| torso
 
     neck_pan[neck_pan_link]:::actuador
     head[head_link]:::estructura
+    phone[iphone_link]:::actuador
     camera([camera_link]):::sensor
     torso -->|"revolute pan · ±90° · TBD actuador"| neck_pan
-    neck_pan -->|"revolute tilt · +90/-45° · TBD actuador"| head
-    head -->|fixed| camera
+    neck_pan -->|"revolute tilt · +30/-45° · TBD actuador"| head
+    head -->|"revolute volteo iPhone · 0/180° · servo"| phone
+    phone -->|fixed| camera
 
     sh_l[shoulder_pitch_L]:::actuador
     shr_l[shoulder_roll_L]:::actuador
@@ -55,11 +61,11 @@ graph TD
     wr_l[wrist_1_L]:::actuador
     wr2_l[wrist_2_L]:::actuador
     gr_l[hand_L]:::actuador
-    torso -->|"revolute hombro subir/bajar · ≥15 N·m · TBD"| sh_l
-    sh_l -->|"revolute rotación del brazo · ≥7 N·m · TBD"| shr_l
-    shr_l -->|"revolute codo · ≥7 N·m · TBD"| el_l
-    el_l -->|"revolute muñeca 1 · ≥2 N·m · TBD"| wr_l
-    wr_l -->|"revolute muñeca 2 · ≥2 N·m · TBD"| wr2_l
+    torso -->|"revolute hombro subir/bajar · -30/+130° · ≥15 N·m · TBD"| sh_l
+    sh_l -->|"revolute rotación del brazo · ±90° · ≥7 N·m · TBD"| shr_l
+    shr_l -->|"revolute codo · 0/135° · ≥7 N·m · TBD"| el_l
+    el_l -->|"revolute muñeca 1 (girar) · ±90° · ≥2 N·m · TBD"| wr_l
+    wr_l -->|"revolute muñeca 2 (doblar) · ±60° · ≥2 N·m · TBD"| wr2_l
     wr2_l -->|"mano adaptativa 4 motores · TBD"| gr_l
 
     sh_r[shoulder_pitch_R]:::actuador
@@ -68,11 +74,11 @@ graph TD
     wr_r[wrist_1_R]:::actuador
     wr2_r[wrist_2_R]:::actuador
     gr_r[hand_R]:::actuador
-    torso -->|"revolute hombro subir/bajar · ≥15 N·m · TBD"| sh_r
-    sh_r -->|"revolute rotación del brazo · ≥7 N·m · TBD"| shr_r
-    shr_r -->|"revolute codo · ≥7 N·m · TBD"| el_r
-    el_r -->|"revolute muñeca 1 · ≥2 N·m · TBD"| wr_r
-    wr_r -->|"revolute muñeca 2 · ≥2 N·m · TBD"| wr2_r
+    torso -->|"revolute hombro subir/bajar · -30/+130° · ≥15 N·m · TBD"| sh_r
+    sh_r -->|"revolute rotación del brazo · ±90° · ≥7 N·m · TBD"| shr_r
+    shr_r -->|"revolute codo · 0/135° · ≥7 N·m · TBD"| el_r
+    el_r -->|"revolute muñeca 1 (girar) · ±90° · ≥2 N·m · TBD"| wr_r
+    wr_r -->|"revolute muñeca 2 (doblar) · ±60° · ≥2 N·m · TBD"| wr2_r
     wr2_r -->|"mano adaptativa 4 motores · TBD"| gr_r
 ```
 
@@ -89,6 +95,9 @@ graph TD
 - Brazo (30 sept 2026): hombro 2 + codo 1 + muñeca 2 y mano de 4 motores,
   para poder juntar las manos delante del pecho; pares mínimos para 1 kg por
   mano con margen ×2 (ver `DECISIONES.md`).
+- Giros (2 oct 2026): son los DESEADOS (requisitos), no límites medidos;
+  0° = postura de la lámina. Los límites reales se miden con el pecho
+  (327 mm) y la cabeza (175 mm) definitivos. Ver `DECISIONES.md`.
 - `TBD` en cualquier joint significa: sin servo/motor elegido todavía. No
   fijar el ángulo límite hasta tener la hoja de datos del actuador real —
   poner un número ahora sería inventarlo.

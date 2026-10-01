@@ -374,6 +374,37 @@ acepta que el robot pase de 950 a **~965 mm**; el cuello no se acorta.
   batería del robot, no del USB de la Ally, para poder despertarla aunque
   el puerto quede sin corriente.
 
+## Giros deseados y cadera (2 oct 2026)
+
+Requisitos de movimiento (no límites medidos; 0° = postura de la lámina).
+Los límites reales se medirán con el pecho y la cabeza definitivos.
+
+| Articulación | Giro | Para qué |
+|---|---|---|
+| Cuello, a los lados | ±90° | Mirar a quien habla a su lado |
+| Cuello, arriba/abajo | +30° / −45° | Cara de un adulto de pie a 1,5 m / manos y mesa |
+| **Cadera, inclinar adelante** | **0° a +30°** | Mesas bajas, sillas, estanterías de abajo |
+| Cintura, girar | ±150° | Girar el tronco sin mover ruedas (no 360°: cables) |
+| Hombro, subir/bajar | −30° / +130° | Estantería alta, brazo algo atrás |
+| Hombro, rotación del brazo | ±90° | Juntar las manos delante del pecho |
+| Codo | 0° a 135° | Llevar cosas al pecho, plegar |
+| Muñeca 1, girar la mano | ±90° | Pomo, verter |
+| Muñeca 2, doblar la mano | ±60° | Orientar la mano |
+| Volteo del iPhone | 0° / 180° | Modo cara / modo visión |
+
+**Cadera nueva:** bisagra de izquierda a derecha donde la cintura entra en
+el tronco (Z ~400). La U del collar del tronco hace de cadera (abierta
+delante y detrás); el fondo del bloque inferior de la cintura se redondea en
+arco alrededor del eje. Motor: **actuador lineal de 24 V** (tipo mueble,
+500-1.500 N, ~20-40 €) dentro del tronco con palanca de ~8 cm: ~80 N·m, no
+se cae sin corriente, lento (3-6 s). Se limita a ~30° porque más allá el
+tronco sale de la base y puede volcar con 1 kg en cada mano.
+
+**El suelo no se alcanza** (hombro a ~690 mm, brazo + mano ~410 mm: la mano
+llega a ~280 mm del suelo recto y ~13 cm ni inclinándose 60°). Aceptado: lo
+del suelo lo coge una persona; si hiciera falta, una herramienta tipo pinza
+larga.
+
 ## Batería: LiFePO4 24 V ~384 Wh en la base, 5 h de uso (1 oct 2026)
 
 - **Requisito del usuario: 5 horas de uso continuo** sin cargar.
