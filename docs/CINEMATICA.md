@@ -42,7 +42,7 @@ graph TD
     waist[waist_link<br/>cintura superior]:::actuador
     torso[torso_link<br/>pecho + Ally]:::estructura
     base -->|fixed| trunk
-    trunk -->|"revolute cadera · 0/+30° adelante · actuador lineal 24 V"| hip
+    trunk -->|"revolute cadera · 0/+85° (software 30°) · actuador lineal 24 V"| hip
     hip -->|"revolute giro cintura · ±150° · TBD"| waist
     waist -->|fixed| torso
 

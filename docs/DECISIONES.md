@@ -383,7 +383,7 @@ Los límites reales se medirán con el pecho y la cabeza definitivos.
 |---|---|---|
 | Cuello, a los lados | ±90° | Mirar a quien habla a su lado |
 | Cuello, arriba/abajo | +30° / −45° | Cara de un adulto de pie a 1,5 m / manos y mesa |
-| **Cadera, inclinar adelante** | **0° a +30°** | Mesas bajas, sillas, estanterías de abajo |
+| **Cadera, inclinar adelante** | **0° a +85° (mecánica); +30° por software al principio** | Mesas bajas, estanterías; con 80-85° recoger del suelo |
 | Cintura, girar | ±150° | Girar el tronco sin mover ruedas (no 360°: cables) |
 | Hombro, subir/bajar | −30° / +130° | Estantería alta, brazo algo atrás |
 | Hombro, rotación del brazo | ±90° | Juntar las manos delante del pecho |
@@ -397,13 +397,21 @@ el tronco (Z ~400). La U del collar del tronco hace de cadera (abierta
 delante y detrás); el fondo del bloque inferior de la cintura se redondea en
 arco alrededor del eje. Motor: **actuador lineal de 24 V** (tipo mueble,
 500-1.500 N, ~20-40 €) dentro del tronco con palanca de ~8 cm: ~80 N·m, no
-se cae sin corriente, lento (3-6 s). Se limita a ~30° porque más allá el
-tronco sale de la base y puede volcar con 1 kg en cada mano.
+se cae sin corriente, lento.
 
-**El suelo no se alcanza** (hombro a ~690 mm, brazo + mano ~410 mm: la mano
-llega a ~280 mm del suelo recto y ~13 cm ni inclinándose 60°). Aceptado: lo
-del suelo lo coge una persona; si hiciera falta, una herramienta tipo pinza
-larga.
+**Recoger del suelo (cambiado el mismo día a petición del usuario):** con el
+hombro a 290 mm sobre la cadera y brazo + mano de ~410 mm, la mano baja a
+~240 mm a 30°, ~135 mm a 60°, **~40 mm a 80°** y toca el suelo a ~88°. Por
+eso:
+- **La cadera se diseña para 85°:** U del collar muy abierta por delante
+  para que pase el fondo del bloque de la cintura, y biela de dos brazos
+  para que el actuador lineal cubra 85° (~30 N·m, ~60 con margen).
+- **Software la limita a 30°** hasta pesar el robot real. Estimación con
+  masas supuestas: a 85° el centro de gravedad queda a ~10 cm del centro
+  (ruedas delanteras a ~15 cm); con 1 kg en cada mano, ~12 cm: poco margen.
+  Con los pesos reales se calcula el vuelco y, si sale bien, se habilita.
+- Al recoger del suelo: robot quieto, despacio, poca carga y la IMU de la
+  base vigilando la inclinación.
 
 ## Batería: LiFePO4 24 V ~384 Wh en la base, 5 h de uso (1 oct 2026)
 
