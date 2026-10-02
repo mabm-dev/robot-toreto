@@ -21,7 +21,11 @@ BODY_PREFIX = "TRONCO95_"
 # 1.6.0 (29-09-2026): collar superior de planta cuadrada que envuelve el
 # bloque de la cintura (antes asomaba por las esquinas) y fondo 0,9.
 # 1.6.1 (29-09-2026): panel frontal sobre el LIDAR.
-VERSION = "1.6.1"
+# 1.7.0 (02-10-2026): cadera (eje X a Z 400): U delantera abierta, discos y
+# paso del eje, holgura de 2 mm alrededor de la cintura.
+# 1.7.1 (02-10-2026): hueco del collar con esquinas R5 y nucleo hasta Z 300.
+# 1.7.2 (02-10-2026): paso de la tapa interior en todo su grosor.
+VERSION = "1.7.2"
 
 _GEOMETRY_Z = 0.0
 
@@ -259,7 +263,9 @@ def _build(manager, rs, hs):
     specs = []
 
     # Núcleo hasta Z 320, bajo el bloque de la cintura (que baja a Z 330).
-    core = _ellipse(manager, zmm(6), zmm(120), rmm(100), rmm(85))
+    # 1.7.1: hasta Z 300 (antes 320) para dejar girar la cintura (y sitio
+    # al actuador lineal de la cadera).
+    core = _ellipse(manager, zmm(6), zmm(100), rmm(100), rmm(85))
     _append(specs, core, "01_NUCLEO_NEGRO", BLACK)
 
     # 1.5.0: tronco casi recto como en el lienzo (247 mm en Z 215, 226 en
@@ -302,11 +308,14 @@ def _build(manager, rs, hs):
     _append(specs, panel, "09_PANEL_FRONTAL_BLANCO", WHITE)
 
     # Bloque inferior de la cintura en planta (182 x 146, radio 50). El
-    # collar lo envuelve sin holgura y la tapa interior le deja paso.
+    # collar lo envuelve y la tapa interior le deja paso. 1.7.0: con 2 mm de
+    # holgura por lado, porque ahora gira con la cadera. 1.7.1: esquinas
+    # casi rectas (R5): con R52 el hueco se estrechaba en las esquinas y el
+    # bloque, al girar, tocaba el collar desde 5 grados.
     def waist_block(z1, z2):
         return _rounded_xy(
-            manager, 0, 0, zmm((z1 + z2) / 2), rmm(182), rmm(146),
-            zmm(z2 - z1), rmm(50),
+            manager, 0, 0, zmm((z1 + z2) / 2), rmm(186), rmm(150),
+            zmm(z2 - z1), rmm(5),
         )
 
     # 1.6.0: collar superior como en el render: planta cuadrada de esquinas
@@ -319,7 +328,36 @@ def _build(manager, rs, hs):
     )
     _difference(manager, collar, waist_block(133, 192), "hueco del collar")
     _difference(manager, collar, saddle(), "silla del collar")
+    # 1.7.0: CADERA con el eje en X a Z 400 (DECISIONES.md). La prueba de
+    # giro (modo cadera) solo encontro choques de la cintura con el frente
+    # del collar: se abre la U por delante hasta el borde del cono (Z 335),
+    # 188 mm de ancho con esquinas R20, para llegar a 85 grados.
+    _difference(
+        manager, collar,
+        _rounded_panel(manager, 0, rmm(-97.5), zmm(192.5), rmm(188), zmm(115), rmm(105), rmm(20)),
+        "U delantera de la cadera",
+    )
+    hip_z = zmm(200)
+    _difference(
+        manager, collar,
+        _cylinder(manager, _point(rmm(-130), 0, hip_z), _point(rmm(130), 0, hip_z), rmm(16)),
+        "paso del eje de la cadera",
+    )
     _append(specs, collar, "05_COLLAR_SUPERIOR_BLANCO", WHITE)
+
+    # Discos negros de la cadera a cada lado (alojamiento de los
+    # rodamientos), como los del hombro; taladro R16 para el eje R15 de la
+    # cintura. 2 mm de holgura con el bloque (X 91).
+    for side, label in ((-1.0, "IZQ"), (1.0, "DER")):
+        disc = _cylinder(
+            manager, _point(side * rmm(93), 0, hip_z), _point(side * rmm(118), 0, hip_z), rmm(26)
+        )
+        _difference(
+            manager, disc,
+            _cylinder(manager, _point(side * rmm(90), 0, hip_z), _point(side * rmm(120), 0, hip_z), rmm(16)),
+            "taladro del disco de la cadera",
+        )
+        _append(specs, disc, f"06_DISCO_CADERA_{label}", BLACK)
 
     # Tapa interior (Z 325-335) que cierra el cono hueco bajo el collar.
     # Sigue el vaciado de _ring, que se alarga 1 mm por cada lado.
@@ -332,7 +370,9 @@ def _build(manager, rs, hs):
         manager, zmm(125), zmm(135),
         rmm(inner_major(125)), rmm(inner_major(125) * k), rmm(inner_major(135)),
     )
-    _difference(manager, cap, waist_block(130, 140), "paso del bloque")
+    # 1.7.2: el paso atraviesa toda la tapa (Z 325-335); antes empezaba en
+    # 330 y la franja de la cintura chocaba al girar desde 30 grados.
+    _difference(manager, cap, waist_block(120, 145), "paso del bloque")
     _append(specs, cap, "08_TAPA_INTERIOR_BLANCA", WHITE)
 
     # Dos fijaciones discretas en la cara posterior, apoyadas en la carcasa.

@@ -20,11 +20,13 @@ SCRIPT_VERSION='v14'
 # 'alturas'      -> v14: en el MONTAJE, SOLO LECTURA: alturas de cada modulo y
 #                cuerpo y huecos entre modulos (alturas_montaje_v14.json).
 # 'comprobar'  -> v14: alturas + interferencias juntas (solo lectura).
+# 'cadera'     -> v14: gira en memoria lo de encima de la cadera 5..85 grados
+#                con el eje a Z 380/400/420 y mide choques (solo lectura).
 # 'interferencias' -> v14: en el MONTAJE, SOLO LECTURA: choques de cada cuerpo
 #                de los brazos con el resto (interferencias_brazos_v14.json).
 # 'juntas_espejo' -> v12: en el MONTAJE, anade juntas y relaciones a la mano
 #                izquierda copiada por simetria. No crea ni mueve geometria.
-MODE='comprobar'
+MODE='cadera'
 
 
 def placement(axis,y_mm):
@@ -556,6 +558,73 @@ def report_arm_interference(design,report_path,min_mm3=0.01):
     return report
 
 
+HIP_UPPER=('03_CINTURA','04_PECHO_HOMBROS','05_CUELLO','06_CABEZA')
+HIP_LOWER=('01_BASE','02_TRONCO')
+
+
+def report_hip_sweep(design,report_path,pivots_mm=(400.0,),
+                     max_deg=85,step_deg=5,min_mm3=0.5,skip_inner_waist=False):
+    """Solo lectura (v14): gira en memoria todo lo que va por encima de la
+    cadera (cintura, pecho, cuello, cabeza y brazos) alrededor de un eje en X
+    (y = 0, Z = pivote), hacia delante, y mide los choques con tronco y base.
+    v14 (cintura 2.3.0 / tronco 1.7.0): eje elegido a Z 400 y TODA la
+    cintura gira (antes se excluia la parte dentro del collar, Z < 462).
+    Bajo el eje van 2 mm de holgura y fondo en arco R70."""
+    manager=adsk.fusion.TemporaryBRepManager.get()
+    upper=[]
+    lower=[]
+    for occurrence in design.rootComponent.allOccurrences:
+        top=occurrence.fullPathName.split('+')[0]
+        name=top.split(':')[0]
+        moving='Brazo_Mano' in top or name in HIP_UPPER
+        if not moving and name not in HIP_LOWER:
+            continue
+        for body in occurrence.component.bRepBodies:
+            if not body.isSolid:
+                continue
+            proxy=body.createForAssemblyContext(occurrence)
+            if (skip_inner_waist and moving and name=='03_CINTURA'
+                    and proxy.boundingBox.maxPoint.z*10<462):
+                continue
+            (upper if moving else lower).append((body.name,manager.copy(proxy)))
+
+    def overlap(a,b):
+        return all(a.minPoint.asArray()[i]<b.maxPoint.asArray()[i] and
+                   b.minPoint.asArray()[i]<a.maxPoint.asArray()[i] for i in range(3))
+    report=dict(version='v14',modo='cadera',cuerpos_que_giran=len(upper),
+                cuerpos_fijos=len(lower),pivotes={})
+    for pivot in pivots_mm:
+        entry=dict(primer_choque_deg=None,libre_hasta_deg=0,choques={})
+        for angle in range(step_deg,max_deg+1,step_deg):
+            matrix=adsk.core.Matrix3D.create()
+            matrix.setToRotation(math.radians(angle),adsk.core.Vector3D.create(1,0,0),
+                                 adsk.core.Point3D.create(0,0,pivot*.1))
+            hits=[]
+            for name,body in upper:
+                moved=manager.copy(body)
+                manager.transform(moved,matrix)
+                for other_name,other in lower:
+                    if not overlap(moved.boundingBox,other.boundingBox):
+                        continue
+                    a=manager.copy(moved)
+                    if not manager.booleanOperation(a,manager.copy(other),
+                            adsk.fusion.BooleanTypes.IntersectionBooleanType):
+                        continue
+                    volume=a.volume*1000.0
+                    if volume>=min_mm3:
+                        hits.append([name,other_name,round(volume,1)])
+            if hits:
+                hits.sort(key=lambda h:-h[2])
+                entry['choques'][str(angle)]=hits[:10]
+                if entry['primer_choque_deg'] is None:
+                    entry['primer_choque_deg']=angle
+            elif entry['primer_choque_deg'] is None:
+                entry['libre_hasta_deg']=angle
+        report['pivotes'][str(int(pivot))]=entry
+        report_path.write_text(json.dumps(report,indent=2,ensure_ascii=False),encoding='utf-8')
+    return report
+
+
 def add_mirror_joints(design,report_path):
     """v12: juntas y relaciones de la mano IZQUIERDA, creada por el usuario con
     Crear > Simetria (plano YZ) en el montaje. Excepcion autorizada por el
@@ -676,8 +745,24 @@ def run(context):
         design=adsk.fusion.Design.cast(app.activeProduct)
         if not design: raise RuntimeError('Abre el documento del robot')
         if MODE not in ('ensayo', 'ver_pinza', 'ensayo_lateral', 'ver_brazo', 'juntas_espejo',
-                        'alturas', 'interferencias', 'comprobar'):
+                        'alturas', 'interferencias', 'comprobar', 'cadera'):
             raise RuntimeError('Modo de ensayo desconocido: '+MODE)
+        if MODE=='cadera':
+            result=report_hip_sweep(design,ROOT/'cadera_giro_v14.json')
+            lines=['Giran {} cuerpos; fijos (tronco y base) {}.'.format(
+                result['cuerpos_que_giran'],result['cuerpos_fijos']),'']
+            for pivot,entry in result['pivotes'].items():
+                first=entry['primer_choque_deg']
+                if first is None:
+                    lines.append('Eje en Z {}: LIBRE hasta 85 grados.'.format(pivot))
+                    continue
+                lines.append('Eje en Z {}: libre hasta {} grados; primer choque a {}:'.format(
+                    pivot,entry['libre_hasta_deg'],first))
+                lines.extend('   {} / {}: {} mm3'.format(*h) for h in entry['choques'][str(first)][:4])
+            app.userInterface.messageBox(
+                'Solo lectura: no se ha cambiado nada.\n\n'+'\n'.join(lines)+
+                '\n\nDetalles: cadera_giro_v14.json','Toreto '+SCRIPT_VERSION+' - giro de la cadera')
+            return
         if MODE=='comprobar':
             heights=report_heights(design,ROOT/'alturas_montaje_v14.json')
             clashes=report_arm_interference(design,ROOT/'interferencias_brazos_v14.json')

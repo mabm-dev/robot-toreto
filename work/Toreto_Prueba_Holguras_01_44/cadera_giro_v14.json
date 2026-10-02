@@ -1,0 +1,13 @@
+{
+  "version": "v14",
+  "modo": "cadera",
+  "cuerpos_que_giran": 272,
+  "cuerpos_fijos": 94,
+  "pivotes": {
+    "400": {
+      "primer_choque_deg": null,
+      "libre_hasta_deg": 85,
+      "choques": {}
+    }
+  }
+}

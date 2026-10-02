@@ -10,7 +10,7 @@ COMPONENT_NAME = "03_CINTURA"
 FEATURE_NAME = "CINTURA_EXTERIOR_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "CINTURA95_"
-VERSION = "2.2.0"
+VERSION = "2.3.0"
 
 _GEOMETRY_Z = 0.0
 
@@ -254,7 +254,28 @@ def _build(manager, rs, hs):
     # radio 50 como en el render); lo que se ve por delante lo marca el
     # borde en U del collar (fondo en Z 354). Sustituye a la espiga.
     lower = _rounded_xy(manager, 0, 0, z(5), r(182), r(146), z(130), r(50))
+    # 2.3.0: CADERA, eje en X a Z 400 (z local 10). Por debajo del eje el
+    # bloque se limita a un arco de R70 alrededor de el (visto de lado), para
+    # que al girar no toque el collar ni la tapa interior del tronco.
+    hip = z(10)
+    trim = _cylinder(manager, _point(-r(100), 0, hip), _point(r(100), 0, hip), r(70))
+    _union(manager, trim, _box(manager, 0, 0, hip + z(40), r(200), r(200), z(80)),
+           "zona del bloque sobre el eje")
+    if not manager.booleanOperation(
+        lower, trim, adsk.fusion.BooleanTypes.IntersectionBooleanType
+    ):
+        raise RuntimeError("No se pudo redondear el bloque para la cadera.")
     _append(specs, lower, "04_BLOQUE_INFERIOR_NEGRO", BLACK)
+    # Eje hueco de la cadera (R15, paso de cables R8) que gira con la cintura
+    # en los discos del tronco.
+    axle = _cylinder(manager, _point(-r(118), 0, hip), _point(r(118), 0, hip), r(15))
+    if not manager.booleanOperation(
+        axle,
+        _cylinder(manager, _point(-r(120), 0, hip), _point(r(120), 0, hip), r(8)),
+        adsk.fusion.BooleanTypes.DifferenceBooleanType,
+    ):
+        raise RuntimeError("No se pudo ahuecar el eje de la cadera.")
+    _append(specs, axle, "09_EJE_CADERA", DARK)
 
     # Franja central de 94 mm en los dos bloques y panel cuadrado de 74 x 70.
     for name, face_y, z1, z2 in (
