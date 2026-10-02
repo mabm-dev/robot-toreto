@@ -619,65 +619,77 @@
       "ocurrencia": "06_CABEZA:1",
       "z_mm": [
         789.98,
-        950.015
+        965.015
       ],
       "cuerpos": {
         "CABEZA95_01_CARCASA_BLANCA_REDONDEADA": [
           790.0,
-          950.0
+          965.0
         ],
         "CABEZA95_02_MARCO_FRONTAL_NEGRO": [
-          806.0,
-          934.0
+          807.5,
+          947.5
         ],
-        "Cuerpo114": [
-          813.0,
-          927.0
+        "Cuerpo127": [
+          815.156,
+          939.844
         ],
-        "CABEZA95_03_OJO_CIAN_IZQ": [
-          843.5,
-          884.5
+        "CABEZA95_04_IPHONE_12_PRO_MAX": [
+          877.5,
+          955.6
         ],
-        "CABEZA95_03_PUPILA_CIAN_IZQ": [
-          860.0,
-          868.0
+        "CABEZA95_05_GUIA_IPHONE_IZQ": [
+          797.4,
+          957.6
         ],
-        "CABEZA95_03_OJO_CIAN_DER": [
-          843.5,
-          884.5
+        "CABEZA95_05_GUIA_IPHONE_DER": [
+          797.4,
+          957.6
         ],
-        "CABEZA95_03_PUPILA_CIAN_DER": [
-          860.0,
-          868.0
+        "CABEZA95_05_SERVO_VOLTEO_MG90S": [
+          863.25,
+          891.75
         ],
-        "CABEZA95_03_PUNTO_FRONTAL": [
-          809.7,
-          813.3
+        "CABEZA95_06_OJO_CIAN_IZQ": [
+          894.128,
+          938.972
+        ],
+        "CABEZA95_06_PUPILA_CIAN_IZQ": [
+          912.175,
+          920.925
+        ],
+        "CABEZA95_06_OJO_CIAN_DER": [
+          894.128,
+          938.972
+        ],
+        "CABEZA95_06_PUPILA_CIAN_DER": [
+          912.175,
+          920.925
         ],
         "CABEZA95_06_PANEL_LATERAL_IZQ": [
-          848.0,
-          900.0
+          853.438,
+          910.312
         ],
         "CABEZA95_07_LENTE_LATERAL_IZQ": [
-          862.5,
-          885.5
+          870.375,
+          893.375
         ],
         "CABEZA95_06_PANEL_LATERAL_DER": [
-          848.0,
-          900.0
+          853.438,
+          910.312
         ],
         "CABEZA95_07_LENTE_LATERAL_DER": [
-          862.5,
-          885.5
+          870.375,
+          893.375
         ],
         "CABEZA95_08_ANILLO_INFERIOR_CUELLO": [
           790.0,
-          804.0
+          805.312
         ]
       },
       "nominal_z_mm": [
         790,
-        950
+        965
       ]
     },
     "Toreto_Brazo_Mano_v14": {

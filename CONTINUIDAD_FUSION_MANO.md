@@ -43,7 +43,14 @@ contactos), giros deseados y cadera nueva (actuador lineal, mecánica 85°,
 software 30°). **Pecho 3.0.0 EJECUTADO (2 oct):** 327 mm, Ally X a la
 vista, rejillas, aro fino; 29 cuerpos; modo nuevo `comprobar` (alturas +
 interferencias): pecho→cuello −0,03, 0 choques brazos-resto. La maqueta
-90_MAQUETA ya no hace falta. Siguientes: la cabeza
+90_MAQUETA ya no hace falta. **Cabeza 4.2.1 EJECUTADA (2 oct):** 175 mm
+(Z 790-965), hueca 3 mm (segundo loft), marco + visor de acrílico como piel
+de 3 mm, iPhone 12 Pro Max ~9 mm tras el visor (el frente se curva: más
+adelante sus extremos se salían) en modo cara arriba con los ojos, guías en
+semicírculo, servo MG90S detrás del barrido, rejilla trasera; 16 cuerpos;
+comprobar: cuello→cabeza −0,04, 0 choques. Fallo conocido: Fusion no
+conserva el nombre del visor (sale "Cuerpo…") ni la opacidad del script;
+puesta a mano (30 %). Siguientes: la cabeza
 (175 mm), diseñar la cadera, y el prototipo del hombro (opción A).
 Aparcado: desmontar la Epson WF-2820 (negro atascado) para sensores ópticos
 y goma de yemas; si no, comprar "optical endstop" y lámina antideslizante.

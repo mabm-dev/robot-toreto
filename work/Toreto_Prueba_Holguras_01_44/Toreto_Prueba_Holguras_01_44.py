@@ -476,7 +476,7 @@ def _placement_candidates(occurrence,mirror):
 
 COLUMN_MODULES=('01_BASE','02_TRONCO','03_CINTURA','04_PECHO_HOMBROS','05_CUELLO','06_CABEZA')
 COLUMN_NOMINAL_MM={'01_BASE':(0,200),'02_TRONCO':(200,390),'03_CINTURA':(390,540),
-                   '04_PECHO_HOMBROS':(540,730),'05_CUELLO':(730,790),'06_CABEZA':(790,950)}
+                   '04_PECHO_HOMBROS':(540,730),'05_CUELLO':(730,790),'06_CABEZA':(790,965)}  # cabeza 4.2.0: 175 mm
 
 
 def report_heights(design,report_path):
