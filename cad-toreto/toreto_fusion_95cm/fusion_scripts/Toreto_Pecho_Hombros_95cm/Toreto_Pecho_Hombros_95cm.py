@@ -10,7 +10,9 @@ COMPONENT_NAME = "04_PECHO_HOMBROS"
 FEATURE_NAME = "PECHO_HOMBROS_EXTERIOR_TORETO_95CM"
 ALIGNMENT_FEATURE_NAME = "MONTAJE_GLOBAL_95CM"
 BODY_PREFIX = "PECHO95_"
-VERSION = "2.9.0"
+VERSION = "3.0.0"
+# Centro en Z de la ROG Ally X (coordenadas del modulo, cm): Z 566-687 global.
+ALLY_ZC = 8.65
 
 _GEOMETRY_Z = 0.0
 
@@ -342,22 +344,37 @@ def _build(
     ):
         raise RuntimeError("No se pudo ahuecar la carcasa rectangular del pecho.")
 
-    cavity_width = screen_width + 2.0 * clearance
-    cavity_height = screen_height + 2.0 * clearance
-    cavity = _rounded_panel(
-        manager,
-        0,
-        -depth / 2 + d(.55),
-        z(11.4),
-        cavity_width,
-        cavity_height,
-        d(2.8),
-        min(cavity_width, cavity_height) * .10,
+    # 3.0.0: la ROG Xbox Ally X va a la vista (DECISIONES.md, 1 oct 2026).
+    # Ventana de su silueta (290 x 121) + 2 mm, esquinas R12, atravesando la
+    # pared frontal. Sustituye al hueco del movil de 160 x 90.
+    window = _rounded_panel(
+        manager, 0, -10.5, ALLY_ZC, 29.4, 12.5, 3.0, 1.2
     )
     if not manager.booleanOperation(
-        shell, cavity, adsk.fusion.BooleanTypes.DifferenceBooleanType
+        shell, window, adsk.fusion.BooleanTypes.DifferenceBooleanType
     ):
-        raise RuntimeError("No se pudo abrir el hueco de la pantalla.")
+        raise RuntimeError("No se pudo abrir la ventana de la Ally.")
+
+    # Rejillas de aire: la Ally toma aire por los costados y lo echa por
+    # arriba. Entrada: 5 ranuras en cada costado, frente a sus extremos.
+    # Salida: 8 ranuras en el techo a cada lado del asiento del cuello.
+    vents = []
+    for side in (-1.0, 1.0):
+        for index in range(5):
+            vents.append(_box(
+                manager, side * body_width / 2, -7.7, ALLY_ZC - 3.6 + index * 1.8,
+                2.0, 4.0, .4,
+            ))
+        for index in range(8):
+            vents.append(_box(
+                manager, side * 10.5, -6.5 + index * 1.3, height / 2 + z(11.4),
+                5.0, .4, 2.0,
+            ))
+    for vent in vents:
+        if not manager.booleanOperation(
+            shell, vent, adsk.fusion.BooleanTypes.DifferenceBooleanType
+        ):
+            raise RuntimeError("No se pudo abrir una rejilla del pecho.")
 
     # 2.7.0: rebaje en U del cuello como en el lienzo frontal (135 mm de
     # ancho, fondo en Z 700). Antes era una ranura de 112 x 33 mm que
@@ -441,53 +458,41 @@ def _build(
     disc = _ellipse(manager, cover_top, z(22.8), r(4.85), r(4.85 * .77))
     _append(specs, disc, "03_DISCO_CUELLO_NEGRO", BLACK)
 
-    front_y = -depth / 2 - d(.08)
-    bezel = _rounded_panel(
-        manager,
-        0,
-        front_y,
-        z(11.4),
-        cavity_width + r(2.2),
-        cavity_height + z(2.0),
-        d(.52),
-        min(cavity_width, cavity_height) * .10,
-    )
-    _append(specs, bezel, "04_MARCO_PANTALLA_NEGRO", BLACK)
+    # 3.0.0: la ROG Xbox Ally X (290 x 121 x 27,5 / 50,9 mm, ficha oficial)
+    # como pieza del pecho, con la cara 4 mm por dentro del frente y los
+    # mandos asomando. Medidas de los mandos aproximadas: medir en la real.
+    face = -10.6
+    ally = _box(manager, 0, face + 1.375, ALLY_ZC, 29.0, 2.75, 12.1)
+    for side in (-1.0, 1.0):
+        grip = _box(manager, side * 11.5, face + 2.545, ALLY_ZC, 6.0, 5.09, 12.1)
+        _union(manager, ally, grip, "empunadura de la Ally")
+    _append(specs, ally, "04_ROG_ALLY_X", DARK)
+    screen = _box(manager, 0, face - .03, ALLY_ZC, 15.5, .06, 8.7)
+    _append(specs, screen, "05_ALLY_PANTALLA_7", BLACK)
+    for name, x, dz in (("JOYSTICK_IZQ", -11.8, 2.5), ("CRUCETA", -11.8, -2.8),
+                        ("ABXY", 11.8, 2.5), ("JOYSTICK_DER", 11.8, -2.8)):
+        radius = 1.1 if "JOYSTICK" in name else 1.0
+        knob = _cylinder(
+            manager, _point(x, face, ALLY_ZC + dz), _point(x, face - 1.0, ALLY_ZC + dz), radius
+        )
+        _append(specs, knob, "05_ALLY_" + name, BLACK)
 
-    screen = _rounded_panel(
-        manager,
-        0,
-        front_y - d(.32),
-        z(11.4),
-        screen_width,
-        screen_height,
-        d(.36),
-        min(screen_width, screen_height) * .07,
-    )
-    _append(specs, screen, "05_PANTALLA_GRAFITO", DARK)
-
+    # La onda cian del lienzo, ahora como imagen en la pantalla de la Ally.
     screen_glow = _rounded_panel(
-        manager,
-        0,
-        front_y - d(.54),
-        z(11.4),
-        min(screen_width * .72, r(12.0)),
-        z(.28),
-        d(.08),
-        r(.12),
+        manager, 0, face - .1, ALLY_ZC, 11.0, z(.28), .08, r(.12)
     )
     _append(specs, screen_glow, "06_LINEA_PANTALLA_CIAN", CYAN)
     waveform = (0.7, 1.25, 2.0, 3.2, 1.8, 1.1, 2.4, 3.8, 2.3, 1.35, 2.7, 1.65, 0.8)
-    spacing = min(screen_width * .065, r(1.05))
+    spacing = .95
     for index, bar_height in enumerate(waveform):
         bar = _rounded_panel(
             manager,
             (index - (len(waveform) - 1) / 2.0) * spacing,
-            front_y - d(.57),
-            z(11.4),
+            face - .11,
+            ALLY_ZC,
             r(.28),
             z(bar_height),
-            d(.07),
+            .07,
             r(.08),
         )
         _append(specs, bar, f"06_ONDA_CIAN_{index + 1:02d}", CYAN)
@@ -499,12 +504,12 @@ def _build(
     # y el eje R36,5 que entra en el brazo. Coaxial con el eje del hombro
     # (en la lámina se dibuja inclinado con el brazo). El brazo no baja de
     # X ~159: los discos acaban en 157 y solo el eje entra en él.
+    # 3.0.0: el pecho ocupa ahora el hueco de los discos (llega a X 163,5);
+    # queda un aro negro fino hasta el brazo (X 168,6) y el eje que entra en
+    # el brazo. Los brazos no se mueven.
     shoulder_parts = (
-        (12.4, 13.0, 4.7),   # disco junto al pecho (entra 2 mm en la carcasa)
-        (13.0, 13.8, 3.9),   # segundo disco
-        (13.8, 14.6, 2.9),   # cuello
-        (14.6, 15.7, 3.9),   # disco junto al brazo
-        (15.7, 19.65, 3.65), # eje dentro del brazo (hasta cx + r(2.5))
+        (body_width / 2 / rs - .05, 16.86, 3.9),  # aro negro (entra .5 mm)
+        (16.86, 19.65, 3.65),                      # eje dentro del brazo
     )
     for side, label in ((-1.0, "IZQ"), (1.0, "DER")):
         socket = None
@@ -588,8 +593,8 @@ def run(context):
         body_width = _set_master_value(
             design,
             "ancho_carcasa_pecho",
-            "252 mm",
-            "Anchura de la carcasa central medida en el lienzo frontal",
+            "327 mm",
+            "Anchura del pecho: 3.0.0, Ally X a la vista (el lienzo da 252)",
         )
         depth = _set_master_value(
             design, "fondo_pecho", "220 mm", "Profundidad máxima de la carcasa de pecho"
@@ -675,9 +680,8 @@ def run(context):
         ui.messageBox(
             ("Pecho y hombros actualizados." if replaced else "Pecho y hombros creados.")
             + f"\n\nCuerpos exteriores: {len(persisted)}\n"
-            f"Hueco dispositivo: {screen_width * 10:.0f} x {screen_height * 10:.0f} mm\n"
-            f"Holgura: {clearance * 10:.0f} mm por lado\n\n"
-            "Pantalla y carcasas de hombro incluidas.\n"
+            f"Ancho {body_width * 10:.0f} mm con la ROG Ally X a la vista,\n"
+            "rejillas de aire y aro fino del hombro.\n"
             "Z inferior global previsto: 520 mm (falda sobre la cintura).\n"
             + _body_report(component)
             + "\nSin mecánica ni esqueleto.",

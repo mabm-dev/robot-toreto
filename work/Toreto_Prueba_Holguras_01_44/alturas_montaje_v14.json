@@ -465,7 +465,7 @@
       "ocurrencia": "04_PECHO_HOMBROS:1",
       "z_mm": [
         519.988,
-        737.853
+        730.02
       ],
       "cuerpos": {
         "PECHO95_01_CARCASA_RECTANGULAR_REDONDEADA": [
@@ -484,77 +484,93 @@
           722.0,
           730.0
         ],
-        "PECHO95_04_MARCO_PANTALLA_NEGRO": [
-          578.667,
-          691.333
+        "PECHO95_04_ROG_ALLY_X": [
+          566.0,
+          687.0
         ],
-        "PECHO95_05_PANTALLA_GRAFITO": [
-          590.0,
-          680.0
+        "PECHO95_05_ALLY_PANTALLA_7": [
+          583.0,
+          670.0
+        ],
+        "PECHO95_05_ALLY_JOYSTICK_IZQ": [
+          640.5,
+          662.5
+        ],
+        "PECHO95_05_ALLY_CRUCETA": [
+          588.5,
+          608.5
+        ],
+        "PECHO95_05_ALLY_ABXY": [
+          641.5,
+          661.5
+        ],
+        "PECHO95_05_ALLY_JOYSTICK_DER": [
+          587.5,
+          609.5
         ],
         "PECHO95_06_LINEA_PANTALLA_CIAN": [
-          633.833,
-          636.167
+          625.333,
+          627.667
         ],
         "PECHO95_06_ONDA_CIAN_01": [
-          632.083,
-          637.917
+          623.583,
+          629.417
         ],
         "PECHO95_06_ONDA_CIAN_02": [
-          629.792,
-          640.208
+          621.292,
+          631.708
         ],
         "PECHO95_06_ONDA_CIAN_03": [
-          626.667,
-          643.333
+          618.167,
+          634.833
         ],
         "PECHO95_06_ONDA_CIAN_04": [
-          621.667,
-          648.333
+          613.167,
+          639.833
         ],
         "PECHO95_06_ONDA_CIAN_05": [
-          627.5,
-          642.5
+          619.0,
+          634.0
         ],
         "PECHO95_06_ONDA_CIAN_06": [
-          630.417,
-          639.583
+          621.917,
+          631.083
         ],
         "PECHO95_06_ONDA_CIAN_07": [
-          625.0,
-          645.0
+          616.5,
+          636.5
         ],
         "PECHO95_06_ONDA_CIAN_08": [
-          619.167,
-          650.833
+          610.667,
+          642.333
         ],
         "PECHO95_06_ONDA_CIAN_09": [
-          625.417,
-          644.583
+          616.917,
+          636.083
         ],
         "PECHO95_06_ONDA_CIAN_10": [
-          629.375,
-          640.625
+          620.875,
+          632.125
         ],
         "PECHO95_06_ONDA_CIAN_11": [
-          623.75,
-          646.25
+          615.25,
+          637.75
         ],
         "PECHO95_06_ONDA_CIAN_12": [
-          628.125,
-          641.875
+          619.625,
+          633.375
         ],
         "PECHO95_06_ONDA_CIAN_13": [
-          631.667,
-          638.333
+          623.167,
+          629.833
         ],
         "PECHO95_07_CONECTOR_HOMBRO_IZQ": [
-          643.833,
-          737.833
+          651.833,
+          729.833
         ],
         "PECHO95_07_CONECTOR_HOMBRO_DER": [
-          643.833,
-          737.833
+          651.833,
+          729.833
         ],
         "PECHO95_08_TAPA_TRASERA_BLANCA": [
           576.25,
@@ -685,7 +701,7 @@
     "01_BASE -> 02_TRONCO": -28.94,
     "02_TRONCO -> 03_CINTURA": -60.042,
     "03_CINTURA -> 04_PECHO_HOMBROS": -20.022,
-    "04_PECHO_HOMBROS -> 05_CUELLO": -7.863,
+    "04_PECHO_HOMBROS -> 05_CUELLO": -0.03,
     "05_CUELLO -> 06_CABEZA": -0.04
   }
 }

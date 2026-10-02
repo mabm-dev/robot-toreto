@@ -40,7 +40,10 @@ Decidido el 1-2 oct (todo en DECISIONES.md y CINEMATICA.md): Ally en el
 pecho (327 mm), iPhone volteable en la cabeza (+15 mm, robot ~965 mm),
 batería LiFePO4 24 V ~384 Wh en la base (5 h, carga a mano con sitio para
 contactos), giros deseados y cadera nueva (actuador lineal, mecánica 85°,
-software 30°). Siguientes: pasar la maqueta al pecho 3.0.0 y la cabeza
+software 30°). **Pecho 3.0.0 EJECUTADO (2 oct):** 327 mm, Ally X a la
+vista, rejillas, aro fino; 29 cuerpos; modo nuevo `comprobar` (alturas +
+interferencias): pecho→cuello −0,03, 0 choques brazos-resto. La maqueta
+90_MAQUETA ya no hace falta. Siguientes: la cabeza
 (175 mm), diseñar la cadera, y el prototipo del hombro (opción A).
 Aparcado: desmontar la Epson WF-2820 (negro atascado) para sensores ópticos
 y goma de yemas; si no, comprar "optical endstop" y lámina antideslizante.

@@ -19,11 +19,12 @@ SCRIPT_VERSION='v14'
 #                v14: disco negro del hombro visible y colores.
 # 'alturas'      -> v14: en el MONTAJE, SOLO LECTURA: alturas de cada modulo y
 #                cuerpo y huecos entre modulos (alturas_montaje_v14.json).
+# 'comprobar'  -> v14: alturas + interferencias juntas (solo lectura).
 # 'interferencias' -> v14: en el MONTAJE, SOLO LECTURA: choques de cada cuerpo
 #                de los brazos con el resto (interferencias_brazos_v14.json).
 # 'juntas_espejo' -> v12: en el MONTAJE, anade juntas y relaciones a la mano
 #                izquierda copiada por simetria. No crea ni mueve geometria.
-MODE='alturas'
+MODE='comprobar'
 
 
 def placement(axis,y_mm):
@@ -675,8 +676,22 @@ def run(context):
         design=adsk.fusion.Design.cast(app.activeProduct)
         if not design: raise RuntimeError('Abre el documento del robot')
         if MODE not in ('ensayo', 'ver_pinza', 'ensayo_lateral', 'ver_brazo', 'juntas_espejo',
-                        'alturas', 'interferencias'):
+                        'alturas', 'interferencias', 'comprobar'):
             raise RuntimeError('Modo de ensayo desconocido: '+MODE)
+        if MODE=='comprobar':
+            heights=report_heights(design,ROOT/'alturas_montaje_v14.json')
+            clashes=report_arm_interference(design,ROOT/'interferencias_brazos_v14.json')
+            lines=['{}: {} mm'.format(k,v) for k,v in heights['huecos_mm'].items()]
+            lines.append('')
+            lines.append('Choques brazos-resto: {} (cuerpos de brazo {}, resto {})'.format(
+                len(clashes['choques']),clashes['cuerpos_brazo'],clashes['cuerpos_resto']))
+            lines.extend('{} / {}: {} mm3'.format(c['cuerpo_brazo'],c['cuerpo_modulo'],c['volumen_mm3'])
+                         for c in clashes['choques'][:10])
+            app.userInterface.messageBox(
+                'Solo lectura: no se ha cambiado nada.\n\nHuecos (+) o solapes (-) entre modulos:\n'+
+                '\n'.join(lines)+'\n\nDetalles: alturas_montaje_v14.json e interferencias_brazos_v14.json',
+                'Toreto '+SCRIPT_VERSION+' - comprobar montaje')
+            return
         if MODE=='interferencias':
             result=report_arm_interference(design,ROOT/'interferencias_brazos_v14.json')
             lines=['{} / {}: {} mm3'.format(c['cuerpo_brazo'],c['cuerpo_modulo'],c['volumen_mm3'])
