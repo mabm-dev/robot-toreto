@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Toreto – Lista de corte de aluminio v0.1</title>
+<style>
+  @page { size: A4; margin: 14mm; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 11pt; color: #111; margin: 0; }
+  h1 { font-size: 18pt; margin: 0 0 2mm; }
+  h2 { font-size: 13pt; margin: 7mm 0 2mm; border-bottom: 1.5px solid #111; padding-bottom: 1mm; }
+  p { margin: 1.5mm 0; }
+  .meta { font-size: 9.5pt; color: #444; }
+  .aviso { border: 1.5px solid #111; padding: 3mm; margin: 4mm 0; background: #f2f2f2; }
+  table { width: 100%; border-collapse: collapse; margin-top: 2mm; }
+  th, td { border: 1px solid #555; padding: 1.8mm 2mm; text-align: left; vertical-align: top; }
+  th { background: #e4e4e4; font-size: 10pt; }
+  td.n { text-align: center; width: 9mm; }
+  td.c { text-align: center; }
+  td.ok { width: 9mm; }
+  .total td { font-weight: bold; background: #f2f2f2; }
+  ul { margin: 1mm 0 0 5mm; padding: 0; }
+  li { margin: 1mm 0; }
+  .firma { margin-top: 8mm; font-size: 10pt; }
+</style>
+</head>
+<body>
+
+<h1>Robot Toreto – Lista de corte de aluminio (v0.1)</h1>
+<p class="meta">Versión 0.1 · 3 de octubre de 2026 · incluye todos los giros (cadera, cintura, hombros, brazos y cuello) · Robot de ~965 mm de alto · Medidas en milímetros</p>
+
+<div class="aviso">
+  <strong>Importante:</strong> son <strong>cortes en bruto</strong> (largo × ancho × espesor).
+  <strong>Todavía no hay taladros</strong>: se marcarán en la versión 1, cuando estén elegidos los
+  motores (de desguace o nuevos), porque los agujeros dependen de ellos. Se puede cortar ya
+  y taladrar después.<br>
+  Material: <strong>6082-T6 o 6061-T6</strong> en placas, pletinas y eje · <strong>6063</strong> vale para tubos y angulares.
+  Se aceptan <strong>recortes</strong> siempre que salgan las medidas.
+</div>
+
+<h2>1. Piezas a cortar</h2>
+<table>
+  <tr><th>#</th><th>Pieza</th><th>Material / perfil</th><th>Medida de corte</th><th class="c">Uds.</th><th>Para qué</th><th>✓</th></tr>
+  <tr><td class="n">1</td><td>Placa de la base</td><td>Chapa 5 mm</td><td>400 × 300 × 5</td><td class="c">1</td><td>Chasis: motores de ruedas, batería y columna. (Alternativa: 4 mm + 2 angulares por debajo)</td><td class="ok"></td></tr>
+  <tr><td class="n">2</td><td>Columna fija</td><td>Tubo cuadrado 25 × 25 × 2</td><td>230</td><td class="c">1</td><td>De la base a la cadera</td><td class="ok"></td></tr>
+  <tr><td class="n">3</td><td>Soporte de la cadera</td><td>Pletina 6 mm</td><td>120 × 80 × 6</td><td class="c">2</td><td>Rodamientos del eje de la cadera y motor (uno a cada lado)</td><td class="ok"></td></tr>
+  <tr><td class="n">4</td><td>Eje de la cadera</td><td>Tubo redondo Ø30 × 3 (o acero)</td><td>260</td><td class="c">1</td><td>Eje que gira; por dentro pasan los cables</td><td class="ok"></td></tr>
+  <tr><td class="n">5a</td><td>Columna de la cintura (tramo bajo)</td><td>Tubo cuadrado 25 × 25 × 2</td><td>70</td><td class="c">1</td><td>Del eje de la cadera al giro de la cintura (se inclina con la cadera)</td><td class="ok"></td></tr>
+  <tr><td class="n">5b</td><td>Columna del pecho (tramo alto)</td><td>Tubo cuadrado 25 × 25 × 2</td><td>270</td><td class="c">1</td><td>Del giro de la cintura al cuello (gira con la cintura)</td><td class="ok"></td></tr>
+  <tr><td class="n">5c</td><td>Placas del giro de la cintura</td><td>Chapa 5 mm</td><td>130 × 130 × 5</td><td class="c">2</td><td>Una abajo y otra arriba del rodamiento de giro (Z ~465); el centro se taladrará para los cables</td><td class="ok"></td></tr>
+  <tr><td class="n">6</td><td>Travesaño de los hombros</td><td>Pletina 6 mm (o tubo 40 × 20 × 2)</td><td>300 × 60 × 6</td><td class="c">1</td><td>Une los dos motores de los hombros dentro del pecho</td><td class="ok"></td></tr>
+  <tr><td class="n">7</td><td>Soporte del motor del hombro</td><td>Pletina 6 mm</td><td>100 × 100 × 6</td><td class="c">2</td><td>Motor y rodamiento de cada hombro</td><td class="ok"></td></tr>
+  <tr><td class="n">7b</td><td>Soporte de la rotación del brazo</td><td>Pletina 5 mm</td><td>90 × 70 × 5</td><td class="c">2</td><td>Motor del giro del brazo dentro de la cápsula del hombro</td><td class="ok"></td></tr>
+  <tr><td class="n">8</td><td>Espina del brazo</td><td>Pletina 4 mm</td><td>160 × 25 × 4</td><td class="c">2</td><td>Dentro de cada brazo (hombro–codo)</td><td class="ok"></td></tr>
+  <tr><td class="n">9</td><td>Espina del antebrazo</td><td>Pletina 4 mm</td><td>170 × 25 × 4</td><td class="c">2</td><td>Dentro de cada antebrazo (codo–muñeca)</td><td class="ok"></td></tr>
+  <tr><td class="n">9b</td><td>Placa del cuello</td><td>Chapa 5 mm</td><td>110 × 110 × 5</td><td class="c">1</td><td>Arriba de la columna: motores del cuello (girar y arriba/abajo)</td><td class="ok"></td></tr>
+  <tr><td class="n">10</td><td>Escuadra grande</td><td>Angular 30 × 30 × 3</td><td>40</td><td class="c">8</td><td>Uniones de columnas, placa y soportes</td><td class="ok"></td></tr>
+  <tr><td class="n">11</td><td>Escuadra pequeña</td><td>Angular 20 × 20 × 2</td><td>30</td><td class="c">8</td><td>Fijar electrónica y piezas pequeñas</td><td class="ok"></td></tr>
+</table>
+
+<h2>2. Material en barra (para pedir o buscar en recortes)</h2>
+<table>
+  <tr><th>Material / perfil</th><th>Necesario (con margen de corte)</th><th>Piezas</th></tr>
+  <tr><td>Chapa 5 mm</td><td>400 × 300 + recortes de ~130 × 130 (×2) y 110 × 110</td><td>1, 5c, 9b</td></tr>
+  <tr><td>Pletina 6 mm</td><td>~0,9 m (en anchos de 60–120 mm)</td><td>3, 6, 7</td></tr>
+  <tr><td>Pletina 5 mm</td><td>~0,2 m × 90 mm</td><td>7b</td></tr>
+  <tr><td>Pletina 4 × 25 mm</td><td>~0,7 m</td><td>8, 9</td></tr>
+  <tr><td>Tubo cuadrado 25 × 25 × 2</td><td>~0,6 m</td><td>2, 5a, 5b</td></tr>
+  <tr><td>Tubo redondo Ø30 × 3</td><td>~0,3 m</td><td>4</td></tr>
+  <tr><td>Angular 30 × 30 × 3</td><td>~0,35 m</td><td>10</td></tr>
+  <tr><td>Angular 20 × 20 × 2</td><td>~0,25 m</td><td>11</td></tr>
+  <tr class="total"><td>Total aluminio</td><td>~5 kg</td><td></td></tr>
+</table>
+
+<h2>3. Otras compras (no son de aluminio)</h2>
+<table>
+  <tr><th>Qué</th><th>Detalle</th></tr>
+  <tr><td>Tornillería inoxidable</td><td>M3, M4 y M5: tornillos, tuercas autoblocantes y arandelas</td></tr>
+  <tr><td>Rodamientos</td><td>2 para la cadera (tipo 6006, para eje Ø30) y 2–4 para los hombros (medida según motor)</td></tr>
+  <tr><td>Rodamiento de giro de la cintura</td><td>Tipo "lazy susan" / plataforma giratoria de bolas de 4–6" (100–150 mm), con agujero central para cables</td></tr>
+</table>
+
+<h2>4. Notas para el taller</h2>
+<ul>
+  <li>Cantos sin rebabas; no hace falta acabado estético (va todo dentro de carcasas impresas).</li>
+  <li>Si sobra algún recorte de 6 mm o de tubo 25 × 25, guardarlo: saldrán más soportes.</li>
+  <li>La versión 1 llevará los <strong>taladros acotados</strong> (y DXF si hay máquina de corte).</li>
+</ul>
+
+<p class="firma">Dudas: proyecto Robot Toreto · github.com/mabm-dev/robot-toreto</p>
+
+</body>
+</html>
