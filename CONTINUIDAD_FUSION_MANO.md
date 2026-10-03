@@ -1,77 +1,105 @@
-# Continuidad del proyecto Toreto — actualizado el 2 de octubre de 2026
+# Continuidad del proyecto Toreto — actualizado el 3 de octubre de 2026
 
-## 00. AL RETOMAR (2 oct 2026): EMPEZAR AQUÍ
+## 00. AL RETOMAR (3 oct 2026): EMPEZAR AQUÍ
+
+### Qué está esperando al usuario (lunes 5 oct)
+
+- **Desguace:** buscar motores de tornillo sin fin (lista abajo) y precios.
+- **Su tío (aluminio):** le lleva `docs/fabricacion/lista_corte_aluminio_v0_2.pdf`
+  (18 piezas, solo aluminio, sin precios, sin taladros) para ver qué puede
+  conseguir, qué recortes tiene y a qué precio.
+- Al volver: con los motores reales (modelo + fotos con regla) se diseñan
+  soportes, acoples y el esqueleto en Fusion → **lista de corte v1 con
+  taladros acotados** (y DXF si su tío tiene máquina de corte).
 
 ### Estado del robot (montaje `Toreto_hombro_encajado_sin_articulaciones_backup`)
 
-Exterior completo, ~965 mm, y comprobado (modo `comprobar`: juntas bien,
+Exterior completo, ~965 mm, comprobado (modo `comprobar`: juntas bien,
 0 choques brazos-resto). Versiones vigentes de los complementos:
 
 | Módulo | Versión | Notas |
 |---|---|---|
 | Base | 2.0.1 | Redonda Ø450, mecanum con aspecto del render, eje y motor visibles, LIDAR |
-| Tronco | **1.7.2** | Collar con U delantera abierta y discos de cadera, núcleo hasta Z 300 |
-| Cintura | **2.3.0** | Tres piezas; bloque inferior con fondo en arco R70 y eje hueco de cadera |
+| Tronco | 1.7.2 | Collar con U delantera abierta y discos de cadera, núcleo hasta Z 300 |
+| Cintura | 2.3.0 | Tres piezas; bloque inferior con fondo en arco R70 y eje hueco de cadera |
 | Pecho | 3.0.0 | 327 mm, ROG Ally X a la vista, rejillas, aro fino del hombro |
 | Cuello | 2.0.0 | Base, cuello 72 mm, collarín |
 | Cabeza | 4.2.1 | 175 mm, hueca, visor acrílico, iPhone 12 Pro Max volteable, guías, servo |
 | Brazos | v14 | `Toreto_Brazo_Mano_v14` (izquierdo por simetría + `juntas_espejo`) |
 
-**Cadera resuelta en geometría (2 oct):** eje en X a Z 400; el modo `cadera`
-gira en memoria todo lo de arriba y da **LIBRE hasta 85°**. Falta el
-mecanismo (actuador lineal + biela) y que gire de verdad en Fusion.
+**Cadera:** eje en X a Z 400, **libre hasta 85°** (modo `cadera`). Falta el
+motor (ahora de tornillo sin fin) y que gire de verdad en Fusion.
 
-Tronco 1.7.2, cintura 2.3.0 y el modo `cadera` guardados en GitHub al cerrar
-el chat del 2 oct.
+### Decisiones (todo en `docs/DECISIONES.md` y `docs/CINEMATICA.md`)
 
-### Decisiones de fase 2 (todo en `docs/DECISIONES.md` y `docs/CINEMATICA.md`)
-
-- Ally X en el pecho a la vista; iPhone 12 Pro Max en la cabeza con giro
-  tipo libro (modo cara / modo visión); encendido de la Ally por USB desde
-  el microcontrolador (no Wake-on-WLAN, no pulsador mecánico).
-- Brazo: hombro 2 + codo 1 + muñeca 2, 1 kg por mano, pares mínimos;
-  reductoras cicloidales impresas en la P1S; prototipo del hombro con la
-  opción A (NEMA17 17HS19-2004S1 + MKS SERVO42D con CAN + correa 3:1 +
-  cicloidal 25:1, ~40 €/articulación; B = motor sin escobillas con
-  reductora StepperOnline M52B60…/G52-5.18S1 si el ruido o la velocidad
-  no convencen).
+- Ally X en el pecho a la vista; iPhone 12 Pro Max en la cabeza con giro tipo
+  libro; encendido de la Ally por USB desde el microcontrolador.
+- Brazo: hombro 2 + codo 1 + muñeca 2, **1 kg por mano**, pares mínimos.
+- **Motores (cambio del 3 oct):** las cicloidales impresas con NEMA17 dan
+  ~3-10 N·m reales (Hackaday): no valen para hombro (15) ni cadera (~30-60).
+  → **Tornillo sin fin** (tipo limpiaparabrisas, 20-45 N·m, no giran sin
+  corriente) para **cadera y hombro subir/bajar ×2**, con driver BTS7960 y
+  AS5600 en el eje. Elevalunas / motores de asiento (5-15 N·m) o cicloidal
+  impresa para rotación del brazo, codo y giro de cintura. Muñeca y mano:
+  servos y micromotores. Descartados para la cadera: actuador lineal (no
+  cabe) y muelle de gas (el usuario no lo quiere).
+- **Desguace:** limpiaparabrisas delanteros (mejor de camión, 24 V; iguales
+  entre sí) → cadera y hombros; elevalunas y motores de asiento → brazo y
+  cintura; limpiaparabrisas trasero → cuello/cintura. Traer conector con
+  cable, probar con batería, fotos con regla.
+- **Esqueleto de aluminio** (tío del usuario): placa de base + soportes de
+  ruedas, nervios y sujeción de batería; columna partida en la cintura con
+  rodamiento de giro; soportes de cadera y eje Ø30; travesaño y soportes de
+  hombros; soportes de rotación del brazo; espinas de brazo y antebrazo;
+  placa del cuello; escuadras. ~5,5 kg.
 - Batería LiFePO4 24 V ~15 Ah (~384 Wh) en la base, 5 h; carga a mano con
-  sitio para contactos de carga automática.
-- Bus CAN, canal central con columna 2020, rejillas de aire, ejes huecos.
-- Giros deseados de cada articulación; cadera mecánica 85°, software 30°
-  hasta pesar el robot. RPLIDAR C1 se mantiene (navegación 360°).
+  sitio para contactos. Bus CAN, canal central, rejillas, ejes huecos.
+- Giros deseados de cada articulación; cadera mecánica 85°, software 30°.
+  RPLIDAR C1 se mantiene.
+- **Fuera del robot:** servidor Proxmox 24/7 con las piezas DDR4 que sobren
+  al cambiar de PC (4 × 8 GB Corsair Vengeance LPX, fuente Corsair 850 W
+  Gold, SSD 500 GB, 2 discos NAS de 4 TB en espejo); torre con RTX 5080 +
+  4070 Ti para IA pesada y simulación, encendida por Wake-on-LAN.
+
+### Compras pendientes (no de aluminio)
+
+Motores de desguace o nuevos; drivers BTS7960; sensores AS5600; motores de
+ruedas mecanum (37 mm con reductora, no de desguace); batería LiFePO4 con
+BMS (comprobar medidas antes); tornillería inoxidable M3-M5; rodamientos
+(2 × 6006 cadera, 2-4 hombros); rodamiento de giro de la cintura tipo
+"lazy susan" 100-150 mm con agujero central; "optical endstop" y lámina
+antideslizante (o desmontar la Epson WF-2820); servo MG90S del iPhone.
 
 ### Pendiente, por orden
 
-1. (Hecho) commit de tronco 1.7.2, cintura 2.3.0 y modo `cadera`.
-2. **(Cambiado 3 oct)** Motores: tornillo sin fin para cadera y hombros
-   (ver DECISIONES "Motores de tornillo sin fin y esqueleto de aluminio").
-   El usuario va al desguace: cuando traiga motores (modelo + fotos con
-   regla), diseñar soportes y acoples. El actuador lineal queda descartado.
-3. Esqueleto de aluminio: el usuario lo consulta con su tío (4 oct). Se
-   diseña en Fusion con los motores ya elegidos; luego planos/DXF.
-   Después, cadera y hombros como articulaciones reales en Fusion.
-4. Medir en la Ally real: posición de los mandos; si arranca sola al
-   recibir corriente.
-5. Cabeza: Fusion no conserva el nombre ni la opacidad del visor (se pone a
-   mano, 30 %); corregirlo en la próxima versión.
-6. Más adelante: límites reales de giro, masas reales → vuelco y equilibrio,
-   la Epson aparcada (sensores ópticos y goma) o comprar "optical endstop".
+1. Lunes: resultado del desguace y del tío → motores reales y aluminio.
+2. Diseñar en Fusion soportes, acoples y esqueleto con los motores reales;
+   lista de corte v1 con taladros (y DXF).
+3. Cadera y hombros como articulaciones reales en Fusion.
+4. Medir en la Ally: posición de los mandos; si arranca sola con corriente.
+5. Cabeza: que el script conserve nombre y opacidad del visor.
+6. Más adelante: límites reales de giro, masas reales → vuelco (desbloquear
+   la cadera > 30°), servidor Proxmox, software/ROS 2.
 
 ### Cómo trabajamos (lo que funciona)
 
 - **Lienzo = medidas, render 3D = forma.** Medir por píxeles, no a ojo.
 - **Plan antes de tocar código**; el usuario aprueba; luego se implementa.
 - Comprobar fuera de Fusion antes de pedir ejecutar: compilar y Fusion
-  simulado (`scratchpad/sim_*.py`), o una simulación geométrica en Python
-  cuando hay rotaciones. Los lofts solo se prueban en Fusion.
-- Cada cambio de un complemento sube su VERSION (si no, no se regenera) y
-  se copia a `%APPDATA%\Autodesk\Autodesk Fusion 360\API\Scripts\`.
+  simulado (`scratchpad/sim_*.py`), o simulación geométrica en Python con
+  giros. Los lofts solo se prueban en Fusion.
+- Cada cambio de un complemento sube su VERSION y se copia a
+  `%APPDATA%\Autodesk\Autodesk Fusion 360\API\Scripts\`.
   `work/Toreto_Prueba_Holguras_01_44` está enlazado directo al repo.
 - Pruebas en el montaje, SOLO LECTURA, con `Toreto_Prueba_Holguras_01_44`:
-  `comprobar` (alturas + interferencias), `cadera` (barrido de giro),
-  `alturas`, `interferencias`; leer los JSON que deja.
-- Al abrir una carcasa hueca, cerrar siempre el interior (relleno o tapa).
+  `comprobar`, `cadera`, `alturas`, `interferencias`; leer los JSON.
+- Al abrir una carcasa hueca, cerrar siempre el interior.
+- **Buscar en web/foros antes de fijar componentes** (el 3 oct una búsqueda
+  cambió la elección de motores); precios siempre "orientativos".
+- **Documentos para terceros** (taller, su tío): PDF A4 imprimible en
+  `docs/fabricacion/`, **sin precios, sin GitHub ni datos de contacto, solo
+  lo que esa persona hace** (p. ej. solo aluminio). Generar con Edge
+  headless desde HTML.
 - Commits sin co-autor; push cuando el usuario lo pide.
 
 ## 0. Histórico (29 sept – 2 oct)
