@@ -44,10 +44,13 @@ el chat del 2 oct.
 ### Pendiente, por orden
 
 1. (Hecho) commit de tronco 1.7.2, cintura 2.3.0 y modo `cadera`.
-2. Cadera: actuador lineal de 24 V + biela de dos brazos dentro del tronco
-   (núcleo libre desde Z 300); luego articulación real en Fusion.
-3. Prototipo del hombro (cuando el usuario compre las piezas): diseñar la
-   cicloidal 25:1 Ø60 y el soporte con las medidas reales.
+2. **(Cambiado 3 oct)** Motores: tornillo sin fin para cadera y hombros
+   (ver DECISIONES "Motores de tornillo sin fin y esqueleto de aluminio").
+   El usuario va al desguace: cuando traiga motores (modelo + fotos con
+   regla), diseñar soportes y acoples. El actuador lineal queda descartado.
+3. Esqueleto de aluminio: el usuario lo consulta con su tío (4 oct). Se
+   diseña en Fusion con los motores ya elegidos; luego planos/DXF.
+   Después, cadera y hombros como articulaciones reales en Fusion.
 4. Medir en la Ally real: posición de los mandos; si arranca sola al
    recibir corriente.
 5. Cabeza: Fusion no conserva el nombre ni la opacidad del visor (se pone a

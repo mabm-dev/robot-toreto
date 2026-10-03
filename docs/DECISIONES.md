@@ -374,6 +374,38 @@ acepta que el robot pase de 950 a **~965 mm**; el cuello no se acorta.
   batería del robot, no del USB de la Ally, para poder despertarla aunque
   el puerto quede sin corriente.
 
+## Motores de tornillo sin fin y esqueleto de aluminio (3 oct 2026)
+
+**Cambio de criterio en los motores grandes.** Las pruebas publicadas de
+reductoras cicloidales impresas con NEMA17 dan ~3,4 N·m de par seguro y
+~10,5 N·m de pico (PETG), y acaban rompiéndose si se bloquean (Hackaday,
+ago 2026). No llegan a los 15 N·m del hombro ni a los ~30 (60 con margen)
+de la cadera. Un NEMA23 con planetaria 50:1 comercial da ~10 N·m (~142 €).
+
+- **Cadera y hombro subir/bajar (×2): motores de tornillo sin fin** de
+  20-45 N·m (tipo limpiaparabrisas): no giran sin corriente (sin muelle ni
+  freno), baratos. Driver de continua BTS7960 (43 A) y sensor AS5600 en el
+  eje de salida. Limitar corriente por seguridad (no ceden si chocan).
+  Mirar el par NOMINAL en la ficha antes de comprar.
+- **Rotación del brazo, codo, cintura: elevalunas o motores de asiento**
+  (tornillo sin fin, 5-15 N·m), o cicloidal/planetaria impresa con NEMA17.
+- Muñeca y mano: servos y micromotores (sin cambios).
+- **Desguace:** limpiaparabrisas delanteros (mejor de camión, 24 V) para
+  cadera y hombros, iguales entre sí; elevalunas y motores de asiento para
+  brazo y cintura; limpiaparabrisas trasero para cuello o cintura. Traer el
+  conector con cable, probar con batería, fotos con regla.
+- Descartado para la cadera: actuador lineal (no cabe y pierde par al
+  final) y muelle de gas (el usuario no lo quiere junto al calor).
+
+**Esqueleto de aluminio** (lo hace un tío del usuario que trabaja el
+aluminio; pendiente de confirmar con él): placa de base 5 mm (o 4 mm con
+nervios), columnas de tubo 25 × 25 × 2, pletinas de 6 mm para los soportes
+de cadera y hombros y el travesaño de los hombros, eje de cadera tubo Ø30 ×
+3, espinas de los brazos en pletina de 4 mm, escuadras. 6082-T6 / 6061-T6
+(6063 para tubos). ~4-5 kg de aluminio, ~65-110 € + tornillería y
+rodamientos ≈ 95-165 €. Se diseña en Fusion DESPUÉS de tener los motores;
+luego planos acotados / DXF para él.
+
 ## Equipos de desarrollo: servidor de casa y torre (3 oct 2026)
 
 Fuera del robot, todo en casa (sin nube):
