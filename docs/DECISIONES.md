@@ -374,6 +374,24 @@ acepta que el robot pase de 950 a **~965 mm**; el cuello no se acorta.
   batería del robot, no del USB de la Ally, para poder despertarla aunque
   el puerto quede sin corriente.
 
+## Equipos de desarrollo: servidor de casa y torre (3 oct 2026)
+
+Fuera del robot, todo en casa (sin nube):
+
+- **Servidor 24/7 con Proxmox**, con las piezas que sobren al cambiar de PC
+  (placa y procesador DDR4) + 4 × 8 GB Corsair Vengeance LPX
+  CMK16GX4M2B3200C16 (32 GB; puede que haya que bajarlas a 2933-3000 MHz)
+  + fuente Corsair 850 W 80 Plus Gold + SSD de 500 GB (Proxmox y VM).
+  Sin gráfica (~35-55 W en reposo, ~5-7 €/mes). VM con TrueNAS u
+  OpenMediaVault, VM con Ubuntu + ROS 2, contenedores. Datos en 2 discos
+  NAS CMR (WD Red Plus / IronWolf) de 4 TB en espejo (~200 €); copias
+  según la regla 3-2-1 (disco USB + GitHub).
+- **Torre con RTX 5080 + RTX 4070 Ti** (16 + 12 GB): solo cuando haga
+  falta, encendida desde el servidor por Wake-on-LAN por cable. Para lo
+  pesado: modelos de IA grandes, entrenar visión, simulación (Gazebo,
+  Isaac Sim).
+- La IA del día a día sigue en la Ally, dentro del robot.
+
 ## Giros deseados y cadera (2 oct 2026)
 
 Requisitos de movimiento (no límites medidos; 0° = postura de la lámina).
